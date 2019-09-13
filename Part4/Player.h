@@ -1,0 +1,8 @@
+//
+// Created by Giselle Martel on 2019-09-13.
+//
+
+#ifndef TEAMPROJECT_COMP345_PLAYER_H
+#define TEAMPROJECT_COMP345_PLAYER_H
+
+#endif //TEAMPROJECT_COMP345_PLAYER_H
