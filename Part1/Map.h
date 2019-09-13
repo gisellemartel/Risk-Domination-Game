@@ -6,3 +6,11 @@
 #define TEAMPROJECT_COMP345_MAP_H
 
 #endif //TEAMPROJECT_COMP345_MAP_H
+
+class Map
+{
+public:
+
+private:
+
+};
