@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/gisellemartel/Documents/TeamProject-COMP345/Part1/Map.h
+
+/Users/gisellemartel/Documents/TeamProject-COMP345/Part1/MapDriver.cpp
+Map.h
+/Users/gisellemartel/Documents/TeamProject-COMP345/Part1/Map.h
+iostream
+-
+

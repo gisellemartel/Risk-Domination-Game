@@ -1,13 +1,17 @@
 //
-// Created by Giselle Martel on 2019-09-13.
+// COMP345 Assignment #1, Fall 2019
 //
 
 #include <iostream>
 using namespace std;
 
+#include "Player.h"
 
 int main()
 {
-    cout << "Player Driver" << endl;
+    cout << "Executing Player Driver" << endl;
+    Player* newPlayer = new Player();
+    delete newPlayer;
+
     return 0;
 }
