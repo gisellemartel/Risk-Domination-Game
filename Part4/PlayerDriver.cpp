@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 /**
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
-
-=======
-//
-// COMP345 Assignment #1, Fall 2019
-//
->>>>>>> player
 
 #include <iostream>
 using namespace std;

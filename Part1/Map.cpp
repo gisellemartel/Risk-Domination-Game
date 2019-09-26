@@ -4,7 +4,6 @@
  */
 
 #include "Map.h"
-#include "../Part4/Player.h"
 
 using namespace std;
 
