@@ -52,7 +52,7 @@ public:
     //Constructor using initializer list
     Country(string* in_country_name) :
             country_name_(in_country_name),
-            country_owner_(nullptr),
+            //country_owner_(nullptr),
             number_of_armies_(0)
     {}
 
