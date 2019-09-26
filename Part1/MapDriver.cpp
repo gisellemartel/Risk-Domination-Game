@@ -17,7 +17,5 @@ int main()
 
     list<int>::iterator searchedItem = find(numbers.begin(), numbers.end(), 10);
 
-    cout <<  << endl;
-
     cout << "Map Driver" << endl;
 }
