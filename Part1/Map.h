@@ -2,10 +2,9 @@
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
-
+#pragma once
 #ifndef TEAMPROJECT_COMP345_MAP_H
 #define TEAMPROJECT_COMP345_MAP_H
-
 
 #include "../Part4/Player.h"
 #include <list>
@@ -14,7 +13,6 @@
 #include <iostream>
 
 using namespace std;
-
 
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
@@ -41,6 +39,8 @@ public:
     //Methods -------------------------------------------------------
     void AddCountryToContinent(string* country);
 };
+
+
 
 //Country class ------------------------------------------------------------------------------------
 class Country{
@@ -76,6 +76,8 @@ public:
     bool IsNeighbor(const Country* neighbor);
     bool BelongsToContinent(const Continent* continent);
 };
+
+
 
 //Map class ------------------------------------------------------------------------------------
 //Implementation of a connected graph where nodes are countries and edges are adjacencies
