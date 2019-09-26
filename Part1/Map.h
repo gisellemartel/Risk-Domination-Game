@@ -1,6 +1,7 @@
-//
-// Created by Giselle Martel on 2019-09-13.
-//
+/**
+ * Assignment #1 COMP345, FALL 2019
+ * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ */
 
 #ifndef TEAMPROJECT_COMP345_MAP_H
 #define TEAMPROJECT_COMP345_MAP_H
@@ -8,6 +9,7 @@
 
 #include "../Part4/Player.h"
 #include <list>
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -18,13 +20,15 @@ using namespace std;
 class Continent{
 private:
     string* continent_name_;
-    list<string*> countries_in_continent_;
+    vector<string*>* countries_in_continent_;
 
 public:
     //Constructor using initializer list
     Continent(string* in_continent_name)
-        : continent_name_ (in_continent_name)
-        {}
+            : continent_name_ (in_continent_name)
+    {}
+
+    ~Continent(){}
 
     //Setters --------------------------------------------------
     void SetContinentName(string* in_continent_name) { continent_name_ = in_continent_name; }
@@ -43,54 +47,66 @@ class Country{
 
 private:
     string* country_name_;
+    //TODO remove comment once Player class is implemented
     //Player* country_owner_;
     int number_of_armies_;
-    list<Country*> neighbors_;
+    vector<Country*>* neighbors_;
     Continent* continent_;
 
 public:
-    //Constructor using initializer list
-    Country(string* in_country_name) :
-            country_name_(in_country_name),
-            //country_owner_(nullptr),
-            number_of_armies_(0)
-    {}
+    //Constructor
+    Country(string* country_name_);
+    //Destructor
+    ~Country();
 
     //Setters --------------------------------------------------
 
-    void SetCountryName(string* in_country_name){ country_name_ = in_country_name; }
-
-    void SetNumberOfArmies(int in_number_of_armies){ number_of_armies_ = in_number_of_armies; }
+    void SetCountryName(string* in_country_name);
+    void SetNumberOfArmies(int in_number_of_armies);
 
     //Getters --------------------------------------------------
 
-    const string* GetCountryName() const { return country_name_; }
-
-    const int GetNumberOfArmies() const { return number_of_armies_; }
-
-    const Continent* GetContinent() const { return continent_; }
+    const string* GetCountryName() const;
+    int GetNumberOfArmies() const;
+    Continent* GetContinent() const;
 
     //Methods -------------------------------------------------------
 
     void AddNeighborCountry(const Country* neighbor);
-
     bool IsNeighbor(const Country* neighbor);
-
     bool BelongsToContinent(const Continent* continent);
 };
 
 //Map class ------------------------------------------------------------------------------------
+//Implementation of a connected graph where nodes are countries and edges are adjacencies
 class Map {
+
 private:
-    list<Continent *> continents;
+    string map_name_;
+    int num_countries_;
+    int num_continents_;
+    vector<Continent*>* continents_;
+    vector<Country*>* countries_;
+
+    //2d array will be used to track what countries are adjacent to others
+    bool** adjacency_matrix_;
 
 public:
-    Map(){
-        cout << "Instantiating new map" << endl;
-    }
+    //Constructor
+    Map(string name, int n_countries, int n_continents);
+
+    //Destructor
+    ~Map();
+
+
+    //Getters --------------------------------------------------
+
+    const int GetNumCountries() const;
+    const int GetNumContinents() const;
+    const string GetMapName() const;
 
     //Methods -------------------------------------------------------
-    void AddContinent(Continent* continent);
+    //void AddContinent(Continent* continent);
 
 };
 #endif //TEAMPROJECT_COMP345_MAP_H

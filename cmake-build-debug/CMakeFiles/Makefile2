@@ -65,187 +65,187 @@ CMAKE_SOURCE_DIR = /Users/gisellemartel/TeamProject-COMP345
 CMAKE_BINARY_DIR = /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug
 
 #=============================================================================
-# Target rules for target CMakeFiles/Part1.dir
+# Target rules for target CMakeFiles/Player.dir
 
 # All Build rule for target.
-CMakeFiles/Part1.dir/all:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/depend
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target Part1"
-.PHONY : CMakeFiles/Part1.dir/all
+CMakeFiles/Player.dir/all:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/depend
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=13,14,15 "Built target Player"
+.PHONY : CMakeFiles/Player.dir/all
 
 # Include target in all.
-all: CMakeFiles/Part1.dir/all
+all: CMakeFiles/Player.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Part1.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Part1.dir/all
+CMakeFiles/Player.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Player.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/Part1.dir/rule
+.PHONY : CMakeFiles/Player.dir/rule
 
 # Convenience name for target.
-Part1: CMakeFiles/Part1.dir/rule
+Player: CMakeFiles/Player.dir/rule
 
-.PHONY : Part1
-
-# clean rule for target.
-CMakeFiles/Part1.dir/clean:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/clean
-.PHONY : CMakeFiles/Part1.dir/clean
+.PHONY : Player
 
 # clean rule for target.
-clean: CMakeFiles/Part1.dir/clean
+CMakeFiles/Player.dir/clean:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/clean
+.PHONY : CMakeFiles/Player.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/Player.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/Part2.dir
+# Target rules for target CMakeFiles/Cards.dir
 
 # All Build rule for target.
-CMakeFiles/Part2.dir/all:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/depend
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target Part2"
-.PHONY : CMakeFiles/Part2.dir/all
+CMakeFiles/Cards.dir/all:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/depend
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target Cards"
+.PHONY : CMakeFiles/Cards.dir/all
 
 # Include target in all.
-all: CMakeFiles/Part2.dir/all
+all: CMakeFiles/Cards.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Part2.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Part2.dir/all
+CMakeFiles/Cards.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Cards.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/Part2.dir/rule
+.PHONY : CMakeFiles/Cards.dir/rule
 
 # Convenience name for target.
-Part2: CMakeFiles/Part2.dir/rule
+Cards: CMakeFiles/Cards.dir/rule
 
-.PHONY : Part2
-
-# clean rule for target.
-CMakeFiles/Part2.dir/clean:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/clean
-.PHONY : CMakeFiles/Part2.dir/clean
+.PHONY : Cards
 
 # clean rule for target.
-clean: CMakeFiles/Part2.dir/clean
+CMakeFiles/Cards.dir/clean:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/clean
+.PHONY : CMakeFiles/Cards.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/Cards.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/Part5.dir
+# Target rules for target CMakeFiles/Dice.dir
 
 # All Build rule for target.
-CMakeFiles/Part5.dir/all:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/depend
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=9,10 "Built target Part5"
-.PHONY : CMakeFiles/Part5.dir/all
+CMakeFiles/Dice.dir/all:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/depend
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=4,5,6 "Built target Dice"
+.PHONY : CMakeFiles/Dice.dir/all
 
 # Include target in all.
-all: CMakeFiles/Part5.dir/all
+all: CMakeFiles/Dice.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Part5.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Part5.dir/all
+CMakeFiles/Dice.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Dice.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/Part5.dir/rule
+.PHONY : CMakeFiles/Dice.dir/rule
 
 # Convenience name for target.
-Part5: CMakeFiles/Part5.dir/rule
+Dice: CMakeFiles/Dice.dir/rule
 
-.PHONY : Part5
-
-# clean rule for target.
-CMakeFiles/Part5.dir/clean:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/clean
-.PHONY : CMakeFiles/Part5.dir/clean
+.PHONY : Dice
 
 # clean rule for target.
-clean: CMakeFiles/Part5.dir/clean
+CMakeFiles/Dice.dir/clean:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/clean
+.PHONY : CMakeFiles/Dice.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/Dice.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/Part4.dir
+# Target rules for target CMakeFiles/MapLoader.dir
 
 # All Build rule for target.
-CMakeFiles/Part4.dir/all:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/depend
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=7,8 "Built target Part4"
-.PHONY : CMakeFiles/Part4.dir/all
+CMakeFiles/MapLoader.dir/all:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/depend
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=10,11,12 "Built target MapLoader"
+.PHONY : CMakeFiles/MapLoader.dir/all
 
 # Include target in all.
-all: CMakeFiles/Part4.dir/all
+all: CMakeFiles/MapLoader.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Part4.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Part4.dir/all
+CMakeFiles/MapLoader.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/MapLoader.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/Part4.dir/rule
+.PHONY : CMakeFiles/MapLoader.dir/rule
 
 # Convenience name for target.
-Part4: CMakeFiles/Part4.dir/rule
+MapLoader: CMakeFiles/MapLoader.dir/rule
 
-.PHONY : Part4
-
-# clean rule for target.
-CMakeFiles/Part4.dir/clean:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/clean
-.PHONY : CMakeFiles/Part4.dir/clean
+.PHONY : MapLoader
 
 # clean rule for target.
-clean: CMakeFiles/Part4.dir/clean
+CMakeFiles/MapLoader.dir/clean:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/clean
+.PHONY : CMakeFiles/MapLoader.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/MapLoader.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/Part3.dir
+# Target rules for target CMakeFiles/Map.dir
 
 # All Build rule for target.
-CMakeFiles/Part3.dir/all:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/depend
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target Part3"
-.PHONY : CMakeFiles/Part3.dir/all
+CMakeFiles/Map.dir/all:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/depend
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles --progress-num=7,8,9 "Built target Map"
+.PHONY : CMakeFiles/Map.dir/all
 
 # Include target in all.
-all: CMakeFiles/Part3.dir/all
+all: CMakeFiles/Map.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/Part3.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Part3.dir/all
+CMakeFiles/Map.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/Map.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/Part3.dir/rule
+.PHONY : CMakeFiles/Map.dir/rule
 
 # Convenience name for target.
-Part3: CMakeFiles/Part3.dir/rule
+Map: CMakeFiles/Map.dir/rule
 
-.PHONY : Part3
-
-# clean rule for target.
-CMakeFiles/Part3.dir/clean:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/clean
-.PHONY : CMakeFiles/Part3.dir/clean
+.PHONY : Map
 
 # clean rule for target.
-clean: CMakeFiles/Part3.dir/clean
+CMakeFiles/Map.dir/clean:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/clean
+.PHONY : CMakeFiles/Map.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/Map.dir/clean
 
 .PHONY : clean
 

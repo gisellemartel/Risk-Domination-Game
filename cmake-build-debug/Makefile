@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /Users/gisellemartel/TeamProject-COMP345/cmake-build-debug
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,69 +111,96 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named Part1
+# Target rules for targets named Player
 
 # Build rule for target.
-Part1: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Part1
-.PHONY : Part1
+Player: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Player
+.PHONY : Player
 
 # fast build rule for target.
-Part1/fast:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/build
-.PHONY : Part1/fast
+Player/fast:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/build
+.PHONY : Player/fast
 
 #=============================================================================
-# Target rules for targets named Part2
+# Target rules for targets named Cards
 
 # Build rule for target.
-Part2: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Part2
-.PHONY : Part2
+Cards: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Cards
+.PHONY : Cards
 
 # fast build rule for target.
-Part2/fast:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/build
-.PHONY : Part2/fast
+Cards/fast:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/build
+.PHONY : Cards/fast
 
 #=============================================================================
-# Target rules for targets named Part5
+# Target rules for targets named Dice
 
 # Build rule for target.
-Part5: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Part5
-.PHONY : Part5
+Dice: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Dice
+.PHONY : Dice
 
 # fast build rule for target.
-Part5/fast:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/build
-.PHONY : Part5/fast
+Dice/fast:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/build
+.PHONY : Dice/fast
 
 #=============================================================================
-# Target rules for targets named Part4
+# Target rules for targets named MapLoader
 
 # Build rule for target.
-Part4: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Part4
-.PHONY : Part4
+MapLoader: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 MapLoader
+.PHONY : MapLoader
 
 # fast build rule for target.
-Part4/fast:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/build
-.PHONY : Part4/fast
+MapLoader/fast:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/build
+.PHONY : MapLoader/fast
 
 #=============================================================================
-# Target rules for targets named Part3
+# Target rules for targets named Map
 
 # Build rule for target.
-Part3: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Part3
-.PHONY : Part3
+Map: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 Map
+.PHONY : Map
 
 # fast build rule for target.
-Part3/fast:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/build
-.PHONY : Part3/fast
+Map/fast:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/build
+.PHONY : Map/fast
+
+Part1/Map.o: Part1/Map.cpp.o
+
+.PHONY : Part1/Map.o
+
+# target to build an object file
+Part1/Map.cpp.o:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/Map.cpp.o
+.PHONY : Part1/Map.cpp.o
+
+Part1/Map.i: Part1/Map.cpp.i
+
+.PHONY : Part1/Map.i
+
+# target to preprocess a source file
+Part1/Map.cpp.i:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/Map.cpp.i
+.PHONY : Part1/Map.cpp.i
+
+Part1/Map.s: Part1/Map.cpp.s
+
+.PHONY : Part1/Map.s
+
+# target to generate assembly for a file
+Part1/Map.cpp.s:
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/Map.cpp.s
+.PHONY : Part1/Map.cpp.s
 
 Part1/MapDriver.o: Part1/MapDriver.cpp.o
 
@@ -181,7 +208,7 @@ Part1/MapDriver.o: Part1/MapDriver.cpp.o
 
 # target to build an object file
 Part1/MapDriver.cpp.o:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/Part1/MapDriver.cpp.o
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/MapDriver.cpp.o
 .PHONY : Part1/MapDriver.cpp.o
 
 Part1/MapDriver.i: Part1/MapDriver.cpp.i
@@ -190,7 +217,7 @@ Part1/MapDriver.i: Part1/MapDriver.cpp.i
 
 # target to preprocess a source file
 Part1/MapDriver.cpp.i:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/Part1/MapDriver.cpp.i
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/MapDriver.cpp.i
 .PHONY : Part1/MapDriver.cpp.i
 
 Part1/MapDriver.s: Part1/MapDriver.cpp.s
@@ -199,8 +226,35 @@ Part1/MapDriver.s: Part1/MapDriver.cpp.s
 
 # target to generate assembly for a file
 Part1/MapDriver.cpp.s:
-	$(MAKE) -f CMakeFiles/Part1.dir/build.make CMakeFiles/Part1.dir/Part1/MapDriver.cpp.s
+	$(MAKE) -f CMakeFiles/Map.dir/build.make CMakeFiles/Map.dir/Part1/MapDriver.cpp.s
 .PHONY : Part1/MapDriver.cpp.s
+
+Part2/MapLoader.o: Part2/MapLoader.cpp.o
+
+.PHONY : Part2/MapLoader.o
+
+# target to build an object file
+Part2/MapLoader.cpp.o:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoader.cpp.o
+.PHONY : Part2/MapLoader.cpp.o
+
+Part2/MapLoader.i: Part2/MapLoader.cpp.i
+
+.PHONY : Part2/MapLoader.i
+
+# target to preprocess a source file
+Part2/MapLoader.cpp.i:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoader.cpp.i
+.PHONY : Part2/MapLoader.cpp.i
+
+Part2/MapLoader.s: Part2/MapLoader.cpp.s
+
+.PHONY : Part2/MapLoader.s
+
+# target to generate assembly for a file
+Part2/MapLoader.cpp.s:
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoader.cpp.s
+.PHONY : Part2/MapLoader.cpp.s
 
 Part2/MapLoaderDriver.o: Part2/MapLoaderDriver.cpp.o
 
@@ -208,7 +262,7 @@ Part2/MapLoaderDriver.o: Part2/MapLoaderDriver.cpp.o
 
 # target to build an object file
 Part2/MapLoaderDriver.cpp.o:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/Part2/MapLoaderDriver.cpp.o
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoaderDriver.cpp.o
 .PHONY : Part2/MapLoaderDriver.cpp.o
 
 Part2/MapLoaderDriver.i: Part2/MapLoaderDriver.cpp.i
@@ -217,7 +271,7 @@ Part2/MapLoaderDriver.i: Part2/MapLoaderDriver.cpp.i
 
 # target to preprocess a source file
 Part2/MapLoaderDriver.cpp.i:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/Part2/MapLoaderDriver.cpp.i
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoaderDriver.cpp.i
 .PHONY : Part2/MapLoaderDriver.cpp.i
 
 Part2/MapLoaderDriver.s: Part2/MapLoaderDriver.cpp.s
@@ -226,8 +280,35 @@ Part2/MapLoaderDriver.s: Part2/MapLoaderDriver.cpp.s
 
 # target to generate assembly for a file
 Part2/MapLoaderDriver.cpp.s:
-	$(MAKE) -f CMakeFiles/Part2.dir/build.make CMakeFiles/Part2.dir/Part2/MapLoaderDriver.cpp.s
+	$(MAKE) -f CMakeFiles/MapLoader.dir/build.make CMakeFiles/MapLoader.dir/Part2/MapLoaderDriver.cpp.s
 .PHONY : Part2/MapLoaderDriver.cpp.s
+
+Part3/Dice.o: Part3/Dice.cpp.o
+
+.PHONY : Part3/Dice.o
+
+# target to build an object file
+Part3/Dice.cpp.o:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/Dice.cpp.o
+.PHONY : Part3/Dice.cpp.o
+
+Part3/Dice.i: Part3/Dice.cpp.i
+
+.PHONY : Part3/Dice.i
+
+# target to preprocess a source file
+Part3/Dice.cpp.i:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/Dice.cpp.i
+.PHONY : Part3/Dice.cpp.i
+
+Part3/Dice.s: Part3/Dice.cpp.s
+
+.PHONY : Part3/Dice.s
+
+# target to generate assembly for a file
+Part3/Dice.cpp.s:
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/Dice.cpp.s
+.PHONY : Part3/Dice.cpp.s
 
 Part3/DiceDriver.o: Part3/DiceDriver.cpp.o
 
@@ -235,7 +316,7 @@ Part3/DiceDriver.o: Part3/DiceDriver.cpp.o
 
 # target to build an object file
 Part3/DiceDriver.cpp.o:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/Part3/DiceDriver.cpp.o
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/DiceDriver.cpp.o
 .PHONY : Part3/DiceDriver.cpp.o
 
 Part3/DiceDriver.i: Part3/DiceDriver.cpp.i
@@ -244,7 +325,7 @@ Part3/DiceDriver.i: Part3/DiceDriver.cpp.i
 
 # target to preprocess a source file
 Part3/DiceDriver.cpp.i:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/Part3/DiceDriver.cpp.i
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/DiceDriver.cpp.i
 .PHONY : Part3/DiceDriver.cpp.i
 
 Part3/DiceDriver.s: Part3/DiceDriver.cpp.s
@@ -253,8 +334,35 @@ Part3/DiceDriver.s: Part3/DiceDriver.cpp.s
 
 # target to generate assembly for a file
 Part3/DiceDriver.cpp.s:
-	$(MAKE) -f CMakeFiles/Part3.dir/build.make CMakeFiles/Part3.dir/Part3/DiceDriver.cpp.s
+	$(MAKE) -f CMakeFiles/Dice.dir/build.make CMakeFiles/Dice.dir/Part3/DiceDriver.cpp.s
 .PHONY : Part3/DiceDriver.cpp.s
+
+Part4/Player.o: Part4/Player.cpp.o
+
+.PHONY : Part4/Player.o
+
+# target to build an object file
+Part4/Player.cpp.o:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/Player.cpp.o
+.PHONY : Part4/Player.cpp.o
+
+Part4/Player.i: Part4/Player.cpp.i
+
+.PHONY : Part4/Player.i
+
+# target to preprocess a source file
+Part4/Player.cpp.i:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/Player.cpp.i
+.PHONY : Part4/Player.cpp.i
+
+Part4/Player.s: Part4/Player.cpp.s
+
+.PHONY : Part4/Player.s
+
+# target to generate assembly for a file
+Part4/Player.cpp.s:
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/Player.cpp.s
+.PHONY : Part4/Player.cpp.s
 
 Part4/PlayerDriver.o: Part4/PlayerDriver.cpp.o
 
@@ -262,7 +370,7 @@ Part4/PlayerDriver.o: Part4/PlayerDriver.cpp.o
 
 # target to build an object file
 Part4/PlayerDriver.cpp.o:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/Part4/PlayerDriver.cpp.o
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/PlayerDriver.cpp.o
 .PHONY : Part4/PlayerDriver.cpp.o
 
 Part4/PlayerDriver.i: Part4/PlayerDriver.cpp.i
@@ -271,7 +379,7 @@ Part4/PlayerDriver.i: Part4/PlayerDriver.cpp.i
 
 # target to preprocess a source file
 Part4/PlayerDriver.cpp.i:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/Part4/PlayerDriver.cpp.i
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/PlayerDriver.cpp.i
 .PHONY : Part4/PlayerDriver.cpp.i
 
 Part4/PlayerDriver.s: Part4/PlayerDriver.cpp.s
@@ -280,8 +388,35 @@ Part4/PlayerDriver.s: Part4/PlayerDriver.cpp.s
 
 # target to generate assembly for a file
 Part4/PlayerDriver.cpp.s:
-	$(MAKE) -f CMakeFiles/Part4.dir/build.make CMakeFiles/Part4.dir/Part4/PlayerDriver.cpp.s
+	$(MAKE) -f CMakeFiles/Player.dir/build.make CMakeFiles/Player.dir/Part4/PlayerDriver.cpp.s
 .PHONY : Part4/PlayerDriver.cpp.s
+
+Part5/Cards.o: Part5/Cards.cpp.o
+
+.PHONY : Part5/Cards.o
+
+# target to build an object file
+Part5/Cards.cpp.o:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/Cards.cpp.o
+.PHONY : Part5/Cards.cpp.o
+
+Part5/Cards.i: Part5/Cards.cpp.i
+
+.PHONY : Part5/Cards.i
+
+# target to preprocess a source file
+Part5/Cards.cpp.i:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/Cards.cpp.i
+.PHONY : Part5/Cards.cpp.i
+
+Part5/Cards.s: Part5/Cards.cpp.s
+
+.PHONY : Part5/Cards.s
+
+# target to generate assembly for a file
+Part5/Cards.cpp.s:
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/Cards.cpp.s
+.PHONY : Part5/Cards.cpp.s
 
 Part5/CardsDriver.o: Part5/CardsDriver.cpp.o
 
@@ -289,7 +424,7 @@ Part5/CardsDriver.o: Part5/CardsDriver.cpp.o
 
 # target to build an object file
 Part5/CardsDriver.cpp.o:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/Part5/CardsDriver.cpp.o
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/CardsDriver.cpp.o
 .PHONY : Part5/CardsDriver.cpp.o
 
 Part5/CardsDriver.i: Part5/CardsDriver.cpp.i
@@ -298,7 +433,7 @@ Part5/CardsDriver.i: Part5/CardsDriver.cpp.i
 
 # target to preprocess a source file
 Part5/CardsDriver.cpp.i:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/Part5/CardsDriver.cpp.i
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/CardsDriver.cpp.i
 .PHONY : Part5/CardsDriver.cpp.i
 
 Part5/CardsDriver.s: Part5/CardsDriver.cpp.s
@@ -307,7 +442,7 @@ Part5/CardsDriver.s: Part5/CardsDriver.cpp.s
 
 # target to generate assembly for a file
 Part5/CardsDriver.cpp.s:
-	$(MAKE) -f CMakeFiles/Part5.dir/build.make CMakeFiles/Part5.dir/Part5/CardsDriver.cpp.s
+	$(MAKE) -f CMakeFiles/Cards.dir/build.make CMakeFiles/Cards.dir/Part5/CardsDriver.cpp.s
 .PHONY : Part5/CardsDriver.cpp.s
 
 # Help Target
@@ -316,25 +451,40 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... Part1"
-	@echo "... Part2"
-	@echo "... Part5"
-	@echo "... Part4"
-	@echo "... Part3"
+	@echo "... rebuild_cache"
+	@echo "... Player"
+	@echo "... Cards"
+	@echo "... Dice"
+	@echo "... MapLoader"
+	@echo "... Map"
+	@echo "... Part1/Map.o"
+	@echo "... Part1/Map.i"
+	@echo "... Part1/Map.s"
 	@echo "... Part1/MapDriver.o"
 	@echo "... Part1/MapDriver.i"
 	@echo "... Part1/MapDriver.s"
+	@echo "... Part2/MapLoader.o"
+	@echo "... Part2/MapLoader.i"
+	@echo "... Part2/MapLoader.s"
 	@echo "... Part2/MapLoaderDriver.o"
 	@echo "... Part2/MapLoaderDriver.i"
 	@echo "... Part2/MapLoaderDriver.s"
+	@echo "... Part3/Dice.o"
+	@echo "... Part3/Dice.i"
+	@echo "... Part3/Dice.s"
 	@echo "... Part3/DiceDriver.o"
 	@echo "... Part3/DiceDriver.i"
 	@echo "... Part3/DiceDriver.s"
+	@echo "... Part4/Player.o"
+	@echo "... Part4/Player.i"
+	@echo "... Part4/Player.s"
 	@echo "... Part4/PlayerDriver.o"
 	@echo "... Part4/PlayerDriver.i"
 	@echo "... Part4/PlayerDriver.s"
+	@echo "... Part5/Cards.o"
+	@echo "... Part5/Cards.i"
+	@echo "... Part5/Cards.s"
 	@echo "... Part5/CardsDriver.o"
 	@echo "... Part5/CardsDriver.i"
 	@echo "... Part5/CardsDriver.s"

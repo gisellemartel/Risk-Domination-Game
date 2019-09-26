@@ -2,11 +2,16 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="TeamProject-COMP345" targetName="Part4" />
-      <config projectName="TeamProject-COMP345" targetName="Part3" />
-      <config projectName="TeamProject-COMP345" targetName="Part5" />
-      <config projectName="TeamProject-COMP345" targetName="Part2" />
-      <config projectName="TeamProject-COMP345" targetName="Part1" />
+      <config projectName="Project" targetName="Part4" />
+      <config projectName="Project" targetName="Part5" />
+      <config projectName="Project" targetName="TeamProject_COMP345" />
+      <config projectName="Project" targetName="Map" />
+      <config projectName="Project" targetName="MapLoader" />
+      <config projectName="Project" targetName="Cards" />
+      <config projectName="Project" targetName="Dice" />
+      <config projectName="Project" targetName="Part2" />
+      <config projectName="Project" targetName="Part3" />
+      <config projectName="Project" targetName="Player" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -15,9 +20,68 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="adb699e5-0735-4331-91ec-07a099fbd396" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="adb699e5-0735-4331-91ec-07a099fbd396" name="Default Changelist" comment="Created MakeFiles to generate exe for each driver">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part1/Map.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/Map.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part1/Map.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/Map.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part1/MapDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/MapDriver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part2/MapLoader.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part2/MapLoader.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part2/MapLoader.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part2/MapLoader.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part2/MapLoaderDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part2/MapLoaderDriver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part3/Dice.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part3/Dice.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part3/Dice.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part3/Dice.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part3/DiceDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part3/DiceDriver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part4/Player.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part4/Player.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part4/Player.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part4/Player.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part4/PlayerDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part4/PlayerDriver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part5/Cards.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part5/Cards.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part5/Cards.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part5/Cards.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part5/CardsDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part5/CardsDriver.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part1.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part2.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part3.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part4.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/DependInfo.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/build.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/cmake_clean.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/depend.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/flags.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/link.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Part5.dir/progress.make" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/TeamProject-COMP345.cbp" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -73,32 +137,37 @@
     </option>
   </component>
 <<<<<<< HEAD
+<<<<<<< HEAD
   <component name="RunManager" selected="CMake Application.Part3">
     <configuration name="Part1" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part1" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part1" EXPLICIT_BUILD_TARGET_NAME="all">
 =======
   <component name="RunManager" selected="CMake Application.Part1">
     <configuration name="Part1" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part1" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TeamProject-COMP345" TARGET_NAME="Part1" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part1">
 >>>>>>> partA_map
+=======
+  <component name="RunManager" selected="CMake Application.Map">
+    <configuration name="Cards" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="Cards" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="Cards">
+>>>>>>> partA_map
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Part2" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part2" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part2" EXPLICIT_BUILD_TARGET_NAME="all">
+    <configuration name="Dice" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="Dice" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="Dice">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Part3" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part3" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part3" EXPLICIT_BUILD_TARGET_NAME="all">
+    <configuration name="Map" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="Map" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="Map">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Part4" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part4" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part4" EXPLICIT_BUILD_TARGET_NAME="all">
+    <configuration name="MapLoader" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="MapLoader" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="MapLoader">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Part5" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$/Part5" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TeamProject-COMP345" RUN_TARGET_NAME="Part5" EXPLICIT_BUILD_TARGET_NAME="all">
+    <configuration name="Player" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://$PROJECT_DIR$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="Player" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="Player">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -109,11 +178,11 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="CMake Application.Part1" />
-      <item itemvalue="CMake Application.Part2" />
-      <item itemvalue="CMake Application.Part3" />
-      <item itemvalue="CMake Application.Part4" />
-      <item itemvalue="CMake Application.Part5" />
+      <item itemvalue="CMake Application.Cards" />
+      <item itemvalue="CMake Application.Dice" />
+      <item itemvalue="CMake Application.Map" />
+      <item itemvalue="CMake Application.MapLoader" />
+      <item itemvalue="CMake Application.Player" />
     </list>
   </component>
   <component name="ServiceViewManager">
@@ -131,13 +200,15 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a94fa858-04cc-4a42-8e07-424feb45a675" name="Default Changelist" comment="" />
+      <changelist id="adb699e5-0735-4331-91ec-07a099fbd396" name="Default Changelist" comment="" />
       <created>1568405699298</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1568405699298</updated>
       <workItem from="1568405702033" duration="4261000" />
       <workItem from="1568745429321" duration="213000" />
+      <workItem from="1569474482164" duration="815000" />
+      <workItem from="1569475776606" duration="4275000" />
     </task>
     <servers />
   </component>

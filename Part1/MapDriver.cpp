@@ -1,23 +1,17 @@
-//
-// Created by Giselle Martel on 2019-09-13.
-//
+/**
+ * Assignment #1 COMP345, FALL 2019
+ * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ */
 
 #include "Map.h"
 #include <iostream>
-#include <list>
-#include <algorithm>
+#include <string>
+
 using namespace std;
 
 int main()
 {
-    Map* test_map = new Map();
+    Map* test_map = new Map("test map", 5, 5);
     delete test_map;
-    list <int> numbers;
-    numbers.push_back(4);
-    numbers.push_back(10);
-    numbers.push_back(22);
-
-    list<int>::iterator searchedItem = find(numbers.begin(), numbers.end(), 10);
-
     cout << "Map Driver" << endl;
 }
