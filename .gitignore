@@ -1,4 +1,9 @@
+*.DS_STORE
+*.xml
+*.log
+*.cmake
 
+/cmake-build-debug/
 /cmake-build-debug/Part1
 /cmake-build-debug/Part2
 /cmake-build-debug/Part3
@@ -9,7 +14,4 @@
 /cmake-build-debug/CMakeFiles/
 /cmake-build-debug/CMakeFiles/CMakeOutput.log
 /.idea/workspace.xml
-*.DS_STORE
-*.xml
-*.log
-/cmake-build-debug/
+
