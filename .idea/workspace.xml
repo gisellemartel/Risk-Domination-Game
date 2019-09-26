@@ -16,10 +16,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="adb699e5-0735-4331-91ec-07a099fbd396" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Part1/MapDriver.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/MapDriver.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part1/Map.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/Map.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Part1/Map.h" beforeDir="false" afterPath="$PROJECT_DIR$/Part1/Map.h" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,14 +36,6 @@
         <option value="CMakeLists.txt" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>unti</find>
-      <find>untitled</find>
-      <find>un</find>
-      <find>untitle</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
