@@ -4,9 +4,9 @@
     <generated>
       <config projectName="TeamProject-COMP345" targetName="Part4" />
       <config projectName="TeamProject-COMP345" targetName="Part3" />
+      <config projectName="TeamProject-COMP345" targetName="Part5" />
       <config projectName="TeamProject-COMP345" targetName="Part2" />
       <config projectName="TeamProject-COMP345" targetName="Part1" />
-      <config projectName="TeamProject-COMP345" targetName="Part5" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -15,7 +15,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a94fa858-04cc-4a42-8e07-424feb45a675" name="Default Changelist" comment="Created MakeFiles to generate exe for each driver">
+    <list default="true" id="dc9633cd-55c3-46fd-b293-ab35a6e41ba5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
@@ -24,6 +24,9 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileTemplateManagerImpl">
@@ -119,6 +122,16 @@
       <item itemvalue="CMake Application.Part4" />
       <item itemvalue="CMake Application.Part5" />
     </list>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="allServicesViewState">
+      <serviceView>
+        <treeState>
+          <expand />
+          <select />
+        </treeState>
+      </serviceView>
+    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
