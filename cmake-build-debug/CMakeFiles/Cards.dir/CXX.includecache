@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/gisellemartel/TeamProject-COMP345/Part5/Cards.cpp
+Cards.h
+/Users/gisellemartel/TeamProject-COMP345/Part5/Cards.h
+
+/Users/gisellemartel/TeamProject-COMP345/Part5/Cards.h
+
+/Users/gisellemartel/TeamProject-COMP345/Part5/CardsDriver.cpp
+iostream
+-
+
