@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /cmake-build-debug/Part1
 /cmake-build-debug/Part2
 /cmake-build-debug/Part3
@@ -6,3 +7,10 @@
 /cmake-build-debug/TeamProject-COMP345.cbp
 /cmake-build-debug/CMakeCache.txt
 *.DS_STORE
+=======
+/cmake-build-debug/CMakeFiles/
+/.idea/workspace.xml
+*.xml
+*.DS_STORE
+
+>>>>>>> f5e903887d7e122459a907072f4a3f528e2af31e
