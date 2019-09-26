@@ -7,12 +7,20 @@
 using namespace std;
 
 #include "Player.h"
+#include "../Part1/Map.h"
 
 int main()
 {
     cout << "Executing Player Driver" << endl;
-    Player* newPlayer = new Player();
+    vector<Country*>* countries = new vector<Country*>;
+    string name = "Canada";
+//    Country* country = new Country(name);
+//    countries->push_back(country);
+    Player* newPlayer = new Player("New player", countries, false);
+    //delete country;
+    //delete countries;
     delete newPlayer;
+
 
     return 0;
 }

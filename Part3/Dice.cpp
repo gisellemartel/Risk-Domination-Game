@@ -5,3 +5,13 @@
 
 
 #include "Dice.h"
+#include <iostream>
+using namespace std;
+
+Dice::Dice() {
+    cout << "Instantiating dice object" << endl;
+}
+
+Dice::~Dice() {
+    cout << "Destroying dice object" << endl;
+}

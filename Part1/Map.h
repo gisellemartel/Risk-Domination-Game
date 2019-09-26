@@ -2,6 +2,7 @@
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
+#pragma once
 
 #ifndef TEAMPROJECT_COMP345_MAP_H
 #define TEAMPROJECT_COMP345_MAP_H
@@ -46,8 +47,7 @@ public:
 class Country{
 
 private:
-    string* country_name_;
-    //TODO remove comment once Player class is implemented
+    string country_name_;
     //Player* country_owner_;
     int number_of_armies_;
     vector<Country*>* neighbors_;
@@ -55,18 +55,18 @@ private:
 
 public:
     //Constructor
-    Country(string* country_name_);
+    Country(string country_name_);
     //Destructor
     ~Country();
 
     //Setters --------------------------------------------------
 
-    void SetCountryName(string* in_country_name);
+    void SetCountryName(string in_country_name);
     void SetNumberOfArmies(int in_number_of_armies);
 
     //Getters --------------------------------------------------
 
-    const string* GetCountryName() const;
+    const string GetCountryName() const;
     int GetNumberOfArmies() const;
     Continent* GetContinent() const;
 
