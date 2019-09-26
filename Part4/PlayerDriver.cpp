@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 /**
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
+=======
+//
+// COMP345 Assignment #1, Fall 2019
+//
+>>>>>>> player
 
 #include <iostream>
 using namespace std;
 
+#include "Player.h"
 
 int main()
 {
-    cout << "Player Driver" << endl;
+    cout << "Executing Player Driver" << endl;
+    Player* newPlayer = new Player();
+    delete newPlayer;
+
     return 0;
 }
