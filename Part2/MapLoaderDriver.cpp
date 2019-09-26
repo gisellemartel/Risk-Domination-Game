@@ -1,6 +1,8 @@
-//
-// Created by Giselle Martel on 2019-09-13.
-//
+/**
+ * Assignment #1 COMP345, FALL 2019
+ * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ */
+
 #include <iostream>
 using namespace std;
 
