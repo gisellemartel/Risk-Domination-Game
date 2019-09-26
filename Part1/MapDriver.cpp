@@ -10,6 +10,8 @@ using namespace std;
 
 int main()
 {
+    Map* test_map = new Map();
+    delete test_map;
     list <int> numbers;
     numbers.push_back(4);
     numbers.push_back(10);

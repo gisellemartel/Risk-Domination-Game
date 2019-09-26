@@ -3,4 +3,5 @@
 
 CMakeFiles/Part1.dir/Part1/MapDriver.cpp.o: ../Part1/Map.h
 CMakeFiles/Part1.dir/Part1/MapDriver.cpp.o: ../Part1/MapDriver.cpp
+CMakeFiles/Part1.dir/Part1/MapDriver.cpp.o: ../Part4/Player.h
 
