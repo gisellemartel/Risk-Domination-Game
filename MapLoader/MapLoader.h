@@ -1,10 +1,10 @@
 /**
- * Assignment #1 COMP345, FALL 2019
+ * Assignment #1 COMP345, FALL 2019, Dr. Joey Paquet
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
-#ifndef MAPLOADER_H
-#define MAPLOADER_H
+#ifndef MAP_LOADER_H
+#define MAP_LOADER_H
 
 #include <string>
 #include <fstream>
@@ -13,20 +13,20 @@
 
 class MapLoader {
 private:
-    Map* map_;
+    Map* parsed_map_;
+
+    //helper functions
     string ReadLine(ifstream&);
-    string strip(string);
-    vector<string> split(string,char);
+    void ParseMap(string file_name);
+
 
 public:
     //Constructor
-    MapLoader();
-    MapLoader(string);
+    MapLoader(string file_name);
     ~MapLoader();
 
     //methods
-    Map* GetMap() const;
-    void ParseMap(string);
+    Map* GetParsedMap() const;
 };
 
-#endif //MAPLOADER_H
+#endif //MAP_LOADER_H

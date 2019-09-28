@@ -7,6 +7,7 @@ add_executable(Map
         Map/MapDriver.cpp
         Map/Map.cpp)
 add_executable(MapLoader
+        Map/Map.cpp
         MapLoader/MapLoaderDriver.cpp
         MapLoader/MapLoader.cpp)
 add_executable(Dice
