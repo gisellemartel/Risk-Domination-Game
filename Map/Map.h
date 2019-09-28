@@ -2,19 +2,12 @@
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
-<<<<<<< HEAD:Part1/Map.h
-#pragma once
-#ifndef TEAMPROJECT_COMP345_MAP_H
-#define TEAMPROJECT_COMP345_MAP_H
-
-#include "../Part4/Player.h"
-=======
 
 #ifndef MAP_H
 #define MAP_H
 
 #include "../Player/Player.h"
->>>>>>> master:Map/Map.h
+
 #include <list>
 #include <vector>
 #include <string>
