@@ -3,16 +3,15 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
+
+#include "Dice.h"
 #include <iostream>
 using namespace std;
 
-#include "Player.h"
+Dice::Dice() {
+    cout << "Instantiating dice object" << endl;
+}
 
-int main()
-{
-    cout << "Executing Player Driver" << endl;
-    Player* newPlayer = new Player();
-    delete newPlayer;
-
-    return 0;
+Dice::~Dice() {
+    cout << "Destroying dice object" << endl;
 }

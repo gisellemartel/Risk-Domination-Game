@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    Map* test_map = new Map("test map", 5, 5);
-    delete test_map;
+    //Map* test_map = new Map("test map", 5, 5);
+    //delete test_map;
     cout << "Map Driver" << endl;
 }

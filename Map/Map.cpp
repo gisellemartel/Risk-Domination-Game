@@ -4,7 +4,6 @@
  */
 
 #include "Map.h"
-#include "../Part4/Player.h"
 
 using namespace std;
 
@@ -88,7 +87,7 @@ const string Map::GetMapName() const {
 //Country class method implementations ----------------------
 
 //Constructor
-Country::Country(string* country_name) {
+Country::Country(string country_name) {
     country_name_ = country_name;
 }
 
@@ -99,7 +98,7 @@ Country::~Country() {
 
 //Setters --------------------------------------------------
 
-void Country::SetCountryName(string* in_country_name){
+void Country::SetCountryName(string in_country_name){
     country_name_ = in_country_name;
 }
 
@@ -109,7 +108,7 @@ void Country::SetNumberOfArmies(int in_number_of_armies){
 
 //Getters --------------------------------------------------
 
-const string* Country::GetCountryName() const {
+const string Country::GetCountryName() const {
     return country_name_;
 }
 

@@ -3,5 +3,15 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
+#ifndef DICE_H
+#define DICE_H
 
-#include "Dice.h"
+
+class Dice{
+private:
+public:
+    Dice();
+    ~Dice();
+};
+
+#endif //DICE_H
