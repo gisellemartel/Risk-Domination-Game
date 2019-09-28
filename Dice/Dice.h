@@ -3,10 +3,8 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
-#pragma once
-
-#ifndef TEAMPROJECT_COMP345_DICE_H
-#define TEAMPROJECT_COMP345_DICE_H
+#ifndef DICE_H
+#define DICE_H
 
 
 class Dice{
@@ -16,4 +14,4 @@ public:
     ~Dice();
 };
 
-#endif //TEAMPROJECT_COMP345_DICE_H
+#endif //DICE_H

@@ -3,18 +3,19 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
-#pragma once
+#ifndef PLAYER_H
+#define PLAYER_H
 
-#ifndef TEAMPROJECT_COMP345_PLAYER_H
-#define TEAMPROJECT_COMP345_PLAYER_H
-
-#include "../Part1/Map.h"
-#include "../Part3/Dice.h"
-#include "../Part5/Cards.h"
+#include "../Map/Map.h"
+#include "../Dice/Dice.h"
+#include "../Cards/Cards.h"
 
 #include <iostream>
 #include <vector>
 using namespace std;
+
+//forward declaration
+class Country;
 
 class Player {
 private:
@@ -37,4 +38,4 @@ public:
 
     void SetPlayersTurn(bool is_turn);
 };
-#endif //TEAMPROJECT_COMP345_PLAYER_H
+#endif //PLAYER_H

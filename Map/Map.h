@@ -2,20 +2,17 @@
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
-#pragma once
 
-#ifndef TEAMPROJECT_COMP345_MAP_H
-#define TEAMPROJECT_COMP345_MAP_H
+#ifndef MAP_H
+#define MAP_H
 
-
-#include "../Part4/Player.h"
+#include "../Player/Player.h"
 #include <list>
 #include <vector>
 #include <string>
 #include <iostream>
 
 using namespace std;
-
 
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
@@ -109,6 +106,6 @@ public:
     //void AddContinent(Continent* continent);
 
 };
-#endif //TEAMPROJECT_COMP345_MAP_H
+#endif //MAP_H
 
 

@@ -7,7 +7,7 @@
 using namespace std;
 
 #include "Player.h"
-#include "../Part1/Map.h"
+#include "../Map/Map.h"
 
 int main()
 {

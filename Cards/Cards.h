@@ -2,10 +2,9 @@
  * Assignment #1 COMP345, FALL 2019
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
-#pragma once
 
-#ifndef TEAMPROJECT_COMP345_CARDS_H
-#define TEAMPROJECT_COMP345_CARDS_H
+#ifndef CARDS_H
+#define CARDS_H
 
 class Cards{
 private:
@@ -15,4 +14,4 @@ public:
     ~Cards();
 };
 
-#endif //TEAMPROJECT_COMP345_CARDS_H
+#endif //CARDS_H
