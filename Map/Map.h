@@ -48,6 +48,7 @@ class Country{
 
 private:
     string country_name_;
+    int country_ID_;
     //Player* country_owner_;
     int number_of_armies_;
     vector<Country*>* neighbors_;
@@ -55,7 +56,7 @@ private:
 
 public:
     //Constructor
-    Country(string country_name_);
+    Country(string country_name_, int country_ID_);
     //Destructor
     ~Country();
 
@@ -67,6 +68,7 @@ public:
     //Getters --------------------------------------------------
 
     const string GetCountryName() const;
+    const int GetCountryID() const;
     int GetNumberOfArmies() const;
     Continent* GetContinent() const;
 
@@ -107,7 +109,12 @@ public:
     const int GetNumContinents() const;
     const string GetMapName() const;
 
+    //Setters --------------------------------------------------
+    void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
+
     //Methods -------------------------------------------------------
+    bool AreCountriesNeighbors(Country* country_a, Country* country_b);
+    void AddCountryToMap(int index_of_country, string country_name, int* continent_index, list<int*>* borders);
     //void AddContinent(Continent* continent);
 
 };
