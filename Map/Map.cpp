@@ -88,8 +88,9 @@ void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
-    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1)
+    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1) {
         return true;
+    }
     return false;
 }
 
@@ -97,8 +98,9 @@ void Map::AddCountryToMap(int index_of_country, string country_name, int* contin
     num_countries_++;
 
     countries_->push_back(new Country(country_name, index_of_country));
-    for(int i = 1; i<borders->size(); i++)
-        SetTwoCountriesToNeighbors(index_of_country, borders)//unfinished
+    for(int i = 1; i<borders->size(); i++) {
+        SetTwoCountriesToNeighbors(index_of_country, i);//unfinished
+    }
 
 }
 
