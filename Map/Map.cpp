@@ -82,13 +82,37 @@ const string Map::GetMapName() const {
     return map_name_;
 }
 
+void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
+    adjacency_matrix_[index_country_a][index_country_b] = 1;
+    adjacency_matrix_[index_country_b][index_country_a] = 1;
+}
+
+bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
+    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1) {
+        return true;
+    }
+    return false;
+}
+
+void Map::AddCountryToMap(int index_of_country, string country_name, int* continent_index, list<int*>* borders){
+    num_countries_++;
+
+    countries_->push_back(new Country(country_name, index_of_country));
+    for(int i = 1; i<borders->size(); i++) {
+        SetTwoCountriesToNeighbors(index_of_country, i);//unfinished
+    }
+
+}
+
 //--------------------------------------------------------------------------------------------
 
 //Country class method implementations ----------------------
 
 //Constructor
-Country::Country(string country_name) {
+Country::Country(string country_name, int country_ID) {
     country_name_ = country_name;
+    country_ID_ = country_ID;
+    number_of_armies_ = 0;
 }
 
 //Destructor
@@ -110,6 +134,10 @@ void Country::SetNumberOfArmies(int in_number_of_armies){
 
 const string Country::GetCountryName() const {
     return country_name_;
+}
+
+const int Country::GetCountryID() const {
+    return country_ID_;
 }
 
 int Country::GetNumberOfArmies() const {
