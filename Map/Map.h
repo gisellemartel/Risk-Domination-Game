@@ -18,30 +18,31 @@ using namespace std;
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
 private:
-    string* continent_name_;
-    int* army_value;
+    string continent_name_;
+    int continent_ID_;
+    int army_value_;
     vector<string*>* countries_in_continent_;
 
 public:
     //Constructor using initializer list
-    Continent(string* in_continent_name, int* army_value)
-            : continent_name_ (in_continent_name)
-            : army_value_ (army_value)
-    {}
+    Continent(string in_continent_name, int army_value);
 
     ~Continent(){}
 
     //Setters --------------------------------------------------
     void SetContinentName(string* in_continent_name) { continent_name_ = in_continent_name; }
+    void SetContinentID(int in_continent_ID){ continent_ID_ = in_continent_ID};
 
 
     //Getters --------------------------------------------------
     const string* GetContinentName() const { return continent_name_; }
     const int* GetContinentArmyValue() const {return army_value_; }
+    const int GetContinentID() const{return continent_ID_;}
 
 
     //Methods -------------------------------------------------------
     void AddCountryToContinent(string* country);
+    void DisplayInfo();
 };
 
 
@@ -51,6 +52,7 @@ class Country{
 
 private:
     string country_name_;
+    int continent_ID_;
     int country_ID_;
     //Player* country_owner_;
     int number_of_armies_;
@@ -59,7 +61,7 @@ private:
 
 public:
     //Constructor
-    Country(string country_name_, int country_ID_);
+    Country(int country_ID, string country_name, int continent_ID);
     //Destructor
     ~Country();
 
@@ -73,13 +75,14 @@ public:
     const string GetCountryName() const;
     const int GetCountryID() const;
     int GetNumberOfArmies() const;
-    Continent* GetContinent() const;
+    int GetContinentID() const;
 
     //Methods -------------------------------------------------------
 
     void AddNeighborCountry(const Country* neighbor);
     bool IsNeighbor(const Country* neighbor);
     bool BelongsToContinent(const Continent* continent);
+    void DisplayInfo();
 };
 
 
