@@ -19,12 +19,14 @@ using namespace std;
 class Continent{
 private:
     string* continent_name_;
+    int* army_value;
     vector<string*>* countries_in_continent_;
 
 public:
     //Constructor using initializer list
-    Continent(string* in_continent_name)
+    Continent(string* in_continent_name, int* army_value)
             : continent_name_ (in_continent_name)
+            : army_value_ (army_value)
     {}
 
     ~Continent(){}
@@ -35,6 +37,7 @@ public:
 
     //Getters --------------------------------------------------
     const string* GetContinentName() const { return continent_name_; }
+    const int* GetContinentArmyValue() const {return army_value_; }
 
 
     //Methods -------------------------------------------------------
@@ -115,6 +118,7 @@ public:
     //Methods -------------------------------------------------------
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
     void AddCountryToMap(int index_of_country, string country_name, int* continent_index, list<int*>* borders);
+    void BuildMap();
     //void AddContinent(Continent* continent);
 
 };
