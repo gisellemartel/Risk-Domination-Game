@@ -98,9 +98,12 @@ void Map::AddCountryToMap(int index_of_country, string country_name, int* contin
     num_countries_++;
 
     countries_->push_back(new Country(country_name, index_of_country));
-    for(int i = 1; i<borders->size(); i++) {
-        SetTwoCountriesToNeighbors(index_of_country, i);//unfinished
-    }
+
+    for (list<int*>::iterator it=borders->begin(); it != borders->end(); ++it)
+        SetTwoCountriesToNeighbors(index_of_country, **it);
+}
+
+void Map::BuildMap(){
 
 }
 
