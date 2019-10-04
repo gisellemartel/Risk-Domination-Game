@@ -121,8 +121,8 @@ public:
     void AddCountryToMap(int index_of_country, string country_name, int continent_index);
     void BuildMap();
     void AddContinentToMap(string continent_name, int army_value, int continent_id);
-    bool IsDuplicate(Continent* continent_a, Continent* continent_b);
-    void AddCountryEdges(list<int> edges);
+    bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
+    void AddCountryEdges(vector<int> edges);
     void DisplayContinents();
     //void AddContinent(Continent* continent);
 
