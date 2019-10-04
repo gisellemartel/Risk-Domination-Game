@@ -111,12 +111,23 @@ void Map::BuildMap(){
 
 void Map::AddContinentToMap(string continent_name, int army_value, int continent_id){
     Continent* cur_continent = new Continent(continent_name, army_value);
-
+    num_continents_++;
     //check for continent duplicate
 
+    for(int i=0; i<continents_->size();i++){
+        //IsDuplicate(cur_continent, continents_.at(i))
+
+    }
 
     cur_continent->SetContinentID(continent_id);
     continents_->push_back(cur_continent);
+}
+
+bool Map::IsDuplicate(Continent* continent_a, Continent* continent_b){
+    if(continent_a->GetContinentID() == continent_b->GetContinentID()
+    || continent_a->GetContinentName() == continent_b->GetContinentName())
+        return true;
+    return false;
 }
 
 void Map::AddCountryEdges(list<int> edges){
