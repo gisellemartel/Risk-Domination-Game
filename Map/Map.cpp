@@ -97,27 +97,36 @@ bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
 
 void Map::AddCountryToMap(int index_of_country, string country_name, int continent_index){
 
-    countries_->push_back(new Country(index_of_country, country_name, continent_index));
+    Country* cur_country = new Country(index_of_country, country_name, continent_index);
+
+    for(int i=0; i<countries_->size();i++){
+        if(IsCountryDuplicate(cur_country, countries_->at(i))){
+            cout<<"duplicate country found"<<endl;
+            throw "duplicate country error";
+        }
+    }
+
+    countries_->push_back(cur_country);
     num_countries_++;
 
-//    for (list<int*>::iterator it=borders->begin(); it != borders->end(); ++it)
-//        SetTwoCountriesToNeighbors(index_of_country, **it);
-
 }
 
-void Map::BuildMap(){
-
-}
 
 void Map::AddContinentToMap(string continent_name, int army_value, int continent_id){
     Continent* cur_continent = new Continent(continent_name, army_value);
+    if(army_value == 0){
+        cout<<"Invalid Continent Army Value"<<endl;
+        throw "Invalid Continent Army value";
+    }
+
     num_continents_++;
 
     //check for continent duplicate
     for(int i=0; i<continents_->size();i++){
-        if(IsContinentDuplicate(cur_continent, continents_->at(i)))
-            cout<<"duplicate continent found"<< endl;
-
+        if(IsContinentDuplicate(cur_continent, continents_->at(i))){
+            cout<<"duplicate continent name found"<< endl;
+            throw "duplicate Continent";
+        }
     }
 
     cur_continent->SetContinentID(continent_id);
@@ -128,6 +137,10 @@ bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
     return(continent_a->GetContinentID() == continent_b->GetContinentID() || continent_a->GetContinentName() == continent_b->GetContinentName());
 }
 
+bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
+    return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
+}
+
 void Map::AddCountryEdges(vector<int> edges){
     SetTwoCountriesToNeighbors(*edges.begin(), 6);
 }
@@ -135,6 +148,12 @@ void Map::AddCountryEdges(vector<int> edges){
 void Map::DisplayContinents(){
     for(int i=0; i<continents_->size();i++){
         continents_->at(i)->DisplayInfo();
+    }
+}
+
+void Map::DisplayCountries(){
+    for(int i=0; i<countries_->size(); i++){
+        countries_->at(i)->DisplayInfo();
     }
 }
 
@@ -224,6 +243,6 @@ void Country::DisplayInfo(){
     cout
             <<"Country ID: "<<Country::GetCountryID() << endl
             <<"Country Name: " <<Country::GetCountryName()<<endl
-            <<"Army Value: "<<Country::GetNumberOfArmies()<<endl
+            <<"Occupying Army Value: "<<Country::GetNumberOfArmies()<<endl
             <<"Continent: " <<Country::GetContinentID()<<endl<<endl;
 }
