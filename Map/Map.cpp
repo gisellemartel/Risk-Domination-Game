@@ -95,20 +95,62 @@ bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
     return false;
 }
 
-void Map::AddCountryToMap(int index_of_country, string country_name, int* continent_index, list<int*>* borders){
+void Map::AddCountryToMap(int index_of_country, string country_name, int continent_index){
+
+    countries_->push_back(new Country(index_of_country, country_name, continent_index));
     num_countries_++;
 
-//    countries_->push_back(new Country(country_name, index_of_country));
+//    for (list<int*>::iterator it=borders->begin(); it != borders->end(); ++it)
+//        SetTwoCountriesToNeighbors(index_of_country, **it);
 
-    for (list<int*>::iterator it=borders->begin(); it != borders->end(); ++it)
-        SetTwoCountriesToNeighbors(index_of_country, **it);
 }
 
 void Map::BuildMap(){
 
 }
 
+void Map::AddContinentToMap(string continent_name, int army_value, int continent_id){
+    Continent* cur_continent = new Continent(continent_name, army_value);
+
+    //check for continent duplicate
+
+
+    cur_continent->SetContinentID(continent_id);
+    continents_->push_back(cur_continent);
+}
+
+void Map::AddCountryEdges(list<int> edges){
+    SetTwoCountriesToNeighbors(*edges.begin(), 6);
+}
+
+void Map::DisplayContinents(){
+
+}
+
 //--------------------------------------------------------------------------------------------
+
+//Continent class method implementations ----------------------
+
+//Constructor-----------------------------------------------------
+Continent::Continent(string continent_name, int army_value){
+    continent_name_ = continent_name;
+    army_value_ = army_value;
+}
+
+
+//Methods --------------------------------------------------------
+void Continent::AddCountryToContinent(string* country){
+    //need to add condition to check if country is already in any other continent
+    countries_in_continent_->push_back(country);
+}
+
+void Continent::DisplayInfo(){
+    cout
+    <<"Continent ID: "<< Continent::GetContinentID() <<endl
+    <<"Continent Name: "<< Continent::GetContinentName()<<endl
+    <<"Continent Army Value: "<< Continent::GetContinentArmyValue()<<endl<<endl;
+}
+
 
 //Country class method implementations ----------------------
 
@@ -169,30 +211,8 @@ bool Country::BelongsToContinent(const Continent* continent) {
 
 void Country::DisplayInfo(){
     cout
-    <<"Country ID: "<<Country::GetCountryID() << endl
-    <<"Country Name: " <<Country::GetCountryName()<<endl
-    <<"Army Value: "<<Country::GetNumberOfArmies()<<endl
-    <<"Continent: " <<Country::GetContinentID()<<endl<<endl;
+            <<"Country ID: "<<Country::GetCountryID() << endl
+            <<"Country Name: " <<Country::GetCountryName()<<endl
+            <<"Army Value: "<<Country::GetNumberOfArmies()<<endl
+            <<"Continent: " <<Country::GetContinentID()<<endl<<endl;
 }
-//Continent class method implementations ----------------------
-
-//Constructor-----------------------------------------------------
-Continent::Continent(string continent_name, int army_value){
-    continent_name_ = continent_name;
-    army_value_ = army_value;
-}
-
-
-//Methods --------------------------------------------------------
-void Continent::AddCountryToContinent(string* country){
-    //need to add condition to check if country is already in any other continent
-    countries_in_continent_->push_back(country);
-}
-
-void Continent::DisplayInfo(){
-    cout
-    <<"Continent ID: "<< <<endl
-    <<"Continent Name: "<< <<endl
-    <<"Continent Army Value: "<< <<endl
-}
-

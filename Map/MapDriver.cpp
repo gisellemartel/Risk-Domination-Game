@@ -14,6 +14,7 @@ int main()
 
 
     Continent* north = new Continent("North America", 5);
+    north->DisplayInfo();
 
     Country* alaska = new Country(0, "Alaska", 0);
     alaska->DisplayInfo();

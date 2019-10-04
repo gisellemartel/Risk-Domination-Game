@@ -14,6 +14,47 @@
 #include <iostream>
 
 using namespace std;
+//Map class ------------------------------------------------------------------------------------
+//Implementation of a connected graph where nodes are countries and edges are adjacencies
+class Map {
+
+private:
+    string map_name_;
+    int num_countries_;
+    int num_continents_;
+    vector<Continent*>* continents_;
+    vector<Country*>* countries_;
+
+    //2d array will be used to track what countries are adjacent to others
+    bool** adjacency_matrix_;
+
+public:
+    //Constructor
+    Map(string name, int n_countries, int n_continents);
+
+    //Destructor
+    ~Map();
+
+
+    //Getters --------------------------------------------------
+
+    const int GetNumCountries() const;
+    const int GetNumContinents() const;
+    const string GetMapName() const;
+
+    //Setters --------------------------------------------------
+    void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
+
+    //Methods -------------------------------------------------------
+    bool AreCountriesNeighbors(Country* country_a, Country* country_b);
+    void AddCountryToMap(int index_of_country, string country_name, int continent_index);
+    void BuildMap();
+    void AddContinentToMap(string continent_name, int army_value, int continent_id);
+    void AddCountryEdges(list<int> edges);
+    void DisplayContinents();
+    //void AddContinent(Continent* continent);
+
+};
 
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
@@ -30,13 +71,13 @@ public:
     ~Continent(){}
 
     //Setters --------------------------------------------------
-    void SetContinentName(string* in_continent_name) { continent_name_ = in_continent_name; }
-    void SetContinentID(int in_continent_ID){ continent_ID_ = in_continent_ID};
+    void SetContinentName(string in_continent_name) { continent_name_ = in_continent_name; }
+    void SetContinentID(int in_continent_ID){ continent_ID_ = in_continent_ID;};
 
 
     //Getters --------------------------------------------------
-    const string* GetContinentName() const { return continent_name_; }
-    const int* GetContinentArmyValue() const {return army_value_; }
+    const string GetContinentName() const { return continent_name_; }
+    const int GetContinentArmyValue() const {return army_value_; }
     const int GetContinentID() const{return continent_ID_;}
 
 
@@ -85,46 +126,6 @@ public:
     void DisplayInfo();
 };
 
-
-
-//Map class ------------------------------------------------------------------------------------
-//Implementation of a connected graph where nodes are countries and edges are adjacencies
-class Map {
-
-private:
-    string map_name_;
-    int num_countries_;
-    int num_continents_;
-    vector<Continent*>* continents_;
-    vector<Country*>* countries_;
-
-    //2d array will be used to track what countries are adjacent to others
-    bool** adjacency_matrix_;
-
-public:
-    //Constructor
-    Map(string name, int n_countries, int n_continents);
-
-    //Destructor
-    ~Map();
-
-
-    //Getters --------------------------------------------------
-
-    const int GetNumCountries() const;
-    const int GetNumContinents() const;
-    const string GetMapName() const;
-
-    //Setters --------------------------------------------------
-    void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
-
-    //Methods -------------------------------------------------------
-    bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    void AddCountryToMap(int index_of_country, string country_name, int* continent_index, list<int*>* borders);
-    void BuildMap();
-    //void AddContinent(Continent* continent);
-
-};
 #endif //MAP_H
 
 
