@@ -122,9 +122,10 @@ public:
     void AddContinentToMap(string continent_name, int army_value, int continent_id);
     bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     bool IsCountryDuplicate(Country* country_a, Country* country_b);
-    void AddCountryEdges(vector<int> edges);
+    void AddCountryEdges(vector<int> *edges);
     void DisplayContinents();
     void DisplayCountries();
+    void DisplayEdges();
 
 };
 #endif //MAP_H

@@ -36,15 +36,18 @@ Map::Map(string name, int n_countries, int n_continents) {
         adjacency_matrix_[i] = new bool[num_countries_];
 
         for (int j = 0; j < num_countries_; ++j) {
-            //a country is adjacent to itself
+           //a country is adjacent to itself
             if (j == i)
             {
+
                 adjacency_matrix_[i][j] = true;
+
             }
-            adjacency_matrix_[i][j] = false;
+            else
+                adjacency_matrix_[i][j] = false;
+//
         }
     }
-
 }
 
 //Destructor
@@ -84,8 +87,10 @@ const string Map::GetMapName() const {
 //Methods--------------------------------------------------------------------------------------------
 
 void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
-    adjacency_matrix_[index_country_a][index_country_b] = 1;
-    adjacency_matrix_[index_country_b][index_country_a] = 1;
+
+    adjacency_matrix_[index_country_a][index_country_b] = true;
+    adjacency_matrix_[index_country_b][index_country_a] = true;
+
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
@@ -107,7 +112,7 @@ void Map::AddCountryToMap(int index_of_country, string country_name, int contine
     }
 
     countries_->push_back(cur_country);
-    num_countries_++;
+//    num_countries_++;
 
 }
 
@@ -141,8 +146,16 @@ bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
     return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
 }
 
-void Map::AddCountryEdges(vector<int> edges){
-    SetTwoCountriesToNeighbors(*edges.begin(), 6);
+void Map::AddCountryEdges(vector<int> *edges){
+
+    if(edges->size() <= 1){
+        cout<<"no neighbors found for country index " << edges->at(0) <<endl;
+        throw "no edge on country";
+    }
+
+    for(int i= 1; i< edges->size(); i++){
+        SetTwoCountriesToNeighbors(edges->at(0)-1, edges->at(i)-1);
+    }
 }
 
 void Map::DisplayContinents(){
@@ -154,6 +167,15 @@ void Map::DisplayContinents(){
 void Map::DisplayCountries(){
     for(int i=0; i<countries_->size(); i++){
         countries_->at(i)->DisplayInfo();
+    }
+}
+
+void Map::DisplayEdges(){
+    for(int i = 0; i< num_countries_ ; i++){
+        for(int j = 0; j<num_countries_; j++){
+            cout<<" "<<adjacency_matrix_[i][j];
+        }
+        cout<<endl;
     }
 }
 
