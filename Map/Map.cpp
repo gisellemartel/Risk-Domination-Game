@@ -50,6 +50,15 @@ Map::Map(string name, int n_countries, int n_continents) {
     }
 }
 
+Map::Map(const Map &map) {
+    map_name_ = map.map_name_;
+    num_countries_ = map.num_countries_;
+    num_continents_ = map.num_continents_;
+    continents_ = map.continents_;
+    countries_ = map.countries_;
+    adjacency_matrix_ = map.adjacency_matrix_;
+}
+
 //Destructor
 Map::~Map() {
     cout << "Destroying Map object" << endl;
@@ -71,6 +80,17 @@ Map::~Map() {
     delete[] adjacency_matrix_;
     delete countries_;
     delete continents_;
+}
+
+Map& Map::operator=(const Map &map)
+{
+    map_name_ = map.map_name_;
+    num_countries_ = map.num_countries_;
+    num_continents_ = map.num_continents_;
+    continents_ = map.continents_;
+    countries_ = map.countries_;
+    adjacency_matrix_ = map.adjacency_matrix_;
+    return *this;
 }
 
 const int Map::GetNumCountries() const {
@@ -178,18 +198,36 @@ void Map::DisplayEdges(){
         cout<<endl;
     }
 }
-
 //--------------------------------------------------------------------------------------------
 
 
-//Boarder class method implementations ----------------------
-Boarder::Boarder(int country_ID, vector<int> *neighbour_ids) {
+
+
+//Border class method implementations ----------------------------------------------------------
+Border::Border(int country_ID, vector<int> *neighbour_ids) {
     country_ID_ = country_ID;
     neighbour_ids_ = neighbour_ids;
 }
+
+Border::Border(const Border &border) {
+    country_ID_ = border.country_ID_;
+    neighbour_ids_ = border.neighbour_ids_;
+}
+
+Border::~Border() {
+    delete neighbour_ids_;
+}
+
+Border& Border::operator=(const Border &border) {
+    country_ID_ = border.country_ID_;
+    neighbour_ids_ = border.neighbour_ids_;
+}
 //--------------------------------------------------------------------------------------------
 
-//Continent class method implementations ----------------------
+
+
+
+//Continent class method implementations -----------------------------------------------------
 
 //Constructor-----------------------------------------------------
 Continent::Continent(string continent_name, int army_value){
@@ -197,11 +235,23 @@ Continent::Continent(string continent_name, int army_value){
     army_value_ = army_value;
 }
 
-//Constructor for map loader-----------------------------------------------------
+//Constructor for map loader----------------------------------------
 Continent::Continent(string continent_name, int army_value, string color) {
     continent_name_ = continent_name;
     army_value_ = army_value;
     color_ = color;
+}
+
+Continent& Continent::operator=(const Continent &continent) {
+    continent_name_ = continent.continent_name_;
+    continent_ID_ - continent.continent_ID_;
+    army_value_ = continent.army_value_;
+    color_ = continent.color_;
+    countries_in_continent_ = continent.countries_in_continent_;
+}
+
+Continent::~Continent() {
+    delete countries_in_continent_;
 }
 
 //Methods --------------------------------------------------------
@@ -218,7 +268,9 @@ void Continent::DisplayInfo(){
 }
 
 
-//Country class method implementations ----------------------
+
+
+//Country class method implementations -----------------------------------------------------
 
 //Constructor
 Country::Country(int country_ID, string country_name, int continent_ID) {
@@ -240,7 +292,8 @@ Country::Country(int country_ID, string country_name, int continent_ID, int coor
 
 //Destructor
 Country::~Country() {
-
+    delete neighbors_;
+    delete continent_;
 }
 
 //Setters --------------------------------------------------
@@ -291,3 +344,4 @@ void Country::DisplayInfo(){
             <<"Occupying Army Value: "<<Country::GetNumberOfArmies()<<endl
             <<"Continent: " <<Country::GetContinentID()<<endl<<endl;
 }
+//----------------------------------------------------------------------------------------

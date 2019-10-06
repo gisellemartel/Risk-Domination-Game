@@ -31,7 +31,13 @@ public:
 
     Continent(string in_continent_name, int army_value, string color);
 
-    ~Continent(){}
+    //Copy constructor
+    Continent(const Continent &continent);
+
+    ~Continent();
+
+    //operator overloader
+    Continent& operator=(const Continent &continent);
 
     //Setters --------------------------------------------------
     void SetContinentName(string in_continent_name) { continent_name_ = in_continent_name; }
@@ -49,15 +55,30 @@ public:
     void DisplayInfo();
 };
 
-//Country class ------------------------------------------------------------------------------------
-class Boarder {
+
+
+
+//Border class ------------------------------------------------------------------------------------
+class Border {
 private:
     int country_ID_;
     vector<int> *neighbour_ids_;
 public:
     //Constructor
-    Boarder(int country_ID, vector<int> *neighbour_ids);
+    Border(int country_ID, vector<int> *neighbour_ids);
+
+    //copy constructor
+    Border(const Border &border);
+
+    //destructor
+    ~Border();
+
+    //operator overloader
+    Border& operator=(const Border &border);
 };
+
+
+
 
 //Country class ------------------------------------------------------------------------------------
 class Country{
@@ -79,8 +100,14 @@ public:
 
     Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y);
 
+    //Copy Constructor
+    Country(const Country &country);
+
     //Destructor
     ~Country();
+
+    //operator overloader
+    Country& operator=(const Country &country);
 
     //Setters --------------------------------------------------
 
@@ -101,6 +128,10 @@ public:
     bool BelongsToContinent(const Continent* continent);
     void DisplayInfo();
 };
+
+
+
+
 //Map class ------------------------------------------------------------------------------------
 //Implementation of a connected graph where nodes are countries and edges are adjacencies
 class Map {
@@ -119,8 +150,14 @@ public:
     //Constructor
     Map(string name, int n_countries, int n_continents);
 
+    //Copy Constructor
+    Map(const Map &map);
+
     //Destructor
     ~Map();
+
+    //operator overloader
+    Map& operator=(const Map &map);
 
 
     //Getters --------------------------------------------------

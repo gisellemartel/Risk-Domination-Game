@@ -22,14 +22,16 @@ private:
     void ParseMap(string file_name);
 
 
-    vector<Continent *> *continents_;
-    vector<Country *> *countries_;
-    vector<Boarder *> *boarders_;
+    vector<Continent*>* continents_;
+    vector<Country*>* countries_;
+    vector<Border*>* borders_;
 
 public:
     //Constructor
     MapLoader(string file_name);
+    MapLoader(const MapLoader &map_loader);
     ~MapLoader();
+    MapLoader& operator=(const MapLoader &map_loader);
 
     //methods
     Map* GetParsedMap() const;

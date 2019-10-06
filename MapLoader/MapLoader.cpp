@@ -15,7 +15,7 @@ using namespace std;
 //forward declarations
 class Country;
 class Continent;
-class Boarder;
+class Border;
 
 //constructors
 //MapLoader::MapLoader() {
@@ -26,6 +26,24 @@ class Boarder;
 
 MapLoader::MapLoader(string file_name) {
     ParseMap(file_name);
+}
+
+MapLoader& MapLoader::operator=(const MapLoader &map_loader) {
+    continents_ = map_loader.continents_;
+    countries_ = map_loader.countries_;
+    borders_ = map_loader.borders_;
+}
+
+MapLoader::~MapLoader() {
+   delete continents_;
+   delete countries_;
+   delete borders_;
+}
+
+MapLoader::MapLoader(const MapLoader &map_loader) {
+    continents_ = map_loader.continents_;
+    countries_ = map_loader.countries_;
+    borders_ = map_loader.borders_;
 }
 
 void MapLoader::ParseMap(string file_name) {
@@ -94,10 +112,6 @@ void MapLoader::ParseMap(string file_name) {
     }
 
 
-}
-
-MapLoader::~MapLoader() {
-    //delete parsed_map_;
 }
 
 //methods
