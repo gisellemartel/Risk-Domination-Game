@@ -37,7 +37,7 @@ int Dice::getRollNumStats(int rollNum) {
     return rollNumStats -> at(rollNum-1);
 }
 int Dice::getTotalRolls() {
-    return *totalRolls;//pointer?
+    return *totalRolls;
 }
 
 Dice::~Dice() {
