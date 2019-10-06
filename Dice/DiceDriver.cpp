@@ -11,32 +11,32 @@ using namespace std;
 
 int main() {
     Dice *player = new Dice();
-    int numOfDice;
+    int num_of_dice;
     int reroll;
     do {
         while (true) {
             cout << "How many dice do you wish to roll?(max 3):\n";
-            cin >> numOfDice;
-            if (numOfDice > 3 || numOfDice < 1) {//Determining attacking and defending players(max number of dice) in another class
+            cin >> num_of_dice;
+            if (num_of_dice > 3 || num_of_dice < 1) {//Determining attacking and defending players(max number of dice) in another class
                 cout << "Invalid number of dice selected, roll again.\n\n";
             } else {
-                cout << "Rolling " << numOfDice << " dice.\n" << endl;
+                cout << "Rolling " << num_of_dice << " dice.\n" << endl;
                 break;
             }
         }
 
-        vector<int> diceRolls = player->roll(numOfDice);
+        vector<int> dice_rolls = player->Roll(num_of_dice);
 
         cout << "Dice rolled:\n";
-        for (int & diceRoll : diceRolls)
-            cout << ' ' << diceRoll << endl;//print dice rolls
+        for (int & dice_roll : dice_rolls)
+            cout << ' ' << dice_roll << endl;//print dice rolls
 
         for (int i = 1; i <= 6; i++) {
-            double percentage = (static_cast<double>(player->getRollNumStats(i)) / player->getTotalRolls()) * 100;
-            cout << "Frequency of dice value " << i << ": " << player->getRollNumStats(i) << "(" << fixed << setprecision(2)
+            double percentage = (static_cast<double>(player->GetRollNumStats(i)) / player->GetTotalRolls()) * 100;
+            cout << "Frequency of dice value " << i << ": " << player->GetRollNumStats(i) << "(" << fixed << setprecision(2)
                  << percentage << "%)" << endl;//sets number of decimals to 2
         }
-        cout << "Total Rolls: " << player->getTotalRolls() << endl;
+        cout << "Total Rolls: " << player->GetTotalRolls() << endl;
 
         cout << "\nDo you wish to reroll?(Enter 0 if not)\n";
         cin >> reroll;

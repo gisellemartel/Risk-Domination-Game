@@ -10,13 +10,13 @@ using namespace std;
 
 class Dice {
 private:
-    vector<int> *rollNumStats;
-    int *totalRolls;
+    vector<int> *roll_num_stats_;
+    int *total_rolls_;
 public:
     Dice();
     ~Dice();
-    vector<int> roll(int numOfDice);
-    int getRollNumStats(int rollNum);
-    int getTotalRolls();
+    vector<int> Roll(int num_of_dice);
+    int GetRollNumStats(int roll_num);
+    int GetTotalRolls();
 };
 #endif

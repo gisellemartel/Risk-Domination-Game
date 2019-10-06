@@ -13,35 +13,35 @@ using namespace std;
 
 Dice::Dice() {
     cout << "Constructing dice object" << endl;
-    rollNumStats = new vector<int>(6);
-    totalRolls = new int(0);
+    roll_num_stats_ = new vector<int>(6);
+    total_rolls_ = new int(0);
 }
 
-vector<int> Dice::roll(int numOfDice) {
-    vector<int> diceRolls;
+vector<int> Dice::Roll(int num_of_dice) {
+    vector<int> dice_rolls;
     random_device rd;
     mt19937 randomGenerator(rd());
     uniform_int_distribution<int> dist(1, 6); //random number of equal distribution from 1 to 6
 
-    for (int i = 0; i < numOfDice; i++) {
-        int diceRoll = dist(randomGenerator);
-        diceRolls.push_back(diceRoll);
-        rollNumStats->at(diceRoll-1)++;
-        (*totalRolls)++;
+    for (int i = 0; i < num_of_dice; i++) {
+        int dice_roll = dist(randomGenerator);
+        dice_rolls.push_back(dice_roll);
+        roll_num_stats_->at(dice_roll-1)++;
+        (*total_rolls_)++;
     }
-    sort(diceRolls.begin(), diceRolls.end(), greater<>());
-    return diceRolls;
+    sort(dice_rolls.begin(), dice_rolls.end(), greater<>());
+    return dice_rolls;
 }
 
-int Dice::getRollNumStats(int rollNum) {
-    return rollNumStats -> at(rollNum-1);
+int Dice::GetRollNumStats(int roll_num) {
+    return roll_num_stats_ -> at(roll_num-1);
 }
-int Dice::getTotalRolls() {
-    return *totalRolls;
+int Dice::GetTotalRolls() {
+    return *total_rolls_;
 }
 
 Dice::~Dice() {
     cout << "Destroying dice object" << endl;
-    delete rollNumStats;
-    delete totalRolls;
+    delete roll_num_stats_;
+    delete total_rolls_;
 }
