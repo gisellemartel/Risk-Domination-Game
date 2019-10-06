@@ -16,15 +16,15 @@
 class MapLoader {
 private:
     Map* parsed_map_;
+    vector<Continent*>* continents_;
+    vector<Country*>* countries_;
+    vector<Border*>* borders_;
 
     //helper functions
     string ReadLine(ifstream&);
     void ParseMap(string file_name);
-
-
-    vector<Continent*>* continents_;
-    vector<Country*>* countries_;
-    vector<Border*>* borders_;
+    vector<string> Split(string s, char delim);
+    string Strip(string s);
 
 public:
     //Constructor
