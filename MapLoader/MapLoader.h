@@ -21,10 +21,7 @@ private:
     vector<Border*>* borders_;
 
     //helper functions
-    string ReadLine(ifstream&);
     void ParseMap(string file_name);
-    vector<string> Split(string s, char delim);
-    string Strip(string s);
 
 public:
     //Constructor
