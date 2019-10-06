@@ -105,6 +105,7 @@ Map* MapLoader::GetParsedMap() const {
     return parsed_map_;
 }
 
+
 //void MapLoader::ParseMap(string textFileName) {
 //    string line;
 //    ifstream fileReader(textFileName);
