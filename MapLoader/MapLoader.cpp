@@ -17,13 +17,6 @@ class Country;
 class Continent;
 class Border;
 
-//constructors
-//MapLoader::MapLoader() {
-//    continents_ = new vector<Continent *>;
-//    countries_ = new vector<Country *>;
-//    boarders_ = new vector<Boarder *>;
-//}
-
 MapLoader::MapLoader(string file_name) {
     ParseMap(file_name);
 }

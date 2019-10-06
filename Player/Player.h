@@ -28,7 +28,9 @@ private:
 public:
 
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
+    Player(const Player &player);
     ~Player();
+    Player& operator=(const Player &player);
 
     void Reinforce();
     void Attack();
