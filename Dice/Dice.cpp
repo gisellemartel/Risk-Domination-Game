@@ -11,7 +11,7 @@
 #include "Dice.h"
 using namespace std;
 
-Dice::Dice() {//constructor
+Dice::Dice() {
     cout << "Constructing dice object" << endl;
     rollNumStats = new vector<int>(6);
     totalRolls = new int(0);
@@ -40,7 +40,7 @@ int Dice::getTotalRolls() {
     return *totalRolls;//pointer?
 }
 
-Dice::~Dice() {//destructor
+Dice::~Dice() {
     cout << "Destroying dice object" << endl;
     delete rollNumStats;
     delete totalRolls;
