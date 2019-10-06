@@ -6,15 +6,19 @@
 #include "MapLoader.h"
 
 #include <iostream>
+#include "MapLoader.h"
+#include "../Map/Map.h"
+
 using namespace std;
 
 
 int main()
 {
     cout << "Map Loader Driver" << endl;
+    // Classes within map cannot be linked from MapLoader
+    // Map* america = new Map("America map", 2, 5);
 
     MapLoader* map_to_load = new MapLoader("test-map-files/bigeurope.map");
-
 
     delete map_to_load;
     return 0;

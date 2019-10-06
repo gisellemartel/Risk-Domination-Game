@@ -22,11 +22,14 @@ private:
     string continent_name_;
     int continent_ID_;
     int army_value_;
+    string color_;
     vector<string*>* countries_in_continent_;
 
 public:
     //Constructor using initializer list
     Continent(string in_continent_name, int army_value);
+
+    Continent(string in_continent_name, int army_value, string color);
 
     ~Continent(){}
 
@@ -46,7 +49,15 @@ public:
     void DisplayInfo();
 };
 
-
+//Country class ------------------------------------------------------------------------------------
+class Boarder {
+private:
+    int country_ID_;
+    vector<int> *neighbour_ids_;
+public:
+    //Constructor
+    Boarder(int country_ID, vector<int> *neighbour_ids);
+};
 
 //Country class ------------------------------------------------------------------------------------
 class Country{
@@ -59,10 +70,15 @@ private:
     int number_of_armies_;
     vector<Country*>* neighbors_;
     Continent* continent_;
+    int coordinate_x_;
+    int coordinate_y_;
 
 public:
     //Constructor
     Country(int country_ID, string country_name, int continent_ID);
+
+    Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y);
+
     //Destructor
     ~Country();
 

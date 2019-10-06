@@ -6,9 +6,11 @@
 #ifndef MAP_LOADER_H
 #define MAP_LOADER_H
 
+#include <list>
+#include <vector>
 #include <string>
 #include <fstream>
-
+#include <iostream>
 #include "../Map/Map.h"
 
 class MapLoader {
@@ -19,6 +21,10 @@ private:
     string ReadLine(ifstream&);
     void ParseMap(string file_name);
 
+
+    vector<Continent *> *continents_;
+    vector<Country *> *countries_;
+    vector<Boarder *> *boarders_;
 
 public:
     //Constructor
