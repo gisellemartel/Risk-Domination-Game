@@ -27,7 +27,7 @@ private:
 
 public:
     //Constructor using initializer list
-    Continent(string in_continent_name, int army_value);
+    Continent(string in_continent_name, int army_value, int continent_id);
     Continent(string in_continent_name, int army_value, string color);
     Continent(const Continent &continent);
     ~Continent();
@@ -152,6 +152,7 @@ public:
     const string GetMapName() const;
 
     //Setters --------------------------------------------------
+    void SetAdjacencyMatrix(bool** adjacency_matrix);
     void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
 
     //Methods -------------------------------------------------------

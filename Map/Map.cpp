@@ -61,6 +61,8 @@ Map::Map(const Map &map) {
 
 Map::Map(string name) {
     map_name_ = name;
+    continents_ = new vector<Continent*>;
+    countries_ = new vector<Country*>;
 }
 
 //Destructor
@@ -111,10 +113,12 @@ const string Map::GetMapName() const {
 //Methods--------------------------------------------------------------------------------------------
 
 void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
-
     adjacency_matrix_[index_country_a][index_country_b] = true;
     adjacency_matrix_[index_country_b][index_country_a] = true;
+}
 
+void Map::SetAdjacencyMatrix(bool** adjacency_matrix) {
+    adjacency_matrix_ = adjacency_matrix;
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
@@ -146,17 +150,20 @@ void Map::AddContinentToMap(Continent* continent_to_add){
     num_continents_++;
 
     //check for continent duplicate
-    for(int i = 0; i < continents_->size(); ++i){
-        Continent* continent_to_check = ;
+    if(continents_->size() > 0) {
+        for(int i = 0; i < continents_->size(); ++i){
+            Continent* continent_to_check = (*continents_)[i];
 
-        if(!continent_to_check) {
-            continue;
+            if(!continent_to_check) {
+                continue;
+            }
+
+            if(IsContinentDuplicate(continent_to_add, continent_to_check)){
+                cout<<"duplicate continent name found"<< endl;
+                //throw "duplicate Continent";
+            }
         }
 
-        if(IsContinentDuplicate(continent_to_add, continent_to_check)){
-            cout<<"duplicate continent name found"<< endl;
-            throw "duplicate Continent";
-        }
     }
 
     continents_->push_back(continent_to_add);
@@ -235,9 +242,10 @@ Border& Border::operator=(const Border &border) {
 //Continent class method implementations -----------------------------------------------------
 
 //Constructor-----------------------------------------------------
-Continent::Continent(string continent_name, int army_value){
+Continent::Continent(string continent_name, int army_value, int continent_id){
     continent_name_ = continent_name;
     army_value_ = army_value;
+    continent_ID_ = continent_id;
 }
 
 //Constructor for map loader----------------------------------------

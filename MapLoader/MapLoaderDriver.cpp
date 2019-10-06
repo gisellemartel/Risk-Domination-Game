@@ -15,7 +15,7 @@ int main()
     // Classes within map cannot be linked from MapLoader
     // Map* america = new Map("America map", 2, 5);
 
-    MapLoader* map_to_load = new MapLoader("test-map-files/bigeurope.map");
+    MapLoader* map_to_load = new MapLoader("test-map-files/kosova.map");
 
     delete map_to_load;
     return 0;
