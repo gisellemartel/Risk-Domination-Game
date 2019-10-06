@@ -196,32 +196,7 @@ void MapLoader::ParseMap(string file_name) {
                 }
 
                 if(countries.size() > 0) {
-                    adjacency_matrix = new bool*[countries.size()];
-
-                    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
-                    * example:
-                    *
-                    *       [
-                    *           Canada [ true, true, false ],
-                    *           US     [ true, true, true ],
-                    *           Mexico  [false, true, true]
-                    *       ]
-                    */
-
-                    for (int i = 0; i < countries.size(); ++i) {
-
-                        adjacency_matrix[i] = new bool[countries.size()];
-
-                        for (int j = 0; j < countries.size(); ++j) {
-                            //a country is adjacent to itself
-                            if (j == i)
-                            {
-                                adjacency_matrix[i][j] = true;
-                            }
-                            else
-                                adjacency_matrix[i][j] = false;
-                        }
-                    }
+                   parsed_map_->SetAdjacencyMatrix(countries.size());
                 }
             }
 
@@ -262,22 +237,10 @@ void MapLoader::ParseMap(string file_name) {
                         } else {
 
                             for(int i = 1; i < borders.size(); ++i) {
-                                adjacency_matrix[current_country][borders[i] - 1] = true;
+                                parsed_map_->SetValueOfBorderInMatrix(true, current_country, borders[i] - 1);
                             }
-
-
-                            //debugging to print matrix
-                            cout << "country: " << (current_country + 1) << '\t';
-                            for(int j = 0; j < countries.size(); ++j) {
-                                cout << adjacency_matrix[current_country][j] << ' ';
-                            }
-                            cout << endl;
-                            //debug end
-
                             ++current_country;
-                            parsed_map_->SetAdjacencyMatrix(adjacency_matrix);
                         }
-
                     }
                 }
             }
@@ -291,5 +254,6 @@ void MapLoader::ParseMap(string file_name) {
 
     if(file_is_valid && countries.size() > 0 && continents.size() > 0) {
        cout << "Success! Map is valid!" << endl;
+       parsed_map_->DisplayAdjacencyMatrix();
     }
 }

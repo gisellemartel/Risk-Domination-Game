@@ -80,7 +80,7 @@ private:
     string country_name_;
     int continent_ID_;
     int country_ID_;
-    //Player* country_owner_;
+    Player* country_owner_;
     int number_of_armies_;
     vector<Country*>* neighbors_;
     Continent* continent_;
@@ -146,7 +146,6 @@ public:
 
 
     //Getters --------------------------------------------------
-
     const int GetNumCountries() const;
     const int GetNumContinents() const;
     const string GetMapName() const;
@@ -154,6 +153,8 @@ public:
     //Setters --------------------------------------------------
     void SetAdjacencyMatrix(bool** adjacency_matrix);
     void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
+    void SetAdjacencyMatrix(int n_countries);
+    void SetValueOfBorderInMatrix(bool value, int country_index, int border_index);
 
     //Methods -------------------------------------------------------
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
@@ -165,6 +166,7 @@ public:
     void DisplayContinents();
     void DisplayCountries();
     void DisplayEdges();
+    void DisplayAdjacencyMatrix();
 };
 #endif //MAP_H
 

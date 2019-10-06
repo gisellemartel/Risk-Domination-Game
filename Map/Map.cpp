@@ -63,6 +63,9 @@ Map::Map(string name) {
     map_name_ = name;
     continents_ = new vector<Continent*>;
     countries_ = new vector<Country*>;
+    num_countries_ = 0;
+    num_continents_ = 0;
+    adjacency_matrix_ = nullptr;
 }
 
 //Destructor
@@ -117,8 +120,43 @@ void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
     adjacency_matrix_[index_country_b][index_country_a] = true;
 }
 
-void Map::SetAdjacencyMatrix(bool** adjacency_matrix) {
-    adjacency_matrix_ = adjacency_matrix;
+void Map::SetAdjacencyMatrix(int num_countries) {
+
+    adjacency_matrix_ = new bool*[num_countries];
+    num_countries_ = num_countries;
+    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
+    * example:
+    *
+    *       [
+    *           Canada [ true, true, false ],
+    *           US     [ true, true, true ],
+    *           Mexico  [false, true, true]
+    *       ]
+    */
+
+    for (int i = 0; i < num_countries; ++i) {
+
+        adjacency_matrix_[i] = new bool[num_countries];
+
+        for (int j = 0; j < num_countries; ++j) {
+            //a country is adjacent to itself
+            if (j == i)
+            {
+                adjacency_matrix_[i][j] = true;
+            }
+            else
+                adjacency_matrix_[i][j] = false;
+        }
+    }
+}
+
+void Map::SetValueOfBorderInMatrix(bool value, int country_index, int border_index) {
+
+    if(country_index >= num_countries_ || border_index >= num_countries_) {
+        cout << "error, invalid index give" << endl;
+        return;
+    }
+    adjacency_matrix_[country_index][border_index] = value;
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
@@ -207,6 +245,19 @@ void Map::DisplayEdges(){
             cout<<" "<<adjacency_matrix_[i][j];
         }
         cout<<endl;
+    }
+}
+
+void Map::DisplayAdjacencyMatrix() {
+
+    for(int i = 0; i < num_countries_; ++i) {
+        //debugging to print matrix
+        cout << "country: " << (i + 1) << '\t';
+        for(int j = 0; j < num_countries_; ++j) {
+            cout << adjacency_matrix_[i][j] << ' ';
+        }
+        cout << endl;
+        //debug end
     }
 }
 //--------------------------------------------------------------------------------------------
