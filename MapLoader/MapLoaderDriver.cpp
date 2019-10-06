@@ -3,12 +3,9 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
-#include "MapLoader.h"
-
 #include <iostream>
-#include "MapLoader.h"
-#include "../Map/Map.h"
 
+#include "MapLoader.h"
 using namespace std;
 
 
@@ -18,7 +15,7 @@ int main()
     // Classes within map cannot be linked from MapLoader
     // Map* america = new Map("America map", 2, 5);
 
-    MapLoader* map_to_load = new MapLoader("test-map-files/bigeurope.map");
+    MapLoader* map_to_load = new MapLoader("test-map-files/kosova.map");
 
     delete map_to_load;
     return 0;

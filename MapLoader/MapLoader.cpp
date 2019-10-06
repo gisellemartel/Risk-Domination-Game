@@ -8,43 +8,19 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <map>
 
 #include "MapLoader.h"
 
 using namespace std;
-//forward declarations
+
 class Country;
 class Continent;
-class Border;
-
-//constructors
-//MapLoader::MapLoader() {
-//    continents_ = new vector<Continent *>;
-//    countries_ = new vector<Country *>;
-//    boarders_ = new vector<Boarder *>;
-//}
 
 MapLoader::MapLoader(string file_name) {
+    string map_name = file_name.substr(0, '.');
+    parsed_map_ = new Map(map_name);
     ParseMap(file_name);
-}
-
-MapLoader& MapLoader::operator=(const MapLoader &map_loader) {
-    continents_ = map_loader.continents_;
-    countries_ = map_loader.countries_;
-    borders_ = map_loader.borders_;
-    return *this;
-}
-
-MapLoader::~MapLoader() {
-   delete continents_;
-   delete countries_;
-   delete borders_;
-}
-
-MapLoader::MapLoader(const MapLoader &map_loader) {
-    continents_ = map_loader.continents_;
-    countries_ = map_loader.countries_;
-    borders_ = map_loader.borders_;
 }
 
 void MapLoader::ParseMap(string file_name) {
@@ -53,6 +29,7 @@ void MapLoader::ParseMap(string file_name) {
     bool file_is_valid = true;
     vector<Country*> countries;
     vector<Continent*> continents;
+    bool** adjacency_matrix;
 
     if(file_to_load.is_open()) {
 
@@ -66,6 +43,7 @@ void MapLoader::ParseMap(string file_name) {
 
            if(line.find("[continents]") == 0) {
                //get the next line
+               int current_id = 0;
                while(getline (file_to_load,line, '\n')) {
                    bool line_is_valid = line.find("[") == -1 && line.length() > 0 && line[0] != '\r';
                    //we have reached the end of the continents section
@@ -98,10 +76,12 @@ void MapLoader::ParseMap(string file_name) {
                        }
 
                        //debug string
-                       cout << continent_name << " " << army_value << endl;
+                       //cout << continent_name << " " << army_value << endl;
 
-                       Continent* continent = new Continent(continent_name, army_value);
+                       Continent* continent = new Continent(continent_name, army_value, current_id);
+                       parsed_map_->AddContinentToMap(continent);
                        continents.push_back(continent);
+                       ++current_id;
                    }
                }
            }
@@ -206,34 +186,63 @@ void MapLoader::ParseMap(string file_name) {
                         country_data.erase(0, y_coordinate_str.length() + delim.length());
 
                         //debug string
-                        cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
+                        //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
 
                         Country* country = new Country(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
+                        parsed_map_->AddCountryToMap(country);
                         countries.push_back(country);
                         ++current_index;
+                    }
+                }
+
+                if(countries.size() > 0) {
+                    adjacency_matrix = new bool*[countries.size()];
+
+                    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
+                    * example:
+                    *
+                    *       [
+                    *           Canada [ true, true, false ],
+                    *           US     [ true, true, true ],
+                    *           Mexico  [false, true, true]
+                    *       ]
+                    */
+
+                    for (int i = 0; i < countries.size(); ++i) {
+
+                        adjacency_matrix[i] = new bool[countries.size()];
+
+                        for (int j = 0; j < countries.size(); ++j) {
+                            //a country is adjacent to itself
+                            if (j == i)
+                            {
+                                adjacency_matrix[i][j] = true;
+                            }
+                            else
+                                adjacency_matrix[i][j] = false;
+                        }
                     }
                 }
             }
 
             if(line.find("[borders]") == 0) {
                 //get the next line
+                int current_country = 0;
                 while(getline (file_to_load,line, '\n')) {
                     bool line_is_valid = line.find("[") == -1 && line.length() > 0 && line[0] != '\r';
                     //we have reached the end of the border section
                     if(!line_is_valid) {
                         break;
                     } else {
-
                         string border_data = line;
                         vector<int> borders;
 
-                        while(border_data.length() > 0) {
+                        while(border_data.length() > 0 && border_data[0] != '\r') {
                             string delim = " ";
                             string border_str = border_data.substr(0, border_data.find(delim));
                             border_data.erase(0, border_str.length() + delim.length());
 
                             int border;
-
                             try{
                                 border = stoi(border_str);
                             } catch( const invalid_argument& e) {
@@ -244,14 +253,31 @@ void MapLoader::ParseMap(string file_name) {
 
                             borders.push_back(border);
 
-                            cout << border << " ";
+                            //debug string
+                            //cout << border << " ";
                         }
 
                         if(borders.size() == 0) {
                             cout << "No borders specified for entry in borders section. Please load a valid file" << endl;
+                        } else {
+
+                            for(int i = 1; i < borders.size(); ++i) {
+                                adjacency_matrix[current_country][borders[i] - 1] = true;
+                            }
+
+
+                            //debugging to print matrix
+                            cout << "country: " << (current_country + 1) << '\t';
+                            for(int j = 0; j < countries.size(); ++j) {
+                                cout << adjacency_matrix[current_country][j] << ' ';
+                            }
+                            cout << endl;
+                            //debug end
+
+                            ++current_country;
+                            parsed_map_->SetAdjacencyMatrix(adjacency_matrix);
                         }
 
-                        cout << endl;
                     }
                 }
             }
@@ -264,11 +290,6 @@ void MapLoader::ParseMap(string file_name) {
     }
 
     if(file_is_valid && countries.size() > 0 && continents.size() > 0) {
-       //TODO create the map object here
+       cout << "Success! Map is valid!" << endl;
     }
-}
-
-//methods
-Map* MapLoader::GetParsedMap() const {
-    return parsed_map_;
 }

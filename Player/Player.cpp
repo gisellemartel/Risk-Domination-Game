@@ -18,9 +18,26 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     countries_ = countries_to_assign_to_player;
 };
 
+Player::Player(const Player &player) {
+    player_name_ = player.player_name_;
+    is_player_turn_ = player.is_player_turn_;
+    countries_ = player.countries_;
+    risk_cards_ = player.risk_cards_;
+    dice_roll_ = player.dice_roll_;
+}
+
 Player::~Player() {
     cout << "Destroying Player object" << endl;
     delete countries_;
+}
+
+Player& Player::operator=(const Player &player) {
+    player_name_ = player.player_name_;
+    is_player_turn_ = player.is_player_turn_;
+    countries_ = player.countries_;
+    risk_cards_ = player.risk_cards_;
+    dice_roll_ = player.dice_roll_;
+    return *this;
 }
 
 void Player::Reinforce() {

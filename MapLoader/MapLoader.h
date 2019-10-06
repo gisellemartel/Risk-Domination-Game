@@ -11,27 +11,20 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+
 #include "../Map/Map.h"
 
+using namespace std;
+
 class MapLoader {
+
 private:
     Map* parsed_map_;
-    vector<Continent*>* continents_;
-    vector<Country*>* countries_;
-    vector<Border*>* borders_;
-
-    //helper functions
     void ParseMap(string file_name);
 
 public:
     //Constructor
     MapLoader(string file_name);
-    MapLoader(const MapLoader &map_loader);
-    ~MapLoader();
-    MapLoader& operator=(const MapLoader &map_loader);
-
-    //methods
-    Map* GetParsedMap() const;
 };
 
 #endif //MAP_LOADER_H
