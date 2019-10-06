@@ -28,12 +28,8 @@ private:
 public:
     //Constructor using initializer list
     Continent(string in_continent_name, int army_value);
-
     Continent(string in_continent_name, int army_value, string color);
-
-    //Copy constructor
     Continent(const Continent &continent);
-
     ~Continent();
 
     //operator overloader
@@ -63,14 +59,11 @@ class Border {
 private:
     int country_ID_;
     vector<int> *neighbour_ids_;
+
 public:
-    //Constructor
+    //Constructors
     Border(int country_ID, vector<int> *neighbour_ids);
-
-    //copy constructor
     Border(const Border &border);
-
-    //destructor
     ~Border();
 
     //operator overloader
@@ -95,15 +88,10 @@ private:
     int coordinate_y_;
 
 public:
-    //Constructor
+    //Constructors
     Country(int country_ID, string country_name, int continent_ID);
-
     Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y);
-
-    //Copy Constructor
     Country(const Country &country);
-
-    //Destructor
     ~Country();
 
     //operator overloader
@@ -147,13 +135,10 @@ private:
     bool** adjacency_matrix_;
 
 public:
-    //Constructor
+    //Constructors
+    Map(string name);
     Map(string name, int n_countries, int n_continents);
-
-    //Copy Constructor
     Map(const Map &map);
-
-    //Destructor
     ~Map();
 
     //operator overloader
@@ -171,15 +156,14 @@ public:
 
     //Methods -------------------------------------------------------
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    void AddCountryToMap(int index_of_country, string country_name, int continent_index);
-    void AddContinentToMap(string continent_name, int army_value, int continent_id);
+    void AddCountryToMap(Country* country_to_add);
+    void AddContinentToMap(Continent* continent_to_add);
     bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     bool IsCountryDuplicate(Country* country_a, Country* country_b);
     void AddCountryEdges(vector<int> *edges);
     void DisplayContinents();
     void DisplayCountries();
     void DisplayEdges();
-
 };
 #endif //MAP_H
 

@@ -59,6 +59,10 @@ Map::Map(const Map &map) {
     adjacency_matrix_ = map.adjacency_matrix_;
 }
 
+Map::Map(string name) {
+    map_name_ = name;
+}
+
 //Destructor
 Map::~Map() {
     cout << "Destroying Map object" << endl;
@@ -120,26 +124,21 @@ bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
     return false;
 }
 
-void Map::AddCountryToMap(int index_of_country, string country_name, int continent_index){
-
-    Country* cur_country = new Country(index_of_country, country_name, continent_index);
+void Map::AddCountryToMap(Country* country_to_add){
 
     for(int i=0; i<countries_->size();i++){
-        if(IsCountryDuplicate(cur_country, countries_->at(i))){
+        if(IsCountryDuplicate(country_to_add, countries_->at(i))){
             cout<<"duplicate country found"<<endl;
             throw "duplicate country error";
         }
     }
 
-    countries_->push_back(cur_country);
-//    num_countries_++;
-
+    countries_->push_back(country_to_add);
 }
 
 
-void Map::AddContinentToMap(string continent_name, int army_value, int continent_id){
-    Continent* cur_continent = new Continent(continent_name, army_value);
-    if(army_value == 0){
+void Map::AddContinentToMap(Continent* continent_to_add){
+    if(continent_to_add->GetContinentArmyValue() == 0){
         cout<<"Invalid Continent Army Value"<<endl;
         throw "Invalid Continent Army value";
     }
@@ -147,15 +146,20 @@ void Map::AddContinentToMap(string continent_name, int army_value, int continent
     num_continents_++;
 
     //check for continent duplicate
-    for(int i=0; i<continents_->size();i++){
-        if(IsContinentDuplicate(cur_continent, continents_->at(i))){
+    for(int i = 0; i < continents_->size(); ++i){
+        Continent* continent_to_check = ;
+
+        if(!continent_to_check) {
+            continue;
+        }
+
+        if(IsContinentDuplicate(continent_to_add, continent_to_check)){
             cout<<"duplicate continent name found"<< endl;
             throw "duplicate Continent";
         }
     }
 
-    cur_continent->SetContinentID(continent_id);
-    continents_->push_back(cur_continent);
+    continents_->push_back(continent_to_add);
 }
 
 bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
@@ -221,6 +225,7 @@ Border::~Border() {
 Border& Border::operator=(const Border &border) {
     country_ID_ = border.country_ID_;
     neighbour_ids_ = border.neighbour_ids_;
+    return *this;
 }
 //--------------------------------------------------------------------------------------------
 
@@ -244,10 +249,11 @@ Continent::Continent(string continent_name, int army_value, string color) {
 
 Continent& Continent::operator=(const Continent &continent) {
     continent_name_ = continent.continent_name_;
-    continent_ID_ - continent.continent_ID_;
+    continent_ID_ = continent.continent_ID_;
     army_value_ = continent.army_value_;
     color_ = continent.color_;
     countries_in_continent_ = continent.countries_in_continent_;
+    return *this;
 }
 
 Continent::~Continent() {

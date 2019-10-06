@@ -3,12 +3,9 @@
  * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
  */
 
-#include "MapLoader.h"
-
 #include <iostream>
-#include "MapLoader.h"
-#include "../Map/Map.h"
 
+#include "MapLoader.h"
 using namespace std;
 
 

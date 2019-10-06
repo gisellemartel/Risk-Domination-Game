@@ -8,36 +8,19 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <map>
 
 #include "MapLoader.h"
 
 using namespace std;
-//forward declarations
+
 class Country;
 class Continent;
-class Border;
 
 MapLoader::MapLoader(string file_name) {
+    string map_name = file_name.substr(0, '.');
+    parsed_map_ = new Map(map_name);
     ParseMap(file_name);
-}
-
-MapLoader& MapLoader::operator=(const MapLoader &map_loader) {
-    continents_ = map_loader.continents_;
-    countries_ = map_loader.countries_;
-    borders_ = map_loader.borders_;
-    return *this;
-}
-
-MapLoader::~MapLoader() {
-   delete continents_;
-   delete countries_;
-   delete borders_;
-}
-
-MapLoader::MapLoader(const MapLoader &map_loader) {
-    continents_ = map_loader.continents_;
-    countries_ = map_loader.countries_;
-    borders_ = map_loader.borders_;
 }
 
 void MapLoader::ParseMap(string file_name) {
@@ -46,6 +29,7 @@ void MapLoader::ParseMap(string file_name) {
     bool file_is_valid = true;
     vector<Country*> countries;
     vector<Continent*> continents;
+    map<int, vector<int>> country_border_map;
 
     if(file_to_load.is_open()) {
 
@@ -91,9 +75,10 @@ void MapLoader::ParseMap(string file_name) {
                        }
 
                        //debug string
-                       cout << continent_name << " " << army_value << endl;
+                       //cout << continent_name << " " << army_value << endl;
 
                        Continent* continent = new Continent(continent_name, army_value);
+                       parsed_map_->AddContinentToMap(continent);
                        continents.push_back(continent);
                    }
                }
@@ -199,9 +184,10 @@ void MapLoader::ParseMap(string file_name) {
                         country_data.erase(0, y_coordinate_str.length() + delim.length());
 
                         //debug string
-                        cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
+                        //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
 
                         Country* country = new Country(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
+                        parsed_map_->AddCountryToMap(country);
                         countries.push_back(country);
                         ++current_index;
                     }
@@ -216,17 +202,15 @@ void MapLoader::ParseMap(string file_name) {
                     if(!line_is_valid) {
                         break;
                     } else {
-
                         string border_data = line;
                         vector<int> borders;
 
-                        while(border_data.length() > 0) {
+                        while(border_data.length() > 0 && border_data[0] != '\r') {
                             string delim = " ";
                             string border_str = border_data.substr(0, border_data.find(delim));
                             border_data.erase(0, border_str.length() + delim.length());
 
                             int border;
-
                             try{
                                 border = stoi(border_str);
                             } catch( const invalid_argument& e) {
@@ -237,14 +221,27 @@ void MapLoader::ParseMap(string file_name) {
 
                             borders.push_back(border);
 
-                            cout << border << " ";
+                            //debug string
+                            //cout << border << " ";
                         }
 
                         if(borders.size() == 0) {
                             cout << "No borders specified for entry in borders section. Please load a valid file" << endl;
+                        } else {
+                            country_border_map.insert(pair<int, vector<int>>(borders[0], borders));
                         }
 
-                        cout << endl;
+//                        map<int, int>::iterator itr;
+//                        cout << "\nThe map gquiz1 is : \n";
+//                        cout << "\tKEY\tELEMENT\n";
+//                        for (itr = country_border_map.begin(); itr != country_border_map.end(); ++itr) {
+//                            cout << '\t' << itr->first
+//                                 << '\t' << itr->second << '\n';
+//                        }
+//                        cout << endl;
+
+                        //debug string
+                        //cout << endl;
                     }
                 }
             }
@@ -258,10 +255,7 @@ void MapLoader::ParseMap(string file_name) {
 
     if(file_is_valid && countries.size() > 0 && continents.size() > 0) {
        //TODO create the map object here
-    }
-}
 
-//methods
-Map* MapLoader::GetParsedMap() const {
-    return parsed_map_;
+       cout << "it is valid" << endl;
+    }
 }
