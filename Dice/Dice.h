@@ -9,12 +9,17 @@
 using namespace std;
 
 class Dice {
+
 private:
     vector<int> *roll_num_stats_;
     int *total_rolls_;
+
 public:
     Dice();
+    Dice(const Dice& dice);
     ~Dice();
+
+    Dice& operator=(const Dice& dice);
     vector<int> Roll(int num_of_dice);
     int GetRollNumStats(int roll_num);
     int GetTotalRolls();

@@ -17,6 +17,24 @@ Dice::Dice() {
     total_rolls_ = new int(0);
 }
 
+Dice::Dice(const Dice &dice) {
+    roll_num_stats_ = dice.roll_num_stats_;
+    total_rolls_ = dice.total_rolls_;
+}
+
+Dice::~Dice() {
+    cout << "Destroying dice object" << endl;
+    delete roll_num_stats_;
+    delete total_rolls_;
+}
+
+
+Dice& Dice::operator=(const Dice &dice) {
+    roll_num_stats_ = dice.roll_num_stats_;
+    total_rolls_ = dice.total_rolls_;
+    return *this;
+}
+
 vector<int> Dice::Roll(int num_of_dice) {
     vector<int> dice_rolls;
     random_device rd;
@@ -36,12 +54,7 @@ vector<int> Dice::Roll(int num_of_dice) {
 int Dice::GetRollNumStats(int roll_num) {
     return roll_num_stats_ -> at(roll_num-1);
 }
+
 int Dice::GetTotalRolls() {
     return *total_rolls_;
-}
-
-Dice::~Dice() {
-    cout << "Destroying dice object" << endl;
-    delete roll_num_stats_;
-    delete total_rolls_;
 }
