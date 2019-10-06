@@ -4,11 +4,18 @@
  */
 
 #include <iostream>
+#include "MapLoader.h"
+#include "../Map/Map.h"
+
 using namespace std;
 
 
 int main()
 {
-    cout << "Map Loader Driver" << endl;
-    return 0;
+    // Classes within map cannot be linked from MapLoader
+    // Map* america = new Map("America map", 2, 5);
+
+
+    MapLoader *m = new MapLoader();
+    m->ParseMap("/Users/raniaAZ/Downloads/europass/europass.map");
 }

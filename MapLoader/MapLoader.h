@@ -6,9 +6,11 @@
 #ifndef MAPLOADER_H
 #define MAPLOADER_H
 
+#include <list>
+#include <vector>
 #include <string>
 #include <fstream>
-
+#include <iostream>
 #include "../Map/Map.h"
 
 class MapLoader {
@@ -17,6 +19,10 @@ private:
     string ReadLine(ifstream&);
     string strip(string);
     vector<string> split(string,char);
+
+    vector<Continent *> *continents_;
+    vector<Country *> *countries_;
+    vector<Boarder *> *boarders_;
 
 public:
     //Constructor

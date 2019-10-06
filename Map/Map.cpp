@@ -181,6 +181,14 @@ void Map::DisplayEdges(){
 
 //--------------------------------------------------------------------------------------------
 
+
+//Boarder class method implementations ----------------------
+Boarder::Boarder(int country_ID, vector<int> *neighbour_ids) {
+    country_ID_ = country_ID;
+    neighbour_ids_ = neighbour_ids;
+}
+//--------------------------------------------------------------------------------------------
+
 //Continent class method implementations ----------------------
 
 //Constructor-----------------------------------------------------
@@ -189,6 +197,12 @@ Continent::Continent(string continent_name, int army_value){
     army_value_ = army_value;
 }
 
+//Constructor for map loader-----------------------------------------------------
+Continent::Continent(string continent_name, int army_value, string color) {
+    continent_name_ = continent_name;
+    army_value_ = army_value;
+    color_ = color;
+}
 
 //Methods --------------------------------------------------------
 void Continent::AddCountryToContinent(string* country){
@@ -213,6 +227,15 @@ Country::Country(int country_ID, string country_name, int continent_ID) {
     country_name_ = country_name;
     continent_ID_ = continent_ID;
     number_of_armies_ = 0;
+}
+
+//Constructor for map loader
+Country::Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y) {
+    country_ID_ = country_ID;
+    country_name_ = country_name;
+    continent_ID_ = continent_ID;
+    coordinate_x_ = coordinate_x;
+    coordinate_y_ = coordinate_y;
 }
 
 //Destructor
