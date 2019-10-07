@@ -10,12 +10,22 @@ using namespace std;
 
 #include "Player.h"
 
+Player::Player(string player_name) {
+    player_name_ = player_name;
+    is_player_turn_ = false;
+    countries_ = new vector<Country*>;
+    //risk_cards_ = new Cards();
+    dice_roll_ = new Dice();
+}
+
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
     cout << "Instantiating new Player object" << endl;
     player_name_ = player_name;
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
+    //risk_cards_ = new Cards();
+    dice_roll_ = new Dice();
 };
 
 Player::Player(const Player &player) {
@@ -29,6 +39,8 @@ Player::Player(const Player &player) {
 Player::~Player() {
     cout << "Destroying Player object" << endl;
     delete countries_;
+    delete dice_roll_;
+    delete risk_cards_;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -123,6 +135,36 @@ bool Player::isCurrentlyPlayersTurn() const {
     return is_player_turn_;
 }
 
+Dice* Player::GetPlayerDice() const {
+    return dice_roll_;
+}
+
+string Player::GetPlayerName() const {
+    return player_name_;
+}
+
+vector<Country*>* Player::GetPlayersCountries() const {
+    return countries_;
+}
+
+vector<Cards*>* Player::GetPlayersCards() const {
+    return risk_cards_;
+}
+
 void Player::SetPlayersTurn(bool is_turn) {
     is_player_turn_ = is_turn;
 }
+
+void Player::SetPlayerName(string player_name) {
+    player_name_ = player_name;
+}
+
+void Player::AddCountryToCollection(Country *country) {
+    countries_->push_back(country);
+}
+
+void Player::AddCardToCollection(Cards* card) {
+    risk_cards_->push_back(card);
+}
+
+

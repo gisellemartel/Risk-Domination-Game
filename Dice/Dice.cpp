@@ -12,7 +12,6 @@
 using namespace std;
 
 Dice::Dice() {
-    cout << "Constructing dice object" << endl;
     roll_num_stats_ = new vector<int>(6);
     total_rolls_ = new int(0);
 }
@@ -23,7 +22,6 @@ Dice::Dice(const Dice &dice) {
 }
 
 Dice::~Dice() {
-    cout << "Destroying dice object" << endl;
     delete roll_num_stats_;
     delete total_rolls_;
 }

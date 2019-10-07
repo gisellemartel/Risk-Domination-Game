@@ -55,26 +55,6 @@ public:
 
 
 
-
-//Border class ------------------------------------------------------------------------------------
-class Border {
-private:
-    int country_ID_;
-    vector<int> *neighbour_ids_;
-
-public:
-    //Constructors
-    Border(int country_ID, vector<int> *neighbour_ids);
-    Border(const Border &border);
-    ~Border();
-
-    //operator overloader
-    Border& operator=(const Border &border);
-};
-
-
-
-
 //Country class ------------------------------------------------------------------------------------
 class Country{
 

@@ -17,6 +17,8 @@ add_executable(Dice
         Dice/Dice.cpp
         )
 add_executable(Player
+        Map/Map.cpp
+        Dice/Dice.cpp
         Player/PlayerDriver.cpp
         Player/Player
         )

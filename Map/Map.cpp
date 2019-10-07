@@ -273,6 +273,7 @@ Country::Country(int country_ID, string country_name, int continent_ID) {
     country_name_ = country_name;
     continent_ID_ = continent_ID;
     number_of_armies_ = 0;
+    country_owner_ = new Player("new player");
 }
 
 //Constructor for map loader
