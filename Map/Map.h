@@ -128,7 +128,7 @@ public:
     //Getters --------------------------------------------------
     const int GetNumCountries() const;
     const int GetNumContinents() const;
-    Country* GetCountryAtIndex(int index) const;
+    Country* GetCountryById(int id) const;
     const string GetMapName() const;
 
     //Setters --------------------------------------------------

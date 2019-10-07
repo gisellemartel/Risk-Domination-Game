@@ -74,11 +74,11 @@ const string Map::GetMapName() const {
     return map_name_;
 }
 
-Country* Map::GetCountryAtIndex(int index) const {
-    if(index < 0 || index > countries_->size() - 1) {
+Country* Map::GetCountryById(int id) const {
+    if(id < 1 || id > countries_->size()) {
         return nullptr;
     }
-    return (*countries_)[index];
+    return (*countries_)[id - 1];
 }
 //Methods--------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
-    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1) {
+    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1 && adjacency_matrix_[country_b->GetCountryID()][country_a->GetCountryID()] == 1) {
         return true;
     }
     return false;

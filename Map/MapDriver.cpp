@@ -13,38 +13,42 @@ using namespace std;
 int main()
 {
     cout << "Testing Map Driver" << endl << endl;
-    Map* america = new Map("America map");
+    Map* test_map = new Map("Test map");
 
-    america->AddContinentToMap("North America", 5, 1);
-    america->AddContinentToMap("South America", 2, 2);
-    america->AddContinentToMap("Europe", 5, 3);
+    test_map->AddContinentToMap("North America", 5, 1);
+    test_map->AddContinentToMap("South America", 2, 2);
+    test_map->AddContinentToMap("Europe", 5, 3);
 
     cout << "Displaying Continents of Map" << endl;
-    america->DisplayContinents();
+    test_map->DisplayContinents();
 
-    america->AddCountryToMap(1,"Alaska", 1, 0, 0);
-    america->AddCountryToMap(2, "Alberta", 1, 0, 0);
-    america->AddCountryToMap(3, "Brazil", 2, 0, 0);
-    america->AddCountryToMap(4, "British Columbia", 1, 0, 0);
-    america->AddCountryToMap(5, "Portugal", 3, 0, 0);
+    test_map->AddCountryToMap(1,"Alaska", 1, 0, 0);
+    test_map->AddCountryToMap(2, "Alberta", 1, 0, 0);
+    test_map->AddCountryToMap(3, "Brazil", 2, 0, 0);
+    test_map->AddCountryToMap(4, "British Columbia", 1, 0, 0);
+    test_map->AddCountryToMap(5, "Portugal", 3, 0, 0);
 
     cout << "Displaying Countries of Map" << endl;
-    america->DisplayCountries();
+    test_map->DisplayCountries();
 
-    america->CreateAdjacencyMatrix();
-    america->SetTwoCountriesAsNeighbours(true, 0, 1);
-    america->SetTwoCountriesAsNeighbours(false, 0, 2);
-    america->SetTwoCountriesAsNeighbours(false, 0, 4);
-    america->SetTwoCountriesAsNeighbours(false, 1, 2);
-    america->SetTwoCountriesAsNeighbours(false, 1, 4);
-    america->SetTwoCountriesAsNeighbours(false, 2, 4);
-    america->SetTwoCountriesAsNeighbours(false, 3, 2);
-    america->SetTwoCountriesAsNeighbours(true, 3, 1);
-    america->SetTwoCountriesAsNeighbours(true, 3, 0);
-    america->SetTwoCountriesAsNeighbours( false, 3, 4);
+    test_map->CreateAdjacencyMatrix();
+    test_map->SetTwoCountriesAsNeighbours(true, 0, 1);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 2, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 2);
+    test_map->SetTwoCountriesAsNeighbours(true, 3, 1);
+    test_map->SetTwoCountriesAsNeighbours(true, 3, 0);
+    test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
 
     cout << "Displaying county nodes and edges:" << endl;
-    america->DisplayAdjacencyMatrix();
+    test_map->DisplayAdjacencyMatrix();
 
-    delete america;
+
+    cout << "Are Alaska (country 1) and Brazil neighbours? " << endl;
+    cout << test_map->AreCountriesNeighbors(test_map->GetCountryById(1), test_map->GetCountryById(3));
+
+    delete test_map;
 }
