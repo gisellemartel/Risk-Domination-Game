@@ -14,14 +14,18 @@ using namespace std;
 MapLoader::MapLoader(string file_name) {
     cout << "Creating MapLoader object for file: " << file_name << endl;
     file_name_ = file_name;
+    string map_name = file_name_.substr(0, '.');
+    parsed_map_ = new Map(map_name);
 }
 
 MapLoader& MapLoader::operator=(const MapLoader &map) {
+    file_name_ = map.file_name_;
     parsed_map_ = map.parsed_map_;
     return *this;
 }
 
 MapLoader::MapLoader(const MapLoader &map) {
+    file_name_ = map.file_name_;
     parsed_map_ = map.parsed_map_;
 }
 
@@ -35,12 +39,7 @@ void MapLoader::ParseMap() {
     bool file_is_valid = true;
 
     if(file_to_load.is_open()) {
-        vector<Country*> countries;
-        vector<Continent*> continents;
         int border_entry_count = 0;
-
-        string map_name = file_name_.substr(0, '.');
-        parsed_map_ = new Map(map_name);
 
         //read contents of .map file line by line
         while ( getline (file_to_load,line, '\n') && file_is_valid )
@@ -89,9 +88,7 @@ void MapLoader::ParseMap() {
                        //debug string
                        //cout << continent_name << " " << army_value << endl;
 
-                       Continent* continent = new Continent(continent_name, army_value, current_id);
-                       parsed_map_->AddContinentToMap(continent);
-                       continents.push_back(continent);
+                       parsed_map_->AddContinentToMap(continent_name, army_value, current_id);
                        ++current_id;
                    }
                }
@@ -122,8 +119,9 @@ void MapLoader::ParseMap() {
                             return;
                         }
 
+                        Country* country = parsed_map_->GetCountryAtIndex(current_index - 1);
                         //ensure countries are in order
-                        if(country_num !=0 && countries.size() > 0 && country_num < countries[current_index - 1]->GetCountryID()) {
+                        if(country_num !=0 && parsed_map_->GetNumCountries() > 0 && country && country_num < country->GetCountryID()) {
                             cout << "Countries are not in order in the file. Please load a valid file\n\n";
                             file_is_valid = false;
                             return;
@@ -201,14 +199,12 @@ void MapLoader::ParseMap() {
                         //debug string
                         //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
 
-                        Country* country = new Country(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
-                        parsed_map_->AddCountryToMap(country);
-                        countries.push_back(country);
+                        parsed_map_->AddCountryToMap(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
                         ++current_index;
                     }
                 }
 
-                if(countries.size() > 0) {
+                if(parsed_map_->GetNumCountries() > 0) {
 
                     parsed_map_->CreateAdjacencyMatrix();
                 }
@@ -255,7 +251,7 @@ void MapLoader::ParseMap() {
                         if(borders.size() == 0) {
                             cout << "No borders specified for entry in borders section. Please load a valid file\n\n";
 
-                        } else if(borders.size() > countries.size()) {
+                        } else if(borders.size() > parsed_map_->GetNumCountries()) {
                             cout << "invalid values given for border. Please load a valid file.\n\n";
                             file_is_valid = false;
                             return;
@@ -277,9 +273,9 @@ void MapLoader::ParseMap() {
         }
         file_to_load.close();
 
-        file_is_valid &= border_entry_count == countries.size();
+        file_is_valid &= border_entry_count == parsed_map_->GetNumCountries();
 
-        if(file_is_valid && countries.size() > 0 && continents.size() > 0) {
+        if(file_is_valid && parsed_map_->GetNumCountries() > 0 && parsed_map_->GetNumContinents() > 0) {
             cout << "Success! Generated map for file" << file_name_ << "!" << endl << "\nHere is the result:\n";
             parsed_map_->DisplayAdjacencyMatrix();
             cout << endl << endl;

@@ -128,6 +128,7 @@ public:
     //Getters --------------------------------------------------
     const int GetNumCountries() const;
     const int GetNumContinents() const;
+    Country* GetCountryAtIndex(int index) const;
     const string GetMapName() const;
 
     //Setters --------------------------------------------------
@@ -137,8 +138,8 @@ public:
     //Methods -------------------------------------------------------
     void CreateAdjacencyMatrix();
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    void AddCountryToMap(Country* country_to_add);
-    void AddContinentToMap(Continent* continent_to_add);
+    void AddCountryToMap(int country_num, string continent_name, int continent_index, int x_coordinate, int y_coordinate);
+    void AddContinentToMap(string continent_name, int army_value, int id);
     bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     bool IsCountryDuplicate(Country* country_a, Country* country_b);
     void AddCountryEdges(vector<int> *edges);

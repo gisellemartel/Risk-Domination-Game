@@ -15,18 +15,18 @@ int main()
     cout << "Testing Map Driver" << endl << endl;
     Map* america = new Map("America map");
 
-    america->AddContinentToMap(new Continent("North America", 5, 1));
-    america->AddContinentToMap(new Continent("South America", 2, 2));
-    america->AddContinentToMap(new Continent("Europe", 5, 3));
+    america->AddContinentToMap("North America", 5, 1);
+    america->AddContinentToMap("South America", 2, 2);
+    america->AddContinentToMap("Europe", 5, 3);
 
     cout << "Displaying Continents of Map" << endl;
     america->DisplayContinents();
 
-    america->AddCountryToMap(new Country(1,"Alaska", 1));
-    america->AddCountryToMap(new Country(2, "Alberta", 1));
-    america->AddCountryToMap(new Country(3, "Brazil", 2));
-    america->AddCountryToMap(new Country(4, "British Columbia", 1));
-    america->AddCountryToMap(new Country(5, "Portugal", 3));
+    america->AddCountryToMap(1,"Alaska", 1, 0, 0);
+    america->AddCountryToMap(2, "Alberta", 1, 0, 0);
+    america->AddCountryToMap(3, "Brazil", 2, 0, 0);
+    america->AddCountryToMap(4, "British Columbia", 1, 0, 0);
+    america->AddCountryToMap(5, "Portugal", 3, 0, 0);
 
     cout << "Displaying Countries of Map" << endl;
     america->DisplayCountries();

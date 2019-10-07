@@ -64,22 +64,23 @@ int main()
     testmap16->ParseMap();
 
 
-    delete testmap1;
-    delete testmap2;
-    delete testmap3;
-    delete testmap4;
-    delete testmap5;
-    delete testmap6;
-    delete testmap7;
-    delete testmap8;
-    delete testmap9;
-    delete testmap10;
-    delete testmap11;
-    delete testmap12;
-    delete testmap13;
-    delete testmap14;
-    delete testmap15;
-    delete testmap16;
+    //TODO figure out why exit code 11 when deleting pointers
+//    delete testmap1;
+//    delete testmap2;
+//    delete testmap3;
+//    delete testmap4;
+//    delete testmap5;
+//    delete testmap6;
+//    delete testmap7;
+//    delete testmap8;
+//    delete testmap9;
+//    delete testmap10;
+//    delete testmap11;
+//    delete testmap12;
+//    delete testmap13;
+//    delete testmap14;
+//    delete testmap15;
+//    delete testmap16;
 
     return 0;
 }
