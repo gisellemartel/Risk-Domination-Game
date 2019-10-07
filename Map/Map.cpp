@@ -200,15 +200,15 @@ void Map::DisplayAdjacencyMatrix() {
     cout << "\t\t\tNeighbours " << endl;
     cout << "\t\t\t";
     for(int i = 0; i < num_countries_; ++i) {
-        cout << (i+1) << " ";
+        cout << (i+1) << "\t";
     }
     cout << endl;
 
     for(int i = 0; i < num_countries_; ++i) {
         //debugging to print matrix
-        cout << "country: " << (i + 1) << '\t';
+        cout << "country " << (i + 1) << ":\t";
         for(int j = 0; j < num_countries_; ++j) {
-            cout << adjacency_matrix_[i][j] << ' ';
+            cout << adjacency_matrix_[i][j] << '\t';
         }
         cout << endl;
         //debug end

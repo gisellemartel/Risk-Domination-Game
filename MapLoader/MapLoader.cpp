@@ -40,7 +40,7 @@ void MapLoader::ParseMap() {
         int border_entry_count = 0;
 
         string map_name = file_name_.substr(0, '.');
-        Map* parsed_map = new Map(map_name);
+        parsed_map_ = new Map(map_name);
 
         //read contents of .map file line by line
         while ( getline (file_to_load,line, '\n') && file_is_valid )
@@ -90,7 +90,7 @@ void MapLoader::ParseMap() {
                        //cout << continent_name << " " << army_value << endl;
 
                        Continent* continent = new Continent(continent_name, army_value, current_id);
-                       parsed_map->AddContinentToMap(continent);
+                       parsed_map_->AddContinentToMap(continent);
                        continents.push_back(continent);
                        ++current_id;
                    }
@@ -202,15 +202,15 @@ void MapLoader::ParseMap() {
                         //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
 
                         Country* country = new Country(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
-                        parsed_map->AddCountryToMap(country);
+                        parsed_map_->AddCountryToMap(country);
                         countries.push_back(country);
                         ++current_index;
                     }
                 }
 
-                if(parsed_map_->GetNumCountries() > 0) {
+                if(countries.size() > 0) {
 
-                    parsed_map->CreateAdjacencyMatrix();
+                    parsed_map_->CreateAdjacencyMatrix();
                 }
             }
 
@@ -236,6 +236,11 @@ void MapLoader::ParseMap() {
                             int border;
                             try{
                                 border = stoi(border_str);
+                                if(border == 0) {
+                                    cout << "invalid values given for border. Please load a valid file\n\n";
+                                    file_is_valid = false;
+                                    return;
+                                }
                                 borders.push_back(border);
                             } catch( const invalid_argument& e) {
                                 cout << "invalid values given for border. Please load a valid file\n\n";
@@ -249,15 +254,19 @@ void MapLoader::ParseMap() {
 
                         if(borders.size() == 0) {
                             cout << "No borders specified for entry in borders section. Please load a valid file\n\n";
+
+                        } else if(borders.size() > countries.size()) {
+                            cout << "invalid values given for border. Please load a valid file.\n\n";
+                            file_is_valid = false;
+                            return;
                         } else {
 
                             for(int i = 1; i < borders.size(); ++i) {
-                                if(borders.size() > countries.size()) {
-                                    cout << "invalid values given for border. Please load a valid file.\n\n";
-                                    file_is_valid = false;
-                                    return;
+
+                                if(i == current_country) {
+                                    continue;
                                 }
-                                parsed_map->SetTwoCountriesAsNeighbours(true, current_country, borders[i] - 1);
+                                parsed_map_->SetTwoCountriesAsNeighbours(true, borders[0] - 1, borders[i] - 1);
                             }
                             ++current_country;
                             ++border_entry_count;
@@ -272,7 +281,7 @@ void MapLoader::ParseMap() {
 
         if(file_is_valid && countries.size() > 0 && continents.size() > 0) {
             cout << "Success! Generated map for file" << file_name_ << "!" << endl << "\nHere is the result:\n";
-            parsed_map->DisplayAdjacencyMatrix();
+            parsed_map_->DisplayAdjacencyMatrix();
             cout << endl << endl;
         } else {
             cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
