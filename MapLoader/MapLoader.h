@@ -19,12 +19,16 @@ using namespace std;
 class MapLoader {
 
 private:
-    Map* parsed_map_;
-    void ParseMap(string file_name);
+    string file_name_;
 
 public:
     //Constructor
     MapLoader(string file_name);
+    MapLoader(const MapLoader &map);
+    ~MapLoader();
+    MapLoader& operator=(const MapLoader& map);
+
+    void ParseMap();
 };
 
 #endif //MAP_LOADER_H

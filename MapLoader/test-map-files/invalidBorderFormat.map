@@ -1,0 +1,27 @@
+[continents]
+NorthAmerica 3
+Africa 4
+Asia 6
+Australia 99
+SouthAmerica 22
+Antarctica 35
+
+
+
+
+
+
+[countries]
+1 Canada 3 89 99
+2 US 3 69 99
+3 China 6 44 33
+4 Ethiopia 4 23 33
+5 Mexico 3 20 22
+
+
+[borders]
+1 1 0 0 1
+1 1 0 0 1 0 0 0 0 0 0 0 0
+0 0 1 0 0
+0 0 0 1 0
+1 1 0 0 one

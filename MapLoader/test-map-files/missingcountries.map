@@ -1,0 +1,14 @@
+[continents]
+NorthAmerica 3
+Africa 4
+Asia 6
+Australia 99
+SouthAmerica 22
+Antarctica 35
+
+[borders]
+1 1 0 0 1
+1 1 0 0 1
+0 0 1 0 0
+0 0 0 1 0
+1 1 0 0 1

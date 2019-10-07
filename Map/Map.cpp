@@ -153,7 +153,7 @@ void Map::SetAdjacencyMatrix(int num_countries) {
 void Map::SetValueOfBorderInMatrix(bool value, int country_index, int border_index) {
 
     if(country_index >= num_countries_ || border_index >= num_countries_) {
-        cout << "error, invalid index give" << endl;
+        cout << "error, invalid index given" << endl;
         return;
     }
     adjacency_matrix_[country_index][border_index] = value;
