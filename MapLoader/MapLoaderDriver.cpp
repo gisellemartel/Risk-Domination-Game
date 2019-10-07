@@ -11,6 +11,7 @@ using namespace std;
 
 int main()
 {
+    cout << "Testing MapLoader Driver" << endl << endl;
     cout << endl << "Loading various map files to generate maps... " << endl << "----------------------------------------" << endl << endl;
     //various custom test cases
     MapLoader* testmap1 = new MapLoader("test-map-files/generaltest.map");
@@ -61,6 +62,24 @@ int main()
 
     MapLoader* testmap16 = new MapLoader("test-map-files/kosova.map");
     testmap16->ParseMap();
+
+
+    delete testmap1;
+    delete testmap2;
+    delete testmap3;
+    delete testmap4;
+    delete testmap5;
+    delete testmap6;
+    delete testmap7;
+    delete testmap8;
+    delete testmap9;
+    delete testmap10;
+    delete testmap11;
+    delete testmap12;
+    delete testmap13;
+    delete testmap14;
+    delete testmap15;
+    delete testmap16;
 
     return 0;
 }

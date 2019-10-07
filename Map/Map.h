@@ -15,6 +15,8 @@
 
 using namespace std;
 
+class Player;
+
 
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
@@ -137,13 +139,11 @@ private:
 public:
     //Constructors
     Map(string name);
-    Map(string name, int n_countries, int n_continents);
     Map(const Map &map);
     ~Map();
 
     //operator overloader
     Map& operator=(const Map &map);
-
 
     //Getters --------------------------------------------------
     const int GetNumCountries() const;
@@ -151,12 +151,11 @@ public:
     const string GetMapName() const;
 
     //Setters --------------------------------------------------
-    void SetAdjacencyMatrix(bool** adjacency_matrix);
-    void SetTwoCountriesToNeighbors(int index_country_a, int index_country_b);
-    void SetAdjacencyMatrix(int n_countries);
-    void SetValueOfBorderInMatrix(bool value, int country_index, int border_index);
+    void SetNumOfCountries(int num_countries);
+    void SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index);
 
     //Methods -------------------------------------------------------
+    void CreateAdjacencyMatrix();
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
     void AddCountryToMap(Country* country_to_add);
     void AddContinentToMap(Continent* continent_to_add);
@@ -165,7 +164,6 @@ public:
     void AddCountryEdges(vector<int> *edges);
     void DisplayContinents();
     void DisplayCountries();
-    void DisplayEdges();
     void DisplayAdjacencyMatrix();
 };
 #endif //MAP_H

@@ -11,45 +11,6 @@ using namespace std;
 
 //Constructors
 
-Map::Map(string name, int n_countries, int n_continents) {
-    cout << "creating Map object" << endl;
-    map_name_ = name;
-    num_countries_ = n_countries;
-    num_continents_ = n_continents;
-
-    continents_ = new vector<Continent*>;
-    countries_ = new vector<Country*>;
-    adjacency_matrix_ = new bool*[num_countries_];
-
-    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
-    * example:
-    *
-    *       [
-    *           Canada [ true, true, false ],
-    *           US     [ true, true, true ],
-    *           Mexico  [false, true, true]
-    *       ]
-    */
-
-    for (int i = 0; i < num_countries_; ++i) {
-
-        adjacency_matrix_[i] = new bool[num_countries_];
-
-        for (int j = 0; j < num_countries_; ++j) {
-           //a country is adjacent to itself
-            if (j == i)
-            {
-
-                adjacency_matrix_[i][j] = true;
-
-            }
-            else
-                adjacency_matrix_[i][j] = false;
-//
-        }
-    }
-}
-
 Map::Map(const Map &map) {
     map_name_ = map.map_name_;
     num_countries_ = map.num_countries_;
@@ -70,7 +31,6 @@ Map::Map(string name) {
 
 //Destructor
 Map::~Map() {
-    cout << "Destroying Map object" << endl;
     //delete all the country objects
     for (int i = 0; i < (*countries_).size(); ++i) {
         delete (*countries_)[i];
@@ -115,48 +75,14 @@ const string Map::GetMapName() const {
 }
 //Methods--------------------------------------------------------------------------------------------
 
-void Map::SetTwoCountriesToNeighbors(int index_country_a, int index_country_b){
-    adjacency_matrix_[index_country_a][index_country_b] = true;
-    adjacency_matrix_[index_country_b][index_country_a] = true;
-}
-
-void Map::SetAdjacencyMatrix(int num_countries) {
-
-    adjacency_matrix_ = new bool*[num_countries];
-    num_countries_ = num_countries;
-    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
-    * example:
-    *
-    *       [
-    *           Canada [ true, true, false ],
-    *           US     [ true, true, true ],
-    *           Mexico  [false, true, true]
-    *       ]
-    */
-
-    for (int i = 0; i < num_countries; ++i) {
-
-        adjacency_matrix_[i] = new bool[num_countries];
-
-        for (int j = 0; j < num_countries; ++j) {
-            //a country is adjacent to itself
-            if (j == i)
-            {
-                adjacency_matrix_[i][j] = true;
-            }
-            else
-                adjacency_matrix_[i][j] = false;
-        }
-    }
-}
-
-void Map::SetValueOfBorderInMatrix(bool value, int country_index, int border_index) {
+void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index) {
 
     if(country_index >= num_countries_ || border_index >= num_countries_) {
         cout << "error, invalid index given" << endl;
         return;
     }
     adjacency_matrix_[country_index][border_index] = value;
+    adjacency_matrix_[border_index][country_index] = value;
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
@@ -170,22 +96,22 @@ void Map::AddCountryToMap(Country* country_to_add){
 
     for(int i=0; i<countries_->size();i++){
         if(IsCountryDuplicate(country_to_add, countries_->at(i))){
-            cout<<"duplicate country found"<<endl;
-            throw "duplicate country error";
+            cout << "Duplicate country found. Aborting operation" << endl;
+            return;
         }
     }
 
     countries_->push_back(country_to_add);
+    ++num_countries_;
 }
 
 
 void Map::AddContinentToMap(Continent* continent_to_add){
-    if(continent_to_add->GetContinentArmyValue() == 0){
-        cout<<"Invalid Continent Army Value"<<endl;
-        throw "Invalid Continent Army value";
-    }
 
-    num_continents_++;
+    if(continent_to_add->GetContinentArmyValue() == 0) {
+        cout << "Invalid Continent Army Value" << endl;
+        return;
+    }
 
     //check for continent duplicate
     if(continents_->size() > 0) {
@@ -197,14 +123,45 @@ void Map::AddContinentToMap(Continent* continent_to_add){
             }
 
             if(IsContinentDuplicate(continent_to_add, continent_to_check)){
-                cout<<"duplicate continent name found"<< endl;
-                //throw "duplicate Continent";
+                cout << "duplicate continent name found" << endl;
+                continue;
             }
         }
-
     }
-
     continents_->push_back(continent_to_add);
+    ++num_continents_;
+}
+
+void Map::CreateAdjacencyMatrix() {
+    adjacency_matrix_ = new bool*[num_countries_];
+
+    /**create an array for each country in the map, which will have true/false value for adjacency for each other country
+    * example:
+    *
+    *       [
+    *           Canada [ true, true, false ],
+    *           US     [ true, true, true ],
+    *           Mexico  [false, true, true]
+    *       ]
+    */
+
+    for (int i = 0; i < num_countries_; ++i) {
+
+        adjacency_matrix_[i] = new bool[num_countries_];
+
+        for (int j = 0; j < num_countries_; ++j) {
+            //a country is adjacent to itself
+            if (j == i)
+            {
+
+                adjacency_matrix_[i][j] = true;
+
+            }
+            else
+                adjacency_matrix_[i][j] = false;
+//
+        }
+    }
 }
 
 bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
@@ -218,12 +175,12 @@ bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
 void Map::AddCountryEdges(vector<int> *edges){
 
     if(edges->size() <= 1){
-        cout<<"no neighbors found for country index " << edges->at(0) <<endl;
-        throw "no edge on country";
+        cout << "no neighbors found for country index " << edges->at(0) <<endl;
+        return;
     }
 
     for(int i= 1; i< edges->size(); i++){
-        SetTwoCountriesToNeighbors(edges->at(0)-1, edges->at(i)-1);
+        SetTwoCountriesAsNeighbours(true, edges->at(0)-1, edges->at(i)-1);
     }
 }
 
@@ -239,16 +196,13 @@ void Map::DisplayCountries(){
     }
 }
 
-void Map::DisplayEdges(){
-    for(int i = 0; i< num_countries_ ; i++){
-        for(int j = 0; j<num_countries_; j++){
-            cout<<" "<<adjacency_matrix_[i][j];
-        }
-        cout<<endl;
-    }
-}
-
 void Map::DisplayAdjacencyMatrix() {
+    cout << "\t\t\tNeighbours " << endl;
+    cout << "\t\t\t";
+    for(int i = 0; i < num_countries_; ++i) {
+        cout << (i+1) << " ";
+    }
+    cout << endl;
 
     for(int i = 0; i < num_countries_; ++i) {
         //debugging to print matrix
@@ -259,35 +213,10 @@ void Map::DisplayAdjacencyMatrix() {
         cout << endl;
         //debug end
     }
+
+    cout << "\n1 implies that country is neighbour, and 0 implies it is not a neighbouring country\n";
 }
 //--------------------------------------------------------------------------------------------
-
-
-
-
-//Border class method implementations ----------------------------------------------------------
-Border::Border(int country_ID, vector<int> *neighbour_ids) {
-    country_ID_ = country_ID;
-    neighbour_ids_ = neighbour_ids;
-}
-
-Border::Border(const Border &border) {
-    country_ID_ = border.country_ID_;
-    neighbour_ids_ = border.neighbour_ids_;
-}
-
-Border::~Border() {
-    delete neighbour_ids_;
-}
-
-Border& Border::operator=(const Border &border) {
-    country_ID_ = border.country_ID_;
-    neighbour_ids_ = border.neighbour_ids_;
-    return *this;
-}
-//--------------------------------------------------------------------------------------------
-
-
 
 
 //Continent class method implementations -----------------------------------------------------

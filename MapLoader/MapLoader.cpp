@@ -16,6 +16,19 @@ MapLoader::MapLoader(string file_name) {
     file_name_ = file_name;
 }
 
+MapLoader& MapLoader::operator=(const MapLoader &map) {
+    parsed_map_ = map.parsed_map_;
+    return *this;
+}
+
+MapLoader::MapLoader(const MapLoader &map) {
+    parsed_map_ = map.parsed_map_;
+}
+
+MapLoader::~MapLoader() {
+    delete parsed_map_;
+}
+
 void MapLoader::ParseMap() {
     string line;
     ifstream file_to_load(file_name_);
@@ -195,8 +208,9 @@ void MapLoader::ParseMap() {
                     }
                 }
 
-                if(countries.size() > 0) {
-                   parsed_map->SetAdjacencyMatrix(countries.size());
+                if(parsed_map_->GetNumCountries() > 0) {
+
+                    parsed_map->CreateAdjacencyMatrix();
                 }
             }
 
@@ -243,7 +257,7 @@ void MapLoader::ParseMap() {
                                     file_is_valid = false;
                                     return;
                                 }
-                                parsed_map->SetValueOfBorderInMatrix(true, current_country, borders[i] - 1);
+                                parsed_map->SetTwoCountriesAsNeighbours(true, current_country, borders[i] - 1);
                             }
                             ++current_country;
                             ++border_entry_count;

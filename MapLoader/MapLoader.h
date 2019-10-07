@@ -20,6 +20,7 @@ class MapLoader {
 
 private:
     string file_name_;
+    Map* parsed_map_;
 
 public:
     //Constructor

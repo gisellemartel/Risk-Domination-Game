@@ -12,33 +12,39 @@ using namespace std;
 
 int main()
 {
+    cout << "Testing Map Driver" << endl << endl;
+    Map* america = new Map("America map");
 
-    Map* america = new Map("America map", 2, 5);
-    //name, army value, id
-//    america->AddContinentToMap("North America", 5, 1);
-//    america->AddContinentToMap("South America", 2, 2);
-//    america->AddContinentToMap("Europe", 5, 3);
-//    america->DisplayContinents();
-//
-//    america->AddCountryToMap(1,"Alaska", 1);
-//    america->AddCountryToMap(2, "Alberta", 1);
-//    america->AddCountryToMap(3, "Central America", 1);
-//    america->DisplayCountries();
+    america->AddContinentToMap(new Continent("North America", 5, 1));
+    america->AddContinentToMap(new Continent("South America", 2, 2));
+    america->AddContinentToMap(new Continent("Europe", 5, 3));
 
-    america->DisplayEdges();
-//    cout<<endl;
-//
-//    vector<int> *border1 = new vector<int>;
-//
-//
-//    border1->push_back(1);
-//    border1->push_back(2);
-//    border1->push_back(3);
-//
-//    america->AddCountryEdges(border1);
-//
-//    america->DisplayEdges();
+    cout << "Displaying Continents of Map" << endl;
+    america->DisplayContinents();
+
+    america->AddCountryToMap(new Country(1,"Alaska", 1));
+    america->AddCountryToMap(new Country(2, "Alberta", 1));
+    america->AddCountryToMap(new Country(3, "Brazil", 2));
+    america->AddCountryToMap(new Country(4, "British Columbia", 1));
+    america->AddCountryToMap(new Country(5, "Portugal", 3));
+
+    cout << "Displaying Countries of Map" << endl;
+    america->DisplayCountries();
+
+    america->CreateAdjacencyMatrix();
+    america->SetTwoCountriesAsNeighbours(true, 0, 1);
+    america->SetTwoCountriesAsNeighbours(false, 0, 2);
+    america->SetTwoCountriesAsNeighbours(false, 0, 4);
+    america->SetTwoCountriesAsNeighbours(false, 1, 2);
+    america->SetTwoCountriesAsNeighbours(false, 1, 4);
+    america->SetTwoCountriesAsNeighbours(false, 2, 4);
+    america->SetTwoCountriesAsNeighbours(false, 3, 2);
+    america->SetTwoCountriesAsNeighbours(true, 3, 1);
+    america->SetTwoCountriesAsNeighbours(true, 3, 0);
+    america->SetTwoCountriesAsNeighbours( false, 3, 4);
+
+    cout << "Displaying county nodes and edges:" << endl;
+    america->DisplayAdjacencyMatrix();
 
     delete america;
-    cout << "Map Driver" << endl;
 }
