@@ -11,8 +11,8 @@ using namespace std;
 class Dice {
 
 private:
-    vector<int> *roll_num_stats_;
-    int *total_rolls_;
+    vector<int>* roll_num_stats_;
+    int* total_rolls_;
 
 public:
     Dice();

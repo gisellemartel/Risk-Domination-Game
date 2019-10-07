@@ -17,17 +17,23 @@ Dice::Dice() {
 }
 
 Dice::Dice(const Dice &dice) {
+    for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
+        roll_num_stats_[i] = dice.roll_num_stats_[i];
+    }
     roll_num_stats_ = dice.roll_num_stats_;
     total_rolls_ = dice.total_rolls_;
 }
 
 Dice::~Dice() {
     delete roll_num_stats_;
-    delete total_rolls_;
+    delete[] total_rolls_;
 }
 
 
 Dice& Dice::operator=(const Dice &dice) {
+    for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
+        roll_num_stats_[i] = dice.roll_num_stats_[i];
+    }
     roll_num_stats_ = dice.roll_num_stats_;
     total_rolls_ = dice.total_rolls_;
     return *this;

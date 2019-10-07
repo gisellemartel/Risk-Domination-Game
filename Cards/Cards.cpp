@@ -9,9 +9,9 @@
 using namespace std;
 
 Cards::Cards() {
-    cout << "Instantiating Cards Object" << endl;
+
 }
 
 Cards::~Cards() {
-    cout << "destroying cards object" << endl;
+
 }
