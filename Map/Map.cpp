@@ -93,7 +93,12 @@ void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
-    if(adjacency_matrix_[country_a->GetCountryID()][country_b->GetCountryID()] == 1 && adjacency_matrix_[country_b->GetCountryID()][country_a->GetCountryID()] == 1) {
+    int index_a = country_a->GetCountryID() - 1;
+    int index_b = country_b->GetCountryID() - 1;
+    if(index_a < 0 || index_a > countries_->size() || index_b < 0 || index_a > countries_->size()) {
+        return false;
+    }
+    if(adjacency_matrix_[index_a][index_b] && adjacency_matrix_[index_b][index_a]) {
         return true;
     }
     return false;
@@ -222,7 +227,7 @@ void Map::DisplayAdjacencyMatrix() {
         //debug end
     }
 
-    cout << "\n1 implies that country is neighbour, and 0 implies it is not a neighbouring country\n";
+    cout << endl;
 }
 //--------------------------------------------------------------------------------------------
 

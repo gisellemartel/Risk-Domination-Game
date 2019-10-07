@@ -119,7 +119,7 @@ void MapLoader::ParseMap() {
                             return;
                         }
 
-                        Country* country = parsed_map_->GetCountryAtIndex(current_index - 1);
+                        Country* country = parsed_map_->GetCountryById(current_index);
                         //ensure countries are in order
                         if(country_num !=0 && parsed_map_->GetNumCountries() > 0 && country && country_num < country->GetCountryID()) {
                             cout << "Countries are not in order in the file. Please load a valid file\n\n";
@@ -276,8 +276,9 @@ void MapLoader::ParseMap() {
         file_is_valid &= border_entry_count == parsed_map_->GetNumCountries();
 
         if(file_is_valid && parsed_map_->GetNumCountries() > 0 && parsed_map_->GetNumContinents() > 0) {
-            cout << "Success! Generated map for file" << file_name_ << "!" << endl << "\nHere is the result:\n";
+            cout << "Success! Generated map for file" << file_name_ << "!" << endl << "\nHere is the resulting graph:\n";
             parsed_map_->DisplayAdjacencyMatrix();
+            cout << "******************************************************************************************************************************************************************************************************************************************************************************************************" << endl;
             cout << endl << endl;
         } else {
             cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
