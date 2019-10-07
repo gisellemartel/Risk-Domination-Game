@@ -8,10 +8,30 @@
 #include <iostream>
 using namespace std;
 
+
+//Cards class ---------------------------------------------
 Cards::Cards() {
 
 }
 
 Cards::~Cards() {
+
+}
+
+//Deck class -----------------------------------------------
+Deck::Deck(int num_countries){
+
+}
+
+Deck::~Deck(){
+
+}
+
+//Hand class ------------------------------------------------
+Hand::Hand(){
+
+}
+
+Hand::~Hand(){
 
 }
