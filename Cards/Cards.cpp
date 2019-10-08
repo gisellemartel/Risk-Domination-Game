@@ -5,6 +5,7 @@
 
 
 #include "Cards.h"
+#include "../Map/Map.h"
 #include <iostream>
 using namespace std;
 
@@ -19,7 +20,7 @@ Cards::~Cards() {
 }
 
 //Deck class -----------------------------------------------
-Deck::Deck(int num_countries){
+Deck::Deck(vector<Country*>* countries){
 
 }
 
