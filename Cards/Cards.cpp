@@ -119,6 +119,7 @@ void Deck::DisplayDeck()
 
 //Hand class ------------------------------------------------
 Hand::Hand(){
+    num_cards_hand_ = 0;
     cards_in_hand_ = new vector<Cards*>;
 }
 
@@ -138,13 +139,50 @@ void Hand::AddCardToHand(Cards* card_)
 
 int Hand::Exchange()
 {
+    int card_1, card_2, card_3;
+    cout<<"Pick 3 cards to exchange"<<endl
+    <<"Card #1: ";
+    cin >> card_1;
+    cout <<"Card #2: ";
+    cin >> card_2;
+    cout <<"Card #3: ";
+    cin >> card_3;
+    cout<<"picked card # " << card_1<<endl
+        <<"picked card # " << card_2<<endl
+        <<"picked card # " << card_3<<endl;
 
+    if
+    (
+            AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
+         || AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
+     )
+        cout<<"You get more armies"<<endl;
+}
+
+bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3)
+{
+    return
+    (
+        card_1->GetCardType() == card_2->GetCardType() &&
+        card_2->GetCardType() == card_3->GetCardType()
+    );
+
+}
+
+bool Hand::AreThreeDifferent(Cards *card_1, Cards *card_2, Cards *card_3)
+{
+    return
+            (
+            card_1->GetCardType() != card_2->GetCardType() &&
+            card_2->GetCardType() != card_3->GetCardType() &&
+            card_1->GetCardType() != card_3->GetCardType()
+            );
 }
 
 void Hand::DisplayHand()
 {
     for(int i = 0; i<cards_in_hand_->size(); i++){
-        cout<<"card #"<<i<<endl;
+        cout<<"card #"<<i<<" ";
         cards_in_hand_->at(i)->DisplayCard();
 
     }

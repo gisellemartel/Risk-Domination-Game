@@ -73,6 +73,8 @@ public:
 //    Methods---------------------------------------------
     void AddCardToHand(Cards* card_);
     int Exchange();
+    bool AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3);
+    bool AreThreeDifferent(Cards* card_1, Cards* card_2, Cards* card_3);
     void DisplayHand();
 };
 

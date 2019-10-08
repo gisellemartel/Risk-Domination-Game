@@ -12,10 +12,23 @@ using namespace std;
 
 int main()
 {
-    Deck* adeck = new Deck();
-    adeck->CreateDeck(12);
-    adeck->DisplayDeck();
-    cout<<"current cards in deck: " <<adeck->GetNumberOfCardsInDeck()<<endl;
+    Deck* deck = new Deck();
+    deck->CreateDeck(12);
+    deck->DisplayDeck();
+    cout<<"current cards in deck: " <<deck->GetNumberOfCardsInDeck()<<endl;
+
+    cout<<endl<<"Cards in hands test"<<endl<<endl;
+
+    Hand* hand = new Hand();
+    hand->AddCardToHand(new Cards("infantry"));
+    hand->AddCardToHand(new Cards("infantry"));
+    hand->AddCardToHand(new Cards("artillery"));
+    hand->AddCardToHand(new Cards("artillery"));
+    hand->AddCardToHand(new Cards("cavalry"));
+
+    hand->DisplayHand();
+    hand->Exchange();
+    hand->DisplayHand();
 
     cout << "Cards Driver" << endl;
     return 0;
