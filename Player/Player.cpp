@@ -19,7 +19,6 @@ Player::Player(string player_name) {
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
-    cout << "Instantiating new Player object" << endl;
     player_name_ = player_name;
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
@@ -44,8 +43,6 @@ Player::Player(const Player &player) {
 }
 
 Player::~Player() {
-    cout << "Destroying Player object" << endl;
-
     for(int i = 0; i < risk_cards_->size(); ++i) {
         delete (*risk_cards_)[i];
     }

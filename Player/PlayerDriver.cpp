@@ -16,7 +16,7 @@ class Country;
 
 int main()
 {
-    cout << "Testing Player Driver" << endl;
+    cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
     Player* new_player = new Player("New player");
@@ -30,13 +30,14 @@ int main()
         cout << (*new_player->GetPlayersCountries())[i]->GetCountryName() << endl;
     }
 
-    //TODO Risk Cards
-    new_player->AddCardToCollection(new Cards());
-    new_player->AddCardToCollection(new Cards());
-    new_player->AddCardToCollection(new Cards());
+    new_player->AddCardToCollection(new Cards("calvary"));
+    new_player->AddCardToCollection(new Cards("infantry"));
+    new_player->AddCardToCollection(new Cards("artillery"));
     cout << "\nPlayer owns collection of following cards: " << endl;
+
     for(int i = 0; i < new_player->GetPlayersCards()->size(); ++i) {
-        //cout << (*new_player->GetPlayersCards())[i]->GetCardName() << endl;
+        cout << "card " << (i + 1) << ": ";
+        (*new_player->GetPlayersCards())[i]->DisplayCard();
     }
 
     //Dice
