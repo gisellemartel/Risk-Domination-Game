@@ -15,12 +15,10 @@ class Country;
 class Cards{
 private:
     string type_;
-    int card_army_value_;
-    string card_country_;
 
 public:
     //constructors
-    Cards(string type, int card_army_value, string card_country);
+    Cards(string type);
     Cards(const Cards &cards);
     ~Cards();
 
@@ -29,12 +27,8 @@ public:
 
 //    Setters---------------------------------------------
     void SetCardType(string card_type);
-    void SetCardArmyValue(int card_value);
-    void SetCardCountry(string card_country);
 //    Getters---------------------------------------------
     const string GetCardType() const;
-    const int GetCardArmyValue() const;
-    const string GetCardCountry() const;
 //    Methods---------------------------------------------
     void DisplayCard();
 };
@@ -45,7 +39,7 @@ private:
     vector<Cards*>* cards_;
 
 public:
-    Deck(vector<Country*>* countries_);
+    Deck();
     Deck(const Deck &deck);
     ~Deck();
 
@@ -54,7 +48,7 @@ public:
 //    Getters---------------------------------------------
     const int GetNumberOfCardsInDeck() const;
 //    Methods---------------------------------------------
-    void CreateDeck();
+    void CreateDeck(int num_cards);
     Cards Draw();
     void DisplayDeck();
 
@@ -62,7 +56,10 @@ public:
 
 class Hand{
 private:
-    int num_cards_hand;
+    int num_cards_hand_;
+    int infantry_cards_;
+    int cavalry_cards_;
+    int artillery_cards_;
     vector<Cards*>* cards_in_hand_;
 public:
     Hand();
@@ -75,8 +72,8 @@ public:
 
 //    Methods---------------------------------------------
     void AddCardToHand(Cards* card_);
-    int Exchange(Cards* card_1, Cards* card_2, Cards* card_3);
-
+    int Exchange();
+    void DisplayHand();
 };
 
 #endif //CARDS_H

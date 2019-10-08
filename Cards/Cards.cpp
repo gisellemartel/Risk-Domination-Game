@@ -14,14 +14,10 @@ using namespace std;
 //Constructors
 Cards::Cards(const Cards &cards) {
     type_ = cards.type_;
-    card_army_value_ =  cards.card_army_value_;
-    card_country_ = cards.card_country_;
 }
 
-Cards::Cards(string type, int card_army_value, string card_country){
+Cards::Cards(string type){
     type_ = type;
-    card_army_value_ = card_army_value;
-    card_country_ = card_country;
 }
 
 Cards::~Cards() {
@@ -31,8 +27,6 @@ Cards::~Cards() {
 Cards& Cards::operator=(const Cards &cards)
 {
     type_ = cards.type_;
-    card_army_value_ = cards.card_army_value_;
-    card_country_ = cards.card_country_;
     return *this;
 }
 
@@ -41,33 +35,14 @@ void Cards::SetCardType(string card_type)
     type_ = card_type;
 }
 
-void Cards::SetCardArmyValue(int card_value)
-{
-    card_army_value_ = card_value;
-}
-
-void Cards::SetCardCountry(string card_country)
-{
-    card_country_ = card_country;
-}
 
 const string Cards::GetCardType() const {
     return type_;
 }
 
-const int Cards::GetCardArmyValue() const {
-    return card_army_value_;
-}
-
-const string Cards::GetCardCountry() const {
-    return card_country_;
-}
 
 void Cards::DisplayCard(){
-    cout
-            <<"Card Type: "<<Cards::GetCardType()<<endl
-            <<"Card Army Value: "<<Cards::GetCardArmyValue()<<endl
-            <<"Card Country: "<<Cards::GetCardCountry()<<endl;
+    cout<<"Card Type: "<<Cards::GetCardType()<<endl;
 }
 
 //Deck class -----------------------------------------------
@@ -76,12 +51,9 @@ Deck::Deck(const Deck &deck){
     cards_ = deck.cards_;
 }
 
-Deck::Deck(vector<Country*>* countries){
-    num_cards_deck_ = countries->size();
-    for(int i = 0; i< countries->size(); i++)
-    {
-        //Cards deck_card = new Cards("soldier", 0,countries->at(i)->GetCountryName());
-    }
+Deck::Deck(){
+    cards_ = new vector<Cards*>;
+    num_cards_deck_ = 0;
 }
 
 Deck::~Deck(){
@@ -97,11 +69,34 @@ const int Deck::GetNumberOfCardsInDeck() const {
     return num_cards_deck_;
 }
 
+void Deck::CreateDeck(int num_cards){
+
+    int artillery_cards = num_cards/3;
+    int cavalry_cards = num_cards/3;
+    int infantry_cards = num_cards - (artillery_cards + cavalry_cards);
+
+
+    for(int i=0; i<artillery_cards;i++){
+        cards_->push_back(new Cards("artillery"));
+        num_cards_deck_++;
+    }
+
+    for(int i=0; i<cavalry_cards;i++){
+        cards_->push_back(new Cards("cavalry"));
+        num_cards_deck_++;
+    }
+
+    for(int i=0; i<infantry_cards;i++){
+        cards_->push_back(new Cards("infantry"));
+        num_cards_deck_++;
+    }
+
+}
+
 Cards Deck::Draw()
 {
     if(cards_->size()<=0){
         cout<<"no more cards in deck"<<endl;
-
     }
 
     else{
@@ -124,9 +119,33 @@ void Deck::DisplayDeck()
 
 //Hand class ------------------------------------------------
 Hand::Hand(){
+    cards_in_hand_ = new vector<Cards*>;
+}
 
+Hand::Hand(const Hand &hand){
+    num_cards_hand_ = hand.num_cards_hand_;
+    cards_in_hand_ = hand.cards_in_hand_;
 }
 
 Hand::~Hand(){
 
+}
+
+void Hand::AddCardToHand(Cards* card_)
+{
+    cards_in_hand_->push_back(card_);
+}
+
+int Hand::Exchange()
+{
+
+}
+
+void Hand::DisplayHand()
+{
+    for(int i = 0; i<cards_in_hand_->size(); i++){
+        cout<<"card #"<<i<<endl;
+        cards_in_hand_->at(i)->DisplayCard();
+
+    }
 }
