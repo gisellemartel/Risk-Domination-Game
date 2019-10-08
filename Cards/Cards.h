@@ -10,6 +10,7 @@
 #include "../Map/Map.h"
 
 using namespace std;
+class Country;
 
 class Cards{
 private:
@@ -23,7 +24,7 @@ public:
     Cards(const Cards &cards);
     ~Cards();
 
-    //operator overlaoder
+    //operator overloader
     Cards& operator=(const Cards &cards);
 
 //    Setters---------------------------------------------
@@ -35,6 +36,7 @@ public:
     const int GetCardArmyValue() const;
     const string GetCardCountry() const;
 //    Methods---------------------------------------------
+    void DisplayCard();
 };
 
 class Deck{
@@ -48,12 +50,13 @@ public:
     ~Deck();
 
 //    Setters---------------------------------------------
-    void SetNumberOfCardsInDeck();
+    void SetNumberOfCardsInDeck(int num_cards);
 //    Getters---------------------------------------------
-    const int GetNumberOfCardsInDeck();
+    const int GetNumberOfCardsInDeck() const;
 //    Methods---------------------------------------------
     void CreateDeck();
     Cards Draw();
+    void DisplayDeck();
 
 };
 

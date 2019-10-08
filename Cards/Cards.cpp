@@ -5,7 +5,6 @@
 
 
 #include "Cards.h"
-#include "../Map/Map.h"
 #include <iostream>
 using namespace std;
 
@@ -64,6 +63,13 @@ const string Cards::GetCardCountry() const {
     return card_country_;
 }
 
+void Cards::DisplayCard(){
+    cout
+            <<"Card Type: "<<Cards::GetCardType()<<endl
+            <<"Card Army Value: "<<Cards::GetCardArmyValue()<<endl
+            <<"Card Country: "<<Cards::GetCardCountry()<<endl;
+}
+
 //Deck class -----------------------------------------------
 Deck::Deck(const Deck &deck){
     num_cards_deck_ = deck.num_cards_deck_;
@@ -74,13 +80,47 @@ Deck::Deck(vector<Country*>* countries){
     num_cards_deck_ = countries->size();
     for(int i = 0; i< countries->size(); i++)
     {
-        Cards deck_card = new Cards("soldier", 0,countries->at(i)->GetCountryName());
+        //Cards deck_card = new Cards("soldier", 0,countries->at(i)->GetCountryName());
     }
 }
 
 Deck::~Deck(){
 
 }
+
+void Deck::SetNumberOfCardsInDeck(int num_cards)
+{
+    num_cards_deck_ = num_cards;
+}
+
+const int Deck::GetNumberOfCardsInDeck() const {
+    return num_cards_deck_;
+}
+
+Cards Deck::Draw()
+{
+    if(cards_->size()<=0){
+        cout<<"no more cards in deck"<<endl;
+
+    }
+
+    else{
+        Cards *top_card = cards_->at(0);
+        num_cards_deck_--;
+        delete cards_->at(0);
+        return *top_card;
+    }
+
+}
+
+void Deck::DisplayDeck()
+{
+    for(int i= 0; i<cards_->size(); i++){
+        cards_->at(i)->DisplayCard();
+    }
+}
+
+
 
 //Hand class ------------------------------------------------
 Hand::Hand(){
