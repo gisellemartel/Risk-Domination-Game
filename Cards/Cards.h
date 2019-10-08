@@ -14,21 +14,26 @@ using namespace std;
 class Cards{
 private:
     string type_;
-    int card_value_;
+    int card_army_value_;
+    string card_country_;
 
 public:
-    Cards();
+    //constructors
+    Cards(string type, int card_army_value, string card_country);
     Cards(const Cards &cards);
     ~Cards();
 
+    //operator overlaoder
+    Cards& operator=(const Cards &cards);
+
 //    Setters---------------------------------------------
-    void setCardType(string card_type);
-    void setCardValue(int card_value);
-    void setCardCountry(string card_country);
+    void SetCardType(string card_type);
+    void SetCardArmyValue(int card_value);
+    void SetCardCountry(string card_country);
 //    Getters---------------------------------------------
-    const string GetCardType() const {return type_ ;}
-    const int GetCardValue() const {return card_value_;}
-    const string GetCardCountry() const {return card_country;}
+    const string GetCardType() const;
+    const int GetCardArmyValue() const;
+    const string GetCardCountry() const;
 //    Methods---------------------------------------------
 };
 
@@ -43,9 +48,9 @@ public:
     ~Deck();
 
 //    Setters---------------------------------------------
-
+    void SetNumberOfCardsInDeck();
 //    Getters---------------------------------------------
-
+    const int GetNumberOfCardsInDeck();
 //    Methods---------------------------------------------
     void CreateDeck();
     Cards Draw();
@@ -55,7 +60,7 @@ public:
 class Hand{
 private:
     int num_cards_hand;
-    vector<Cards*>* cards_in_hands_;
+    vector<Cards*>* cards_in_hand_;
 public:
     Hand();
     Hand(const Hand &hand);
