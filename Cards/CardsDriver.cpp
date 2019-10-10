@@ -22,9 +22,9 @@ int main()
 
     hand->AddCardToHand(deck->Draw());
     hand->AddCardToHand(deck->Draw());
-    hand->AddCardToHand(deck->Draw());
-    hand->AddCardToHand(deck->Draw());
-    hand->AddCardToHand(deck->Draw());
+//    hand->AddCardToHand(deck->Draw());
+//    hand->AddCardToHand(deck->Draw());
+//    hand->AddCardToHand(deck->Draw());
 //    hand->AddCardToHand(new Cards("infantry"));
 //    hand->AddCardToHand(new Cards("infantry"));
 //    hand->AddCardToHand(new Cards("infantry"));
