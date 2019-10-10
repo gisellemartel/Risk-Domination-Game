@@ -1,11 +1,14 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
 #ifndef DICE_H
 #define DICE_H
+
 #include <vector>
+
 using namespace std;
 
 class Dice {
@@ -20,8 +23,10 @@ public:
     ~Dice();
 
     Dice& operator=(const Dice& dice);
-    vector<int> Roll(int num_of_dice);
+
     int GetRollNumStats(int roll_num);
     int GetTotalRolls();
+
+    vector<int> Roll(int num_of_dice);
 };
 #endif

@@ -1,23 +1,28 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
 #ifndef CARDS_H
 #define CARDS_H
-#include <iostream>
-#include <vector>
+
 #include "../Map/Map.h"
 
+#include <iostream>
+#include <vector>
+
 using namespace std;
+
 class Country;
 
 class Cards{
+
 private:
     string type_;
 
 public:
-    //constructors
+
     Cards(string type);
     Cards(const Cards &cards);
     ~Cards();
@@ -25,15 +30,15 @@ public:
     //operator overloader
     Cards& operator=(const Cards &cards);
 
-//    Setters---------------------------------------------
     void SetCardType(string card_type);
-//    Getters---------------------------------------------
+
     const string GetCardType() const;
-//    Methods---------------------------------------------
+
     void DisplayCard();
 };
 
 class Deck{
+
 private:
     int num_cards_deck_;
     vector<Cards*>* cards_;
@@ -43,11 +48,11 @@ public:
     Deck(const Deck &deck);
     ~Deck();
 
-//    Setters---------------------------------------------
+
     void SetNumberOfCardsInDeck(int num_cards);
-//    Getters---------------------------------------------
+
     const int GetNumberOfCardsInDeck() const;
-//    Methods---------------------------------------------
+
     void CreateDeck(int num_cards);
     Cards Draw();
     void DisplayDeck();

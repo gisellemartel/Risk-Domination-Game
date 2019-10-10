@@ -1,7 +1,9 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
+
 
 #include <iostream>
 
@@ -12,7 +14,7 @@ using namespace std;
 int main()
 {
     cout << "Testing MapLoader Driver" << endl << endl;
-    cout << endl << "Loading various map files to generate maps... " << endl << "----------------------------------------" << endl << endl;
+    cout << "\nLoading various map files to generate maps...\n**************************************************************************************************\n\n";
     //various custom test cases
     MapLoader* testmap1 = new MapLoader("test-map-files/generaltest.map");
     testmap1->ParseMap();
@@ -62,25 +64,6 @@ int main()
 
     MapLoader* testmap16 = new MapLoader("test-map-files/kosova.map");
     testmap16->ParseMap();
-
-
-    //TODO figure out why exit code 11 when deleting pointers
-//    delete testmap1;
-//    delete testmap2;
-//    delete testmap3;
-//    delete testmap4;
-//    delete testmap5;
-//    delete testmap6;
-//    delete testmap7;
-//    delete testmap8;
-//    delete testmap9;
-//    delete testmap10;
-//    delete testmap11;
-//    delete testmap12;
-//    delete testmap13;
-//    delete testmap14;
-//    delete testmap15;
-//    delete testmap16;
 
     return 0;
 }
