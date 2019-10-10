@@ -48,6 +48,7 @@ public:
     const int GetContinentID() const;
 
     //Methods -------------------------------------------------------
+    void AddCountryToContinent(string* country);
     void DisplayInfo();
 };
 
