@@ -242,10 +242,10 @@ int Hand::AcquireArmy(int exchanges_done)
 bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3)
 {
     return
-    (
-        card_1->GetCardType() == card_2->GetCardType() &&
-        card_2->GetCardType() == card_3->GetCardType()
-    );
+            (
+                    card_1->GetCardType() == card_2->GetCardType() &&
+                    card_2->GetCardType() == card_3->GetCardType()
+            );
 
 }
 
@@ -253,9 +253,9 @@ bool Hand::AreThreeDifferent(Cards *card_1, Cards *card_2, Cards *card_3)
 {
     return
             (
-            card_1->GetCardType() != card_2->GetCardType() &&
-            card_2->GetCardType() != card_3->GetCardType() &&
-            card_1->GetCardType() != card_3->GetCardType()
+                    card_1->GetCardType() != card_2->GetCardType() &&
+                    card_2->GetCardType() != card_3->GetCardType() &&
+                    card_1->GetCardType() != card_3->GetCardType()
             );
 }
 
