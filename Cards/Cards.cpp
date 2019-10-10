@@ -47,17 +47,24 @@ void Cards::DisplayCard(){
 
 //Deck class -----------------------------------------------
 Deck::Deck(const Deck &deck){
+    num_exchanges = deck.num_exchanges;
     num_cards_deck_ = deck.num_cards_deck_;
     cards_ = deck.cards_;
 }
 
 Deck::Deck(){
+    num_exchanges = 0;
     cards_ = new vector<Cards*>;
     num_cards_deck_ = 0;
 }
 
 Deck::~Deck(){
 
+}
+
+int Deck::GetNumExchanges()
+{
+    return num_exchanges;
 }
 
 const int Deck::GetNumberOfCardsInDeck() const {
@@ -121,12 +128,10 @@ void Deck::DisplayDeck()
 
 //Hand class ------------------------------------------------
 Hand::Hand(){
-    num_cards_hand_ = 0;
     cards_in_hand_ = new vector<Cards*>;
 }
 
 Hand::Hand(const Hand &hand){
-    num_cards_hand_ = hand.num_cards_hand_;
     cards_in_hand_ = hand.cards_in_hand_;
 }
 
@@ -134,38 +139,104 @@ Hand::~Hand(){
 
 }
 
+const int Hand::GetNumberOfCardsInHand() const
+{
+    return cards_in_hand_->size();
+}
+
 void Hand::AddCardToHand(Cards* card_)
 {
     cards_in_hand_->push_back(card_);
 }
-
-int Hand::Exchange()
+// 3 conditions to verify:
+// 1-(Minimum 3 cards in hand)
+// 2-(Inputs for choices of cards in hand are valid and unique)
+// 3-(Cards are 3 same type or 3 different type)
+int Hand::Exchange(int exchanges_done)
 {
+    //condition #1
     if(cards_in_hand_->size()<3){
         cout<<"Not enough cards to exchange"<<endl;
         return 0;
     }
 
     int card_1, card_2, card_3;
+    string user_response;
     bool valid_input = false;
+    bool valid_cards = false;
 
-    cout<<"Pick 3 valid cards to exchange"<<endl
-    <<"Card #1: ";
-    cin >> card_1;
-    cout <<"Card #2: ";
-    cin >> card_2;
-    cout <<"Card #3: ";
-    cin >> card_3;
-    cout<<"picked card # " << card_1<<endl
-        <<"picked card # " << card_2<<endl
-        <<"picked card # " << card_3<<endl;
+    while(!valid_cards) {
 
-    if
-    (
-            AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
-         || AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
-     )
-        cout<<"You get more armies"<<endl;
+        //condition #2
+        while (!valid_input) {
+            cout << "Pick 3 valid cards to exchange" << endl;
+
+            card_1 = InputCard();
+            card_2 = InputCard();
+            card_3 = InputCard();
+
+            if (card_1 == card_2 || card_1 == card_3 || card_2 == card_3)
+            {
+                cout << "Invalid inputs. Pick 3 unique cards" << endl;
+                continue;
+            }
+            else
+            {
+                valid_input = true;
+            }
+
+        }
+
+        //condition #3
+        if(AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))|| AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3)))
+        {
+            cout << "Exchanging Cards" << endl;
+            cards_in_hand_->erase(cards_in_hand_->begin()+card_1);
+            cards_in_hand_->erase(cards_in_hand_->begin()+card_2);
+            cards_in_hand_->erase(cards_in_hand_->begin()+card_3);
+            return AcquireArmy(exchanges_done);
+        }
+        else
+        {
+            cout << "Cards are invalid for exchange. Try again? y/n: ";
+            cin >> user_response;
+            if(user_response !="y")
+            {
+                valid_cards = true;
+            }
+            else
+            {
+                valid_input = false; //restart condition #2
+            }
+
+        }
+    }
+}
+
+int Hand::InputCard()
+{
+    int card_value;
+    cout<<"Pick a card: ";
+    cin>> card_value;
+    while(cin.fail() && ValidateInput(card_value))//loops until input is int and within range
+    {
+        cout<<"Invalid input. Pick a valid card number: ";
+        cin.clear();
+        cin.ignore(256, '\n');
+        cin >> card_value;
+    }
+    cout<<"You picked card#"<<card_value<<endl;
+    return card_value;
+}
+
+bool Hand::ValidateInput(int card_index)
+{
+    return (card_index < 0 || card_index > cards_in_hand_->size());
+}
+
+int Hand::AcquireArmy(int exchanges_done)
+{
+    return (exchanges_done*5 + 5);
 }
 
 bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3)

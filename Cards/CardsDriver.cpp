@@ -15,9 +15,9 @@ int main()
     Deck* deck = new Deck();
     deck->CreateDeck(12);
     deck->Draw();
-//    deck->DisplayDeck();
-//    cout<<"current cards in deck: " <<deck->GetNumberOfCardsInDeck()<<endl;
-//
+    deck->DisplayDeck();
+    cout<<"current cards in deck: " <<deck->GetNumberOfCardsInDeck()<<endl;
+
     Hand* hand = new Hand();
 
     hand->AddCardToHand(deck->Draw());
@@ -27,9 +27,10 @@ int main()
     hand->AddCardToHand(deck->Draw());
 
     hand->DisplayHand();
-//    hand->Exchange();
-//    hand->DisplayHand();
+    cout<<hand->Exchange(0)<<endl;
+    hand->DisplayHand();
 
-    cout << "Cards Driver " << endl;
+
+
     return 0;
 }
