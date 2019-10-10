@@ -12,7 +12,6 @@ using namespace std;
 
 #include "Player.h"
 #include "../Cards/Cards.h"
-#include "../Map/Map.h"
 
 class Country;
 

@@ -62,12 +62,11 @@ Deck::~Deck(){
 
 }
 
-int Deck::GetNumExchanges()
-{
+int Deck::GetNumExchanges() const {
     return num_exchanges;
 }
 
-const int Deck::GetNumberOfCardsInDeck() const {
+int Deck::GetNumberOfCardsInDeck() const {
     return cards_->size();
 }
 
@@ -119,7 +118,7 @@ Cards* Deck::Draw()
 
 void Deck::DisplayDeck()
 {
-    for(int i= 0; i<cards_->size(); i++){
+    for(int i= 0; i<cards_->size(); ++i){
         cards_->at(i)->DisplayCard();
     }
 }

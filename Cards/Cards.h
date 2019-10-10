@@ -23,7 +23,7 @@ private:
 
 public:
 
-    Cards(string type);
+    explicit Cards(string type);
     Cards(const Cards &cards);
     ~Cards();
 
@@ -49,14 +49,13 @@ public:
     Deck(const Deck &deck);
     ~Deck();
     
-    int GetNumExchanges();
-    void SetNumberOfCardsInDeck(int num_cards);
-    const int GetNumberOfCardsInDeck() const;
+    int GetNumExchanges() const;
+    int GetNumberOfCardsInDeck() const;
 
     void CreateDeck(int num_cards);
-    Cards* Draw();
     void DisplayDeck();
 
+    Cards* Draw();
 };
 
 class Hand{
@@ -66,10 +65,6 @@ public:
     Hand();
     Hand(const Hand &hand);
     ~Hand();
-
-//    Setters---------------------------------------------
-
-//    Getters---------------------------------------------
 
     const int GetNumberOfCardsInHand() const;
 //    Methods---------------------------------------------
