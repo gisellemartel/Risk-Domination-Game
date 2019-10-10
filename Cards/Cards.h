@@ -35,6 +35,7 @@ public:
 
 class Deck{
 private:
+    int num_exchanges;
     int num_cards_deck_;
     vector<Cards*>* cards_;
 
@@ -44,22 +45,19 @@ public:
     ~Deck();
 
 //    Setters---------------------------------------------
-    void SetNumberOfCardsInDeck(int num_cards);
+
 //    Getters---------------------------------------------
+    int GetNumExchanges();
     const int GetNumberOfCardsInDeck() const;
 //    Methods---------------------------------------------
     void CreateDeck(int num_cards);
-    Cards Draw();
+    Cards* Draw();
     void DisplayDeck();
 
 };
 
 class Hand{
 private:
-    int num_cards_hand_;
-    int infantry_cards_;
-    int cavalry_cards_;
-    int artillery_cards_;
     vector<Cards*>* cards_in_hand_;
 public:
     Hand();
@@ -70,11 +68,20 @@ public:
 
 //    Getters---------------------------------------------
 
+    const int GetNumberOfCardsInHand() const;
 //    Methods---------------------------------------------
     void AddCardToHand(Cards* card_);
-    int Exchange();
+    int Exchange(int exchanges_done);
+    int InputCard();
+    bool ValidateInput(int card_index);
+    int AcquireArmy(int exchanges_done);
+    int Max(int index_1, int index_2, int index_3);
+    int Min(int index_1, int index_2, int index_3);
+    int Mid(int index_1, int index_2, int index_3);
+
     bool AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3);
     bool AreThreeDifferent(Cards* card_1, Cards* card_2, Cards* card_3);
+
     void DisplayHand();
 };
 

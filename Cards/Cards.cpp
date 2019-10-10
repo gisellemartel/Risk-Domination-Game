@@ -47,11 +47,13 @@ void Cards::DisplayCard(){
 
 //Deck class -----------------------------------------------
 Deck::Deck(const Deck &deck){
+    num_exchanges = deck.num_exchanges;
     num_cards_deck_ = deck.num_cards_deck_;
     cards_ = deck.cards_;
 }
 
 Deck::Deck(){
+    num_exchanges = 0;
     cards_ = new vector<Cards*>;
     num_cards_deck_ = 0;
 }
@@ -60,13 +62,13 @@ Deck::~Deck(){
 
 }
 
-void Deck::SetNumberOfCardsInDeck(int num_cards)
+int Deck::GetNumExchanges()
 {
-    num_cards_deck_ = num_cards;
+    return num_exchanges;
 }
 
 const int Deck::GetNumberOfCardsInDeck() const {
-    return num_cards_deck_;
+    return cards_->size();
 }
 
 void Deck::CreateDeck(int num_cards){
@@ -93,17 +95,24 @@ void Deck::CreateDeck(int num_cards){
 
 }
 
-Cards Deck::Draw()
+Cards* Deck::Draw()
 {
+
     if(cards_->size()<=0){
         cout<<"no more cards in deck"<<endl;
+        return nullptr;
     }
 
     else{
-        Cards *top_card = cards_->at(0);
-        num_cards_deck_--;
-        delete cards_->at(0);
-        return *top_card;
+
+        srand(time (NULL));
+        int random_card = rand() % cards_->size();
+
+        Cards* top_card = cards_->at(random_card);
+
+        cards_->erase(cards_->begin()+ random_card);
+
+        return top_card;
     }
 
 }
@@ -119,12 +128,10 @@ void Deck::DisplayDeck()
 
 //Hand class ------------------------------------------------
 Hand::Hand(){
-    num_cards_hand_ = 0;
     cards_in_hand_ = new vector<Cards*>;
 }
 
 Hand::Hand(const Hand &hand){
-    num_cards_hand_ = hand.num_cards_hand_;
     cards_in_hand_ = hand.cards_in_hand_;
 }
 
@@ -132,40 +139,116 @@ Hand::~Hand(){
 
 }
 
+const int Hand::GetNumberOfCardsInHand() const
+{
+    return cards_in_hand_->size();
+}
+
 void Hand::AddCardToHand(Cards* card_)
 {
     cards_in_hand_->push_back(card_);
 }
-
-int Hand::Exchange()
+// 3 conditions to verify:
+// 1-(Minimum 3 cards in hand)
+// 2-(Inputs for choices of cards in hand are valid and unique)
+// 3-(Cards are 3 same type or 3 different type)
+int Hand::Exchange(int exchanges_done)
 {
-    int card_1, card_2, card_3;
-    cout<<"Pick 3 cards to exchange"<<endl
-    <<"Card #1: ";
-    cin >> card_1;
-    cout <<"Card #2: ";
-    cin >> card_2;
-    cout <<"Card #3: ";
-    cin >> card_3;
-    cout<<"picked card # " << card_1<<endl
-        <<"picked card # " << card_2<<endl
-        <<"picked card # " << card_3<<endl;
+    //condition #1
+    if(cards_in_hand_->size()<3){
+        cout<<"Not enough cards to exchange"<<endl;
+        return 0;
+    }
 
-    if
-    (
-            AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
-         || AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))
-     )
-        cout<<"You get more armies"<<endl;
+    int card_1, card_2, card_3;
+    string user_response;
+    bool valid_input = false;
+    bool valid_cards = false;
+
+    while(!valid_cards) {
+
+        //condition #2
+        while (!valid_input) {
+            cout << "Pick 3 valid cards to exchange" << endl;
+
+            card_1 = InputCard();
+            card_2 = InputCard();
+            card_3 = InputCard();
+
+            if (card_1 == card_2 || card_1 == card_3 || card_2 == card_3)
+            {
+                cout << "Invalid inputs. Pick 3 unique cards" << endl;
+                continue;
+            }
+            else
+            {
+                valid_input = true;
+            }
+
+        }
+
+        //condition #3
+        if(AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))|| AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3)))
+        {
+            cout << "Exchanging Cards" << endl;
+
+
+
+            cards_in_hand_->erase(cards_in_hand_->begin()+Max(card_1, card_2, card_3));
+            cards_in_hand_->erase(cards_in_hand_->begin()+Mid(card_1, card_2, card_3));
+            cards_in_hand_->erase(cards_in_hand_->begin()+Min(card_1, card_2, card_3));
+            return AcquireArmy(exchanges_done);
+        }
+        else
+        {
+            cout << "Cards are invalid for exchange. Input y to retry: ";
+            cin >> user_response;
+            if(user_response !="y")
+            {
+                return 0;
+            }
+            else
+            {
+                valid_input = false; //restart condition #2
+            }
+
+        }
+    }
+}
+
+int Hand::InputCard()
+{
+    int card_value;
+    cout<<"Pick a card#: ";
+    cin>> card_value;
+    while(cin.fail() || ValidateInput(card_value))//loops until input is int and within range
+    {
+        cout<<"Invalid input. Pick a valid card number: ";
+        cin.clear();
+        cin.ignore(256, '\n');
+        cin >> card_value;
+    }
+    cout<<"You picked card#"<<card_value<<endl;
+    return card_value;
+}
+
+bool Hand::ValidateInput(int card_index)
+{
+    return (card_index < 0 || card_index > cards_in_hand_->size()-1);
+}
+
+int Hand::AcquireArmy(int exchanges_done)
+{
+    return (exchanges_done*5 + 5);
 }
 
 bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3)
 {
     return
-    (
-        card_1->GetCardType() == card_2->GetCardType() &&
-        card_2->GetCardType() == card_3->GetCardType()
-    );
+            (
+                    card_1->GetCardType() == card_2->GetCardType() &&
+                    card_2->GetCardType() == card_3->GetCardType()
+            );
 
 }
 
@@ -173,10 +256,37 @@ bool Hand::AreThreeDifferent(Cards *card_1, Cards *card_2, Cards *card_3)
 {
     return
             (
-            card_1->GetCardType() != card_2->GetCardType() &&
-            card_2->GetCardType() != card_3->GetCardType() &&
-            card_1->GetCardType() != card_3->GetCardType()
+                    card_1->GetCardType() != card_2->GetCardType() &&
+                    card_2->GetCardType() != card_3->GetCardType() &&
+                    card_1->GetCardType() != card_3->GetCardType()
             );
+}
+
+int Hand::Max(int index_1, int index_2, int index_3)
+{
+    if(index_1> index_2 && index_1 > index_3)
+        return index_1;
+    if(index_2> index_1 && index_2 > index_3)
+        return index_2;
+    return index_3;
+}
+
+int Hand::Mid(int index_1, int index_2, int index_3)
+{
+    if(index_1 > index_2 && index_1 < index_3)
+        return index_1;
+    if(index_2 > index_1 && index_2 < index_3)
+        return index_2;
+    return index_3;
+}
+
+int Hand::Min(int index_1, int index_2, int index_3)
+{
+    if(index_1 < index_2 && index_1 < index_3)
+        return index_1;
+    if(index_2 < index_1 && index_2 < index_3)
+        return index_2;
+    return index_3;
 }
 
 void Hand::DisplayHand()
