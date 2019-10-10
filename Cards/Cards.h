@@ -75,6 +75,10 @@ public:
     int InputCard();
     bool ValidateInput(int card_index);
     int AcquireArmy(int exchanges_done);
+    int Max(int index_1, int index_2, int index_3);
+    int Min(int index_1, int index_2, int index_3);
+    int Mid(int index_1, int index_2, int index_3);
+
     bool AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3);
     bool AreThreeDifferent(Cards* card_1, Cards* card_2, Cards* card_3);
 

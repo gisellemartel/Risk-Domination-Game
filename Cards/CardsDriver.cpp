@@ -25,6 +25,9 @@ int main()
     hand->AddCardToHand(deck->Draw());
     hand->AddCardToHand(deck->Draw());
     hand->AddCardToHand(deck->Draw());
+//    hand->AddCardToHand(new Cards("infantry"));
+//    hand->AddCardToHand(new Cards("infantry"));
+//    hand->AddCardToHand(new Cards("infantry"));
 
     hand->DisplayHand();
     cout<<hand->Exchange(0)<<endl;
