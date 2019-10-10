@@ -1,6 +1,7 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
 #ifndef PLAYER_H
@@ -33,11 +34,11 @@ public:
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
+
     Player& operator=(const Player &player);
 
-    void Reinforce();
-    void Attack();
-    void Fortify();
+    void SetPlayersTurn(bool is_turn);
+    void SetPlayerName(string player_name);
 
     bool isCurrentlyPlayersTurn() const;
     string GetPlayerName() const;
@@ -45,10 +46,12 @@ public:
     vector<Country*>* GetPlayersCountries() const;
     vector<Cards*>* GetPlayersCards() const;
 
-    void SetPlayersTurn(bool is_turn);
-    void SetPlayerName(string player_name);
-
     void AddCountryToCollection(Country* country);
     void AddCardToCollection(Cards* card);
+
+    void Reinforce();
+    void Attack();
+    void Fortify();
+
 };
 #endif //PLAYER_H

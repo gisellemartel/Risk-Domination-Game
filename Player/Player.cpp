@@ -1,6 +1,7 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
 #include <vector>
@@ -74,6 +75,42 @@ Player& Player::operator=(const Player &player) {
     return *this;
 }
 
+void Player::SetPlayersTurn(bool is_turn) {
+    is_player_turn_ = is_turn;
+}
+
+void Player::SetPlayerName(string player_name) {
+    player_name_ = player_name;
+}
+
+bool Player::isCurrentlyPlayersTurn() const {
+    return is_player_turn_;
+}
+
+Dice* Player::GetPlayerDice() const {
+    return dice_roll_;
+}
+
+string Player::GetPlayerName() const {
+    return player_name_;
+}
+
+vector<Country*>* Player::GetPlayersCountries() const {
+    return countries_;
+}
+
+vector<Cards*>* Player::GetPlayersCards() const {
+    return risk_cards_;
+}
+
+void Player::AddCountryToCollection(Country *country) {
+    countries_->push_back(country);
+}
+
+void Player::AddCardToCollection(Cards* card) {
+    risk_cards_->push_back(card);
+}
+
 void Player::Reinforce() {
     cout << "In reinforce method" << endl;
 
@@ -139,56 +176,19 @@ void Player::Fortify() {
     cout << "In fortify method" << endl;
     return;
     //TODO implementation of rules below
-   /**
-    	The player may move any number of armies from one of his owed countries to the other,
-        provided that there is a path between these two countries that is composed of countries that he owns.
+    /**
+     	The player may move any number of armies from one of his owed countries to the other,
+         provided that there is a path between these two countries that is composed of countries that he owns.
 
-    	Only one such move is allowed per fortification phase
+     	Only one such move is allowed per fortification phase
 
-    	Once the move is made, or the place forfeits his fortification phase, the player’s turn ends,
-        and it is now the next player’s turn.
+     	Once the move is made, or the place forfeits his fortification phase, the player’s turn ends,
+         and it is now the next player’s turn.
 
-    	Any player that does not control at least one country is removed from the game
+     	Any player that does not control at least one country is removed from the game
 
-    	The game end at any time one of the players owns all the countries in the map
-    */
+     	The game end at any time one of the players owns all the countries in the map
+     */
 
 }
-
-bool Player::isCurrentlyPlayersTurn() const {
-    return is_player_turn_;
-}
-
-Dice* Player::GetPlayerDice() const {
-    return dice_roll_;
-}
-
-string Player::GetPlayerName() const {
-    return player_name_;
-}
-
-vector<Country*>* Player::GetPlayersCountries() const {
-    return countries_;
-}
-
-vector<Cards*>* Player::GetPlayersCards() const {
-    return risk_cards_;
-}
-
-void Player::SetPlayersTurn(bool is_turn) {
-    is_player_turn_ = is_turn;
-}
-
-void Player::SetPlayerName(string player_name) {
-    player_name_ = player_name;
-}
-
-void Player::AddCountryToCollection(Country *country) {
-    countries_->push_back(country);
-}
-
-void Player::AddCardToCollection(Cards* card) {
-    risk_cards_->push_back(card);
-}
-
 

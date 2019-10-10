@@ -1,7 +1,9 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
+
 
 #include <iostream>
 #include <iomanip>
@@ -21,7 +23,7 @@ int main()
 
     Player* new_player = new Player("New player");
 
-    //Countries
+    //Player has Countries
     new_player->AddCountryToCollection(new Country(1, "Canada", 1));
     new_player->AddCountryToCollection(new Country(2, "US", 1));
     new_player->AddCountryToCollection(new Country(3, "Mexico", 1));
@@ -30,6 +32,7 @@ int main()
         cout << (*new_player->GetPlayersCountries())[i]->GetCountryName() << endl;
     }
 
+    //Player has Cards
     new_player->AddCardToCollection(new Cards("calvary"));
     new_player->AddCardToCollection(new Cards("infantry"));
     new_player->AddCardToCollection(new Cards("artillery"));
@@ -40,8 +43,8 @@ int main()
         (*new_player->GetPlayersCards())[i]->DisplayCard();
     }
 
-    //Dice
-    cout << "\nPlayer own dice  and can roll 2 of them: " << endl;
+    //Player has Dice Rolling mechanism
+    cout << "\nPlayer owns dice rollign mechanism and can roll 2 dice: " << endl;
     vector<int> dice_rolls = new_player->GetPlayerDice()->Roll(2);
     cout << "Dice rolled:\n";
     for (int & dice_roll : dice_rolls) {

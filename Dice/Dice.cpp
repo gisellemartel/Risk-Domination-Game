@@ -1,14 +1,15 @@
 /**
  * Assignment #1 COMP345, FALL 2019
- * Authors: Giselle Martel (26352936), Wayne Tam, Jeffrey Li, Rania Az
+ * Project: Risk Domination Game
+ * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
+#include "Dice.h"
 
-#include <iostream>
 #include <random>
 #include <vector>
 #include <algorithm>
-#include "Dice.h"
+
 using namespace std;
 
 Dice::Dice() {
@@ -20,6 +21,7 @@ Dice::Dice(const Dice &dice) {
     for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
         roll_num_stats_[i] = dice.roll_num_stats_[i];
     }
+
     roll_num_stats_ = dice.roll_num_stats_;
     total_rolls_ = dice.total_rolls_;
 }
@@ -34,9 +36,18 @@ Dice& Dice::operator=(const Dice &dice) {
     for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
         roll_num_stats_[i] = dice.roll_num_stats_[i];
     }
+
     roll_num_stats_ = dice.roll_num_stats_;
     total_rolls_ = dice.total_rolls_;
     return *this;
+}
+
+int Dice::GetRollNumStats(int roll_num) {
+    return roll_num_stats_ -> at(roll_num-1);
+}
+
+int Dice::GetTotalRolls() {
+    return *total_rolls_;
 }
 
 vector<int> Dice::Roll(int num_of_dice) {
@@ -53,12 +64,4 @@ vector<int> Dice::Roll(int num_of_dice) {
     }
     sort(dice_rolls.begin(), dice_rolls.end(), greater<>());
     return dice_rolls;
-}
-
-int Dice::GetRollNumStats(int roll_num) {
-    return roll_num_stats_ -> at(roll_num-1);
-}
-
-int Dice::GetTotalRolls() {
-    return *total_rolls_;
 }
