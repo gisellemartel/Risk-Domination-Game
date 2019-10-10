@@ -14,22 +14,22 @@ int main()
 {
     Deck* deck = new Deck();
     deck->CreateDeck(12);
-    deck->DisplayDeck();
-    cout<<"current cards in deck: " <<deck->GetNumberOfCardsInDeck()<<endl;
-
-    cout<<endl<<"Cards in hands test"<<endl<<endl;
-
+    deck->Draw();
+//    deck->DisplayDeck();
+//    cout<<"current cards in deck: " <<deck->GetNumberOfCardsInDeck()<<endl;
+//
     Hand* hand = new Hand();
-    hand->AddCardToHand(new Cards("infantry"));
-    hand->AddCardToHand(new Cards("infantry"));
-    hand->AddCardToHand(new Cards("artillery"));
-    hand->AddCardToHand(new Cards("artillery"));
-    hand->AddCardToHand(new Cards("cavalry"));
+
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
 
     hand->DisplayHand();
-    hand->Exchange();
-    hand->DisplayHand();
+//    hand->Exchange();
+//    hand->DisplayHand();
 
-    cout << "Cards Driver" << endl;
+    cout << "Cards Driver " << endl;
     return 0;
 }

@@ -60,13 +60,8 @@ Deck::~Deck(){
 
 }
 
-void Deck::SetNumberOfCardsInDeck(int num_cards)
-{
-    num_cards_deck_ = num_cards;
-}
-
 const int Deck::GetNumberOfCardsInDeck() const {
-    return num_cards_deck_;
+    return cards_->size();
 }
 
 void Deck::CreateDeck(int num_cards){
@@ -93,17 +88,24 @@ void Deck::CreateDeck(int num_cards){
 
 }
 
-Cards Deck::Draw()
+Cards* Deck::Draw()
 {
+
     if(cards_->size()<=0){
         cout<<"no more cards in deck"<<endl;
+        return nullptr;
     }
 
     else{
-        Cards *top_card = cards_->at(0);
-        num_cards_deck_--;
-        delete cards_->at(0);
-        return *top_card;
+
+        srand(time (NULL));
+        int random_card = rand() % cards_->size();
+
+        Cards* top_card = cards_->at(random_card);
+
+        cards_->erase(cards_->begin()+ random_card);
+
+        return top_card;
     }
 
 }
@@ -139,8 +141,15 @@ void Hand::AddCardToHand(Cards* card_)
 
 int Hand::Exchange()
 {
+    if(cards_in_hand_->size()<3){
+        cout<<"Not enough cards to exchange"<<endl;
+        return 0;
+    }
+
     int card_1, card_2, card_3;
-    cout<<"Pick 3 cards to exchange"<<endl
+    bool valid_input = false;
+
+    cout<<"Pick 3 valid cards to exchange"<<endl
     <<"Card #1: ";
     cin >> card_1;
     cout <<"Card #2: ";

@@ -44,12 +44,12 @@ public:
     ~Deck();
 
 //    Setters---------------------------------------------
-    void SetNumberOfCardsInDeck(int num_cards);
+
 //    Getters---------------------------------------------
     const int GetNumberOfCardsInDeck() const;
 //    Methods---------------------------------------------
     void CreateDeck(int num_cards);
-    Cards Draw();
+    Cards* Draw();
     void DisplayDeck();
 
 };
@@ -57,9 +57,6 @@ public:
 class Hand{
 private:
     int num_cards_hand_;
-    int infantry_cards_;
-    int cavalry_cards_;
-    int artillery_cards_;
     vector<Cards*>* cards_in_hand_;
 public:
     Hand();
