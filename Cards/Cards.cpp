@@ -141,7 +141,7 @@ void Hand::AddCardToHand(Cards* card_) {
 int Hand::Exchange(int exchanges_done) {
     //condition #1
     if(cards_in_hand_->size()<3) {
-        cout<<"Not enough cards to exchange"<<endl;
+        cout << "Not enough cards to exchange" << endl;
         return 0;
     }
 
@@ -154,14 +154,14 @@ int Hand::Exchange(int exchanges_done) {
 
         //condition #2
         while (!valid_input) {
-            cout << "Pick 3 valid cards to exchange" << endl;
+            cout << "Pick 3 valid cards to exchange" << endl << endl;
 
             card_1 = InputCard();
             card_2 = InputCard();
             card_3 = InputCard();
 
             if (card_1 == card_2 || card_1 == card_3 || card_2 == card_3) {
-                cout << "Invalid inputs. Pick 3 unique cards" << endl;
+                cout << "Invalid inputs. Pick 3 unique cards" << endl << endl;
                 continue;
             }
             else {
@@ -202,12 +202,12 @@ size_t Hand::InputCard() {
         cin.ignore(256, '\n');
         cin >> card_value;
     }
-    cout << "You picked card#" << card_value << endl;
+    cout << "You picked card #" << card_value << endl << endl;
 
     return card_value;
 }
 
-bool Hand::ValidateInput(int card_index) {
+bool Hand::ValidateInput(size_t card_index) {
     return (card_index < 0 || card_index > cards_in_hand_->size()-1);
 }
 
@@ -259,8 +259,7 @@ size_t Hand::Min(size_t index_1, size_t index_2, size_t index_3) {
 
 void Hand::DisplayHand() {
     for(size_t i = 0; i < cards_in_hand_->size(); ++i){
-        cout << "card #" << i << " ";
+        cout << "card #" << i << ": ";
         cards_in_hand_->at(i)->DisplayCard();
-
     }
 }

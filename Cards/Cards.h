@@ -78,7 +78,7 @@ public:
     // Methods---------------------------------------------
     int Exchange(int exchanges_done);
     size_t InputCard();
-    bool ValidateInput(int card_index);
+    bool ValidateInput(size_t card_index);
     void AddCardToHand(Cards* card_);
     void DisplayHand();
 
