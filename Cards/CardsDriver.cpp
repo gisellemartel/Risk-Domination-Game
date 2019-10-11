@@ -35,7 +35,7 @@ int main()
     cout << "\nContents of Hand: \n";
     hand->DisplayHand();
 
-    cout << "\n\nAttempting to exchange card 0: " << hand->Exchange(0) << "\nHere is the result:\n\n";
+    cout << "\n\nAttempting to exchange card 0: " << hand->Exchange(0) << "\n\nHere is the resulting hand:\n\n";
     hand->DisplayHand();
 
     return 0;

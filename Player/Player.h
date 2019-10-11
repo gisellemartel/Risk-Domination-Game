@@ -22,7 +22,7 @@ class Cards;
 
 class Player {
 private:
-    string player_name_;
+    string* player_name_;
     vector<Country*>* countries_;
     vector<Cards*>* risk_cards_;
     Dice* dice_roll_;
@@ -30,18 +30,18 @@ private:
 
 public:
 
-    Player(string player_name);
-    Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
+    explicit Player(string* player_name);
+    Player(string* player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
 
-    Player& operator=(const Player &player);
+    Player& operator=(const Player& player);
 
     void SetPlayersTurn(bool is_turn);
-    void SetPlayerName(string player_name);
+    void SetPlayerName(string* player_name);
 
     bool isCurrentlyPlayersTurn() const;
-    string GetPlayerName() const;
+    string* GetPlayerName() const;
     Dice* GetPlayerDice() const;
     vector<Country*>* GetPlayersCountries() const;
     vector<Cards*>* GetPlayersCards() const;
@@ -52,6 +52,5 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
-
 };
 #endif //PLAYER_H

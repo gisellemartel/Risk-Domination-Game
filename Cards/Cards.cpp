@@ -140,7 +140,7 @@ void Hand::AddCardToHand(Cards* card_) {
 // 3-(Cards are 3 same type or 3 different type)
 int Hand::Exchange(int exchanges_done) {
     //condition #1
-    if(cards_in_hand_->size()<3) {
+    if(cards_in_hand_->size() < 3) {
         cout << "Not enough cards to exchange" << endl;
         return 0;
     }
@@ -181,7 +181,7 @@ int Hand::Exchange(int exchanges_done) {
         else {
             cout << "Cards are invalid for exchange. Input y to retry: ";
             cin >> user_response;
-            if(user_response !="y") {
+            if(user_response != "y") {
                 return 0;
             }
             else {

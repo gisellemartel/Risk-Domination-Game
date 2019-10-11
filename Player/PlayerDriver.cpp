@@ -20,15 +20,15 @@ int main()
     cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
-    Player* new_player = new Player("New player");
+    Player* new_player = new Player(new string("New player"));
 
     //Player has Countries
-    new_player->AddCountryToCollection(new Country(1, "Canada", 1));
-    new_player->AddCountryToCollection(new Country(2, "US", 1));
-    new_player->AddCountryToCollection(new Country(3, "Mexico", 1));
+    new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
+    new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
+    new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
     cout << "\nPlayer owns collection of following countries: " << endl;
-    for(int i = 0; i < new_player->GetPlayersCountries()->size(); ++i) {
-        cout << (*new_player->GetPlayersCountries())[i]->GetCountryName() << endl;
+    for(Country* country : *new_player->GetPlayersCountries()) {
+        cout << country->GetCountryName() << endl;
     }
 
     //Player has Cards
@@ -37,13 +37,13 @@ int main()
     new_player->AddCardToCollection(new Cards("artillery"));
     cout << "\nPlayer owns collection of following cards: " << endl;
 
-    for(int i = 0; i < new_player->GetPlayersCards()->size(); ++i) {
+    for(size_t i = 0; i < new_player->GetPlayersCards()->size(); ++i) {
         cout << "card " << (i + 1) << ": ";
         (*new_player->GetPlayersCards())[i]->DisplayCard();
     }
 
     //Player has Dice Rolling mechanism
-    cout << "\nPlayer owns dice rollign mechanism and can roll 2 dice: " << endl;
+    cout << "\nPlayer owns dice rolling mechanism and can roll 2 dice: " << endl;
     vector<int> dice_rolls = new_player->GetPlayerDice()->Roll(2);
     cout << "Dice rolled:\n";
     for (int & dice_roll : dice_rolls) {

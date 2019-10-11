@@ -11,7 +11,7 @@ using namespace std;
 
 #include "Player.h"
 
-Player::Player(string player_name) {
+Player::Player(string* player_name) {
     player_name_ = player_name;
     is_player_turn_ = false;
     countries_ = new vector<Country*>;
@@ -19,23 +19,23 @@ Player::Player(string player_name) {
     dice_roll_ = new Dice();
 }
 
-Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
+Player::Player(string* player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
     player_name_ = player_name;
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
     risk_cards_ = new vector<Cards*>;
     dice_roll_ = new Dice();
-};
+}
 
 Player::Player(const Player &player) {
     player_name_ = player.player_name_;
     is_player_turn_ = player.is_player_turn_;
-    for(int i = 0; i < player.risk_cards_->size(); ++i) {
+    for(size_t i = 0; i < player.risk_cards_->size(); ++i) {
         risk_cards_[i] = player.risk_cards_[i];
     }
 
-    for(int i = 0; i < player.countries_->size(); ++i) {
+    for(size_t i = 0; i < player.countries_->size(); ++i) {
         countries_[i] = player.countries_[i];
     }
     countries_ = player.countries_;
@@ -44,12 +44,12 @@ Player::Player(const Player &player) {
 }
 
 Player::~Player() {
-    for(int i = 0; i < risk_cards_->size(); ++i) {
-        delete (*risk_cards_)[i];
+    for(Cards* risk_card : *risk_cards_) {
+        delete risk_card;
     }
 
-    for(int i = 0; i < countries_->size(); ++i) {
-        delete (*countries_)[i];
+    for(Country* country : *countries_) {
+        delete country;
     }
 
     delete risk_cards_;
@@ -61,11 +61,11 @@ Player& Player::operator=(const Player &player) {
     player_name_ = player.player_name_;
     is_player_turn_ = player.is_player_turn_;
 
-    for(int i = 0; i < player.risk_cards_->size(); ++i) {
+    for(size_t i = 0; i < player.risk_cards_->size(); ++i) {
        risk_cards_[i] = player.risk_cards_[i];
     }
 
-    for(int i = 0; i < player.countries_->size(); ++i) {
+    for(size_t i = 0; i < player.countries_->size(); ++i) {
         countries_[i] = player.countries_[i];
     }
 
@@ -79,7 +79,7 @@ void Player::SetPlayersTurn(bool is_turn) {
     is_player_turn_ = is_turn;
 }
 
-void Player::SetPlayerName(string player_name) {
+void Player::SetPlayerName(string* player_name) {
     player_name_ = player_name;
 }
 
@@ -91,7 +91,7 @@ Dice* Player::GetPlayerDice() const {
     return dice_roll_;
 }
 
-string Player::GetPlayerName() const {
+string* Player::GetPlayerName() const {
     return player_name_;
 }
 
@@ -116,8 +116,7 @@ void Player::Reinforce() {
 
     //the number of armies the player is assigned at their current turn is the number of countries
     //they own divided by 3 rounded down
-    int num_of_armies_to_assign = floor((float)(countries_->size() / 3));
-    return;
+    int num_of_armies_to_assign = (int)floor((float)(countries_->size() / 3));
 
     //TODO implementation of the rules below
     /**
@@ -139,7 +138,6 @@ void Player::Reinforce() {
 
 void Player::Attack() {
     cout << "In attack method" << endl;
-    return;
 
     //TODO implementation of rules below
     /**
@@ -174,7 +172,6 @@ void Player::Attack() {
 
 void Player::Fortify() {
     cout << "In fortify method" << endl;
-    return;
     //TODO implementation of rules below
     /**
      	The player may move any number of armies from one of his owed countries to the other,
