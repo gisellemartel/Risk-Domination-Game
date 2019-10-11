@@ -24,7 +24,7 @@ public:
 
     Dice& operator=(const Dice& dice);
 
-    int GetRollNumStats(int roll_num);
+    int GetRollNumStats(size_t roll_num);
     int GetTotalRolls();
 
     vector<int> Roll(int num_of_dice);

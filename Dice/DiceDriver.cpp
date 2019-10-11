@@ -9,21 +9,37 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <stdexcept>
 
 using namespace std;
 
 int main() {
     Dice *player = new Dice();
-    int num_of_dice;
-    int reroll;
+
+    int num_of_dice = 0;
+    string input;
+    bool reroll = true;
+
+    cout << "\nTesting Dice Driver...\n\n";
     do {
         while (true) {
-            cout << "How many dice do you wish to roll?(max 3):\n";
-            cin >> num_of_dice;
-            if (num_of_dice > 3 || num_of_dice < 1) {//Determining attacking and defending players(max number of dice) in another class
-                cout << "Invalid number of dice selected, roll again.\n\n";
+
+            cout << "How many dice do you wish to roll?(max 3): ";
+
+            try {
+                cin >> input;
+                num_of_dice = std::stoi(input);
+            } catch (invalid_argument& e) {
+                cout << "\nInvalid number of dice selected, roll again.\n\n";
+                continue;
+            }
+
+            //Determining attacking and defending players(max number of dice) in another class
+            if (num_of_dice > 3 || num_of_dice < 1) {
+                cout << "\nInvalid number of dice selected, roll again.\n\n";
+                continue;
             } else {
-                cout << "Rolling " << num_of_dice << " dice.\n" << endl;
+                cout << "\n\nRolling " << num_of_dice << " dice.\n\n";
                 break;
             }
         }
@@ -31,22 +47,35 @@ int main() {
         vector<int> dice_rolls = player->Roll(num_of_dice);
 
         cout << "Dice rolled:\n";
-        for (int & dice_roll : dice_rolls)
-            cout << ' ' << dice_roll << endl;//print dice rolls
 
-        for (int i = 1; i <= 6; i++) {
+        for (int & dice_roll : dice_rolls) {
+            //print dice rolls
+            cout << ' ' << dice_roll << endl;
+        }
+
+        cout << endl;
+
+        for (size_t i = 1; i <= 6; i++) {
             double percentage = (static_cast<double>(player->GetRollNumStats(i)) / player->GetTotalRolls()) * 100;
             cout << "Frequency of dice value " << i << ": " << player->GetRollNumStats(i) << "(" << fixed << setprecision(2)
                  << percentage << "%)" << endl;//sets number of decimals to 2
         }
-        cout << "Total Rolls: " << player->GetTotalRolls() << endl;
+        cout << "\nTotal Rolls: " << player->GetTotalRolls() << endl;
 
-        cout << "\nDo you wish to reroll?(Enter 0 if not)\n";
-        cin >> reroll;
+        input = "";
+        cout << "\nDo you wish to reroll?(Enter y, any other char otherwise): ";
+        cin >> input;
+
+        if(input.find('y') == -1) {
+            reroll = false;
+        }
+
         cout << endl;
+
     } while(reroll);
 
     delete player;
+
     return 0;
 }
 

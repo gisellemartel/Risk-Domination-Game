@@ -18,7 +18,7 @@ Dice::Dice() {
 }
 
 Dice::Dice(const Dice &dice) {
-    for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
+    for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
         roll_num_stats_[i] = dice.roll_num_stats_[i];
     }
 
@@ -33,7 +33,7 @@ Dice::~Dice() {
 
 
 Dice& Dice::operator=(const Dice &dice) {
-    for (int i = 0; i < dice.roll_num_stats_->size(); ++i) {
+    for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
         roll_num_stats_[i] = dice.roll_num_stats_[i];
     }
 
@@ -42,8 +42,8 @@ Dice& Dice::operator=(const Dice &dice) {
     return *this;
 }
 
-int Dice::GetRollNumStats(int roll_num) {
-    return roll_num_stats_ -> at(roll_num-1);
+int Dice::GetRollNumStats(size_t roll_num) {
+    return roll_num_stats_ -> at(roll_num - 1);
 }
 
 int Dice::GetTotalRolls() {
@@ -56,10 +56,10 @@ vector<int> Dice::Roll(int num_of_dice) {
     mt19937 randomGenerator(rd());
     uniform_int_distribution<int> dist(1, 6); //random number of equal distribution from 1 to 6
 
-    for (int i = 0; i < num_of_dice; i++) {
+    for (size_t i = 0; i < num_of_dice; i++) {
         int dice_roll = dist(randomGenerator);
         dice_rolls.push_back(dice_roll);
-        roll_num_stats_->at(dice_roll-1)++;
+        roll_num_stats_->at((size_t)dice_roll - 1)++;
         (*total_rolls_)++;
     }
     sort(dice_rolls.begin(), dice_rolls.end(), greater<>());
