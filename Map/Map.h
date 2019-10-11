@@ -22,16 +22,15 @@ class Player;
 class Continent{
 
 private:
-    string continent_name_;
+    string* continent_name_;
+    string* color_;
     int continent_ID_;
     int army_value_;
-    string color_;
     vector<string*>* countries_in_continent_;
 
 public:
     //Constructors
-    Continent(string in_continent_name, int army_value, int continent_id);
-    Continent(string in_continent_name, int army_value, string color);
+    Continent(string* in_continent_name, int army_value, int continent_id);
     Continent(const Continent &continent);
     ~Continent();
 
@@ -39,16 +38,16 @@ public:
     Continent& operator=(const Continent &continent);
 
     //Setters --------------------------------------------------
-    void SetContinentName(string in_continent_name);
+    void SetContinentName(string* in_continent_name);
     void SetContinentID(int in_continent_ID);
 
     //Getters --------------------------------------------------
-    const string GetContinentName() const;
-    const int GetContinentArmyValue() const;
-    const int GetContinentID() const;
+    string* GetContinentName() const;
+    int GetContinentArmyValue() const;
+    int GetContinentID() const;
 
     //Methods -------------------------------------------------------
-    void AddCountryToContinent(string* country);
+    void AddCountryToContinent(const string& country);
     void DisplayInfo();
 };
 
@@ -57,7 +56,7 @@ public:
 class Country{
 
 private:
-    string country_name_;
+    string* country_name_;
     int continent_ID_;
     int country_ID_;
     int number_of_armies_;
@@ -69,34 +68,33 @@ private:
 
 public:
     //Constructors
-    Country(int country_ID, string country_name, int continent_ID);
-    Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y);
+    Country(int country_ID, string* country_name, int continent_ID);
+    Country(int country_ID, string* country_name, int continent_ID, int coordinate_x, int coordinate_y);
     Country(const Country &country);
     ~Country();
 
     //operator overloader
     Country& operator=(const Country &country);
+    bool operator==(const Country &country);
 
     //Setters --------------------------------------------------
-    void SetCountryName(string in_country_name);
+    void SetCountryName(string* in_country_name);
     void SetNumberOfArmies(int in_number_of_armies);
     void SetCountryOwner(Player* player);
 
     //Getters --------------------------------------------------
-    const string GetCountryName() const;
-    const int GetCountryID() const;
+    string* GetCountryName() const;
+    int GetCountryID() const;
     int GetNumberOfArmies() const;
     int GetContinentID() const;
     Player* GetCountryOwner() const;
 
     //Methods -------------------------------------------------------
-    void AddNeighborCountry(const Country* neighbor);
+    void AddNeighborCountry(Country* neighbor);
     void DisplayInfo();
     bool IsNeighbor(const Country* neighbor);
     bool BelongsToContinent(const Continent* continent);
 };
-
-
 
 
 //Map class ------------------------------------------------------------------------------------
@@ -104,7 +102,7 @@ public:
 class Map {
 
 private:
-    string map_name_;
+    string* map_name_;
     int num_countries_;
     int num_continents_;
     vector<Continent*>* continents_;
@@ -115,7 +113,7 @@ private:
 
 public:
     //Constructors
-    Map(string name);
+    explicit Map(const string& name);
     Map(const Map &map);
     ~Map();
 
@@ -123,9 +121,9 @@ public:
     Map& operator=(const Map &map);
 
     //Getters --------------------------------------------------
-    const int GetNumCountries() const;
-    const int GetNumContinents() const;
-    const string GetMapName() const;
+    int GetNumCountries() const;
+    int GetNumContinents() const;
+    string* GetMapName() const;
     Country* GetCountryById(int id) const;
 
     //Setters --------------------------------------------------
@@ -133,16 +131,17 @@ public:
 
     //Methods -------------------------------------------------------
     void CreateAdjacencyMatrix();
-    void DisplayContinents();
-    void DisplayCountries();
-    void DisplayAdjacencyMatrix();
-    void AddCountryToMap(int country_num, string continent_name, int continent_index, int x_coordinate, int y_coordinate);
-    void AddContinentToMap(string continent_name, int army_value, int id);
+    void DisplayContinents() const;
+    void DisplayCountries() const;
+    void DisplayAdjacencyMatrix() const;
+    void AddCountryToMap(int country_num, const string& continent_name, int continent_index, int x_coordinate, int y_coordinate);
+    void AddContinentToMap(const string& continent_name, int army_value, int id);
     void AddCountryEdges(vector<int> *edges);
 
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
-    bool IsCountryDuplicate(Country* country_a, Country* country_b);
+
+    static bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
+    static bool IsCountryDuplicate(Country* country_a, Country* country_b);
 };
 #endif //MAP_H
 

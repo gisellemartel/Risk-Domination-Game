@@ -16,27 +16,30 @@ using namespace std;
 
 class Country;
 
+// CARDS class ---------------------------------------------------------------------------------------------------------
 class Cards{
 
 private:
     string type_;
 
 public:
-
-    explicit Cards(string type);
-    Cards(const Cards &cards);
+    explicit Cards(const string& type);
+    Cards(const Cards& cards);
     ~Cards();
 
     //operator overloader
-    Cards& operator=(const Cards &cards);
+    Cards& operator=(const Cards& cards);
 
-    void SetCardType(string card_type);
+    void SetCardType(string& card_type);
 
-    const string GetCardType() const;
+    string GetCardType() const;
 
     void DisplayCard();
 };
+// END OF CARDS class --------------------------------------------------------------------------------------------------
 
+
+// DECK class ----------------------------------------------------------------------------------------------------------
 class Deck{
 
 private:
@@ -46,41 +49,47 @@ private:
 
 public:
     Deck();
-    Deck(const Deck &deck);
+    Deck(const Deck& deck);
     ~Deck();
     
     int GetNumExchanges() const;
-    int GetNumberOfCardsInDeck() const;
+    size_t GetNumberOfCardsInDeck() const;
 
     void CreateDeck(int num_cards);
     void DisplayDeck();
 
     Cards* Draw();
 };
+// END DECK class ------------------------------------------------------------------------------------------------------
 
+
+// HAND class ----------------------------------------------------------------------------------------------------------
 class Hand{
+
 private:
     vector<Cards*>* cards_in_hand_;
 public:
     Hand();
-    Hand(const Hand &hand);
+    Hand(const Hand& hand);
     ~Hand();
 
-    const int GetNumberOfCardsInHand() const;
-//    Methods---------------------------------------------
-    void AddCardToHand(Cards* card_);
+    size_t GetNumberOfCardsInHand() const;
+
+    // Methods---------------------------------------------
     int Exchange(int exchanges_done);
-    int InputCard();
+    size_t InputCard();
     bool ValidateInput(int card_index);
-    int AcquireArmy(int exchanges_done);
-    int Max(int index_1, int index_2, int index_3);
-    int Min(int index_1, int index_2, int index_3);
-    int Mid(int index_1, int index_2, int index_3);
-
-    bool AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3);
-    bool AreThreeDifferent(Cards* card_1, Cards* card_2, Cards* card_3);
-
+    void AddCardToHand(Cards* card_);
     void DisplayHand();
+
+    static int AcquireArmy(int exchanges_done);
+    static size_t Max(size_t index_1, size_t index_2, size_t index_3);
+    static size_t Mid(size_t index_1, size_t index_2, size_t index_3);
+    static size_t Min(size_t index_1, size_t index_2, size_t index_3);
+    static bool AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3);
+    static bool AreThreeDifferent(Cards* card_1, Cards* card_2, Cards* card_3);
 };
+// END HAND class ------------------------------------------------------------------------------------------------------
+
 
 #endif //CARDS_H

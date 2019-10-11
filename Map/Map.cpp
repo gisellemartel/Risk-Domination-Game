@@ -10,27 +10,31 @@ using namespace std;
 
 // START OF CONTINENT CLASS FUNCTIONS  -----------------------------------------------------------------
 
-Continent::Continent(string continent_name, int army_value, int continent_id){
+Continent::Continent(string* continent_name, int army_value, int continent_id){
     continent_name_ = continent_name;
     army_value_ = army_value;
     continent_ID_ = continent_id;
+    color_= new string("");
+    countries_in_continent_ = new vector<string*>;
 }
 
-Continent::Continent(string continent_name, int army_value, string color) {
-    continent_name_ = continent_name;
-    army_value_ = army_value;
-    color_ = color;
-}
 
 Continent::Continent(const Continent &continent) {
     continent_name_ = continent.continent_name_;
     continent_ID_ = continent.continent_ID_;
     army_value_ = continent.army_value_;
     color_ = continent.color_;
+    for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
+       countries_in_continent_[i] = continent.countries_in_continent_[i];
+    }
     countries_in_continent_ = continent.countries_in_continent_;
 }
 
 Continent::~Continent() {
+    for(size_t i = 0; i < countries_in_continent_->size(); ++i) {
+        delete (&countries_in_continent_[i]);
+    }
+
     delete countries_in_continent_;
 }
 
@@ -39,40 +43,42 @@ Continent& Continent::operator=(const Continent &continent) {
     continent_ID_ = continent.continent_ID_;
     army_value_ = continent.army_value_;
     color_ = continent.color_;
+    for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
+        countries_in_continent_[i] = continent.countries_in_continent_[i];
+    }
     countries_in_continent_ = continent.countries_in_continent_;
     return *this;
 }
 
-void Continent::SetContinentName(string in_continent_name) {
+void Continent::SetContinentName(string* in_continent_name) {
     continent_name_ = in_continent_name;
 }
 
 void Continent::SetContinentID(int in_continent_ID){
     continent_ID_ = in_continent_ID;
-};
+}
 
-const string Continent::GetContinentName() const {
+string* Continent::GetContinentName() const {
     return continent_name_;
 }
 
-const int Continent::GetContinentArmyValue() const{
+int Continent::GetContinentArmyValue() const{
     return army_value_;
 }
 
-const int Continent::GetContinentID() const{
+int Continent::GetContinentID() const{
     return continent_ID_;
 }
 
-void Continent::AddCountryToContinent(string* country){
+void Continent::AddCountryToContinent(const string& country){
     //need to add condition to check if country is already in any other continent
-    for(int i = 0; i<countries_in_continent_->size(); i++)
-    {
-        if(countries_in_continent_->at(i) == country){
-            cout<<"Country already in continent";
+    for(string* country_in_continent  : *countries_in_continent_) {
+        if(*country_in_continent == country) {
+            cout << "Country already in continent";
             return;
         }
     }
-    countries_in_continent_->push_back(country);
+    countries_in_continent_->push_back(new string(country));
 }
 
 void Continent::DisplayInfo(){
@@ -85,21 +91,29 @@ void Continent::DisplayInfo(){
 //START OF COUNTRY CLASS FUNCTIONS ------------------------------------------------------------------------
 
 //Constructors
-Country::Country(int country_ID, string country_name, int continent_ID) {
+Country::Country(int country_ID, string* country_name, int continent_ID) {
 
     country_ID_ = country_ID;
     country_name_ = country_name;
     continent_ID_ = continent_ID;
     number_of_armies_ = 0;
-    country_owner_ = new Player("new player");
+    coordinate_x_ = 0;
+    coordinate_y_ = 0;
+    country_owner_ = nullptr;
+    continent_ = nullptr;
+    neighbors_ = new vector<Country*>;
 }
 
-Country::Country(int country_ID, string country_name, int continent_ID, int coordinate_x, int coordinate_y) {
+Country::Country(int country_ID, string* country_name, int continent_ID, int coordinate_x, int coordinate_y) {
     country_ID_ = country_ID;
     country_name_ = country_name;
     continent_ID_ = continent_ID;
     coordinate_x_ = coordinate_x;
     coordinate_y_ = coordinate_y;
+    number_of_armies_ = 0;
+    country_owner_ = nullptr;
+    continent_ = nullptr;
+    neighbors_ = new vector<Country*>;
 }
 
 Country::Country(const Country &country) {
@@ -111,6 +125,9 @@ Country::Country(const Country &country) {
     coordinate_y_ = country.coordinate_y_;
     country_owner_ = country.country_owner_;
     continent_ = country.continent_;
+    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
+       neighbors_[i] = country.neighbors_[i];
+    }
     neighbors_ = country.neighbors_;
 }
 
@@ -128,13 +145,34 @@ Country& Country::operator=(const Country &country) {
     coordinate_y_ = country.coordinate_y_;
     country_owner_ = country.country_owner_;
     continent_ = country.continent_;
+    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
+        neighbors_[i] = country.neighbors_[i];
+    }
     neighbors_ = country.neighbors_;
     return *this;
 }
 
+bool Country::operator==(const Country &country) {
+    bool is_equal = true;
+    is_equal &= country_name_ == country.country_name_;
+    is_equal &= continent_ID_ == country.continent_ID_;
+    is_equal &= country_ID_ == country.country_ID_;
+    is_equal &= number_of_armies_ == country.number_of_armies_;
+    is_equal &= coordinate_x_ == country.coordinate_x_;
+    is_equal &= coordinate_y_ == country.coordinate_y_;
+    is_equal &= country_owner_ == country.country_owner_;
+    is_equal &= continent_ == country.continent_;
+
+    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
+        is_equal &= neighbors_[i] == country.neighbors_[i];
+    }
+
+    return is_equal;
+}
+
 //Setters --------------------------------------------------
 
-void Country::SetCountryName(string in_country_name) {
+void Country::SetCountryName(string* in_country_name) {
     country_name_ = in_country_name;
 }
 
@@ -148,11 +186,11 @@ void Country::SetCountryOwner(Player* player) {
 
 //Getters --------------------------------------------------
 
-const string Country::GetCountryName() const {
+string* Country::GetCountryName() const {
     return country_name_;
 }
 
-const int Country::GetCountryID() const {
+int Country::GetCountryID() const {
     return country_ID_;
 }
 
@@ -172,15 +210,24 @@ Player* Country::GetCountryOwner() const {
 
 //TODO implementation
 bool Country::BelongsToContinent(const Continent* continent) {
-    return false;
+
+    return GetContinentID() == continent->GetContinentID();
 }
 
 bool Country::IsNeighbor(const Country* neighbor) {
+    //return neighbors_.contains(neighbor->GetCountryName());
+    for(Country* country : *neighbors_) {
+        if (country == neighbor) {
+            return true;
+        }
+    }
+
     return false;
 }
 
-void Country::AddNeighborCountry(const Country* neighbor) {
-    //neighbors->push_front(neighbor);
+void Country::AddNeighborCountry(Country* neighbor) {
+    //TODO add condition which checks if neighbour does not already exist
+    neighbors_->push_back(neighbor);
 }
 
 void Country::DisplayInfo(){
@@ -194,8 +241,8 @@ void Country::DisplayInfo(){
 
 //START OF MAP CLASS FUNCTIONS ---------------------------------------------------------------------------------
 
-Map::Map(string name) {
-    map_name_ = name;
+Map::Map(const string& name) {
+    map_name_ = new string(name);
     continents_ = new vector<Continent*>;
     countries_ = new vector<Country*>;
     num_countries_ = 0;
@@ -209,18 +256,25 @@ Map::Map(const Map &map) {
     num_continents_ = map.num_continents_;
     continents_ = map.continents_;
     countries_ = map.countries_;
+
     adjacency_matrix_ = map.adjacency_matrix_;
+    for(size_t i = 0; i < map.num_countries_; ++i) {
+        adjacency_matrix_[i] = map.adjacency_matrix_[i];
+        for(size_t j = 0; j < map.num_countries_; ++j) {
+            adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
+        }
+    }
 }
 
 Map::~Map() {
     //delete all the country objects
-    for (int i = 0; i < (*countries_).size(); ++i) {
-        delete (*countries_)[i];
+    for (auto & i : (*countries_)) {
+        delete i;
     }
 
     //delete all the continent objects
-    for (int i = 0; i < (*continents_).size(); ++i) {
-        delete (*continents_)[i];
+    for (auto & i : (*continents_)) {
+        delete i;
     }
 
     //delete rows of adjacency matrix
@@ -241,18 +295,24 @@ Map& Map::operator=(const Map &map)
     continents_ = map.continents_;
     countries_ = map.countries_;
     adjacency_matrix_ = map.adjacency_matrix_;
+    for(size_t i = 0; i < map.num_countries_; ++i) {
+        adjacency_matrix_[i] = map.adjacency_matrix_[i];
+        for(size_t j = 0; j < map.num_countries_; ++j) {
+            adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
+        }
+    }
     return *this;
 }
 
-const int Map::GetNumCountries() const {
+int Map::GetNumCountries() const {
     return num_countries_;
 }
 
-const int Map::GetNumContinents() const {
+int Map::GetNumContinents() const {
     return num_continents_;
 }
 
-const string Map::GetMapName() const {
+string* Map::GetMapName() const {
     return map_name_;
 }
 
@@ -275,11 +335,11 @@ void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_
 
 //Methods--------------------------------------------------------------------------------------------
 
-void Map::AddCountryToMap(int country_num, string continent_name, int continent_index, int x_coordinate, int y_coordinate){
+void Map::AddCountryToMap(int country_num, const string& continent_name, int continent_index, int x_coordinate, int y_coordinate){
 
-    Country* country_to_add = new Country(country_num, continent_name, continent_index, x_coordinate, y_coordinate);
-    for(int i=0; i<countries_->size();i++){
-        if(IsCountryDuplicate(country_to_add, countries_->at(i))){
+    auto* country_to_add = new Country(country_num, new string(continent_name), continent_index, x_coordinate, y_coordinate);
+    for(Country* country : *countries_){
+        if(IsCountryDuplicate(country_to_add, country)){
             cout << "Duplicate country found. Aborting operation" << endl;
             return;
         }
@@ -290,18 +350,16 @@ void Map::AddCountryToMap(int country_num, string continent_name, int continent_
 }
 
 
-void Map::AddContinentToMap(string continent_name, int army_value, int id){
+void Map::AddContinentToMap(const string& continent_name, int army_value, int id){
     if(army_value == 0) {
         cout << "Invalid Continent Army Value" << endl;
         return;
     }
-    Continent* continent_to_add = new Continent(continent_name, army_value, id);
+    Continent* continent_to_add = new Continent(new string(continent_name), army_value, id);
 
     //check for continent duplicate
-    if(continents_->size() > 0) {
-        for(int i = 0; i < continents_->size(); ++i){
-            Continent* continent_to_check = (*continents_)[i];
-
+    if(!continents_->empty()) {
+        for(auto continent_to_check : *continents_){
             if(!continent_to_check) {
                 continue;
             }
@@ -329,64 +387,61 @@ void Map::CreateAdjacencyMatrix() {
     *       ]
     */
 
-    for (int i = 0; i < num_countries_; ++i) {
+    for (size_t i = 0; i < num_countries_; ++i) {
 
         adjacency_matrix_[i] = new bool[num_countries_];
 
         for (int j = 0; j < num_countries_; ++j) {
             //a country is adjacent to itself
-            if (j == i)
-            {
-
-                adjacency_matrix_[i][j] = true;
-
-            }
-            else
-                adjacency_matrix_[i][j] = false;
+            adjacency_matrix_[i][j] = j == i;
         }
     }
 }
 
 
-void Map::DisplayContinents(){
-    for(int i=0; i<continents_->size();i++){
-        continents_->at(i)->DisplayInfo();
+void Map::DisplayContinents() const {
+    for(Continent* continent : *continents_){
+        continent->DisplayInfo();
     }
 }
 
-void Map::DisplayCountries(){
-    for(int i=0; i<countries_->size(); i++){
-        countries_->at(i)->DisplayInfo();
+void Map::DisplayCountries() const {
+    for(Country* country : *countries_){
+        country->DisplayInfo();
     }
 }
 
-void Map::DisplayAdjacencyMatrix() {
+void Map::DisplayAdjacencyMatrix() const {
     cout << "\t\t\tNeighbours " << endl;
     cout << "\t\t\t";
-    for(int i = 0; i < num_countries_; ++i) {
+    for(size_t i = 0; i < num_countries_; ++i) {
         cout << (i+1) << "\t";
     }
     cout << endl;
 
-    for(int i = 0; i < num_countries_; ++i) {
-        //debugging to print matrix
+    for(size_t i = 0; i < num_countries_; ++i) {
         cout << "country " << (i + 1) << ":\t";
-        for(int j = 0; j < num_countries_; ++j) {
+
+        for(size_t j = 0; j < num_countries_; ++j) {
             cout << adjacency_matrix_[i][j] << '\t';
         }
+
         cout << endl;
-        //debug enn
     }
 
     cout << endl;
 }
 
-bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
-    return(continent_a->GetContinentID() == continent_b->GetContinentID() || continent_a->GetContinentName() == continent_b->GetContinentName());
-}
+void Map::AddCountryEdges(vector<int> *edges){
 
-bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
-    return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
+    if(edges->size() <= 1){
+        cout << "no neighbors found for country index " << edges->at(0) <<endl;
+        return;
+    }
+
+    for(size_t i= 1; i< edges->size(); ++i){
+        SetTwoCountriesAsNeighbours(true, edges->at(0)-1, edges->at(i)-1);
+    }
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
@@ -401,15 +456,12 @@ bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
     return false;
 }
 
-void Map::AddCountryEdges(vector<int> *edges){
+//static functions
+bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
+    return(continent_a->GetContinentID() == continent_b->GetContinentID() || continent_a->GetContinentName() == continent_b->GetContinentName());
+}
 
-    if(edges->size() <= 1){
-        cout << "no neighbors found for country index " << edges->at(0) <<endl;
-        return;
-    }
-
-    for(int i= 1; i< edges->size(); i++){
-        SetTwoCountriesAsNeighbours(true, edges->at(0)-1, edges->at(i)-1);
-    }
+bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
+    return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
 }
 //--------------------------------------------------------------------------------------------

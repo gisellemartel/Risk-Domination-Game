@@ -14,7 +14,7 @@ using namespace std;
 
 MapLoader::MapLoader(string file_name) {
     cout << "Creating MapLoader object for file: " << file_name << endl;
-    string map_name = StripString(file_name, "/", ".");
+    string map_name = StripString(new string(file_name), "/", ".");
     file_name_ = file_name;
     parsed_map_ = new Map(map_name);
 }
@@ -28,42 +28,39 @@ MapLoader::~MapLoader() {
     delete parsed_map_;
 }
 
-MapLoader& MapLoader::operator=(const MapLoader &map) {
-    file_name_ = map.file_name_;
-    parsed_map_ = map.parsed_map_;
-    return *this;
-}
+MapLoader& MapLoader::operator=(const MapLoader &map) = default;
 
 Map* MapLoader::GetParsedMap() const {
     return parsed_map_;
 }
 
 //returns a substring in between 2 specified delimiters
-string MapLoader::StripString(string string_to_strip, string left_delim, string right_delim) {
-    if((left_delim.length() == 0 && right_delim.length() == 0) || string_to_strip.length() < 2) {
-        return string_to_strip;
+string MapLoader::StripString(string* string_to_strip, const string& left_delim, const string& right_delim) {
+    if((left_delim.length() == 0 && right_delim.length() == 0) || string_to_strip->length() < 2) {
+        return *string_to_strip;
     }
 
     if(left_delim.length() == 0) {
-        return string_to_strip.substr(0, string_to_strip.find(right_delim));
+        return string_to_strip->substr(0, string_to_strip->find(right_delim));
     }
 
     if(right_delim.length() == 0) {
-        return string_to_strip.substr(string_to_strip.find(left_delim) + 1, string_to_strip.length() - 1);
+        return string_to_strip->substr(string_to_strip->find(left_delim) + 1, string_to_strip->length() - 1);
     }
 
-    if (string_to_strip.length() > 2){
-        string stripped_string = string_to_strip.substr(string_to_strip.find(left_delim));
-        return stripped_string.substr(1, stripped_string.find(right_delim) - 1);
+    if (string_to_strip->length() > 2){
+        *string_to_strip = string_to_strip->substr(string_to_strip->find(left_delim));
+        return string_to_strip->substr(1, string_to_strip->find(right_delim) - 1);
     }
 
     else {
-        return string_to_strip;
+        return *string_to_strip;
     }
 }
 
 void MapLoader::ParseMap() {
     string line;
+    char line_delim = '\n';
     ifstream file_to_load(file_name_);
     if(file_to_load.peek() == ifstream::traits_type::eof()) {
         cout << "File is empty! Please load a another file\n\n";
@@ -73,7 +70,7 @@ void MapLoader::ParseMap() {
     if(file_to_load.is_open()) {
         int border_entry_count = 0;
         //read contents of .map file line by line
-        while (getline (file_to_load,line, '\n'))
+        while (getline (file_to_load, line, line_delim))
         {
             //if line is empty or line is comment, skip it
            if(line.length() == 0 ||  line.at(0) == ';') {
@@ -84,21 +81,21 @@ void MapLoader::ParseMap() {
            if(line.find("[continents]") == 0) {
                //get the next line
                int current_id = 0;
-               while(getline (file_to_load,line, '\n')) {
-                   bool line_is_valid = line.find("[") == -1 && line[0] != '\r';
+               while(getline (file_to_load,line, line_delim)) {
+                   bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
                    //we have reached the end of the continents section
                    if(!line_is_valid) {
                        break;
                    } else if (line[0] == '\n' || line.length() == 0) {
                        continue;
                    } else {
-                       string continent_data = line;
+                       string* continent_data = &line;
                        string delim = " ";
                        //parse the name of the continent
                        string continent_name = StripString(continent_data, "", delim);
-                       continent_data.erase(0, continent_name.length() + delim.length());
+                       continent_data->erase(0, continent_name.length() + delim.length());
 
-                       if(continent_data.length() == 0) {
+                       if(continent_data->length() == 0) {
                            cout << "continent " << continent_name << " is missing an army value. Please load a valid file\n\n";
                            return;
                        }
@@ -131,15 +128,15 @@ void MapLoader::ParseMap() {
                 }
                 int current_index = 0;
                 //get the next line
-                while(getline (file_to_load,line, '\n')) {
-                    bool line_is_valid = line.find("[") == -1 && line[0] != '\r';
+                while(getline (file_to_load,line, line_delim)) {
+                    bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
                     //we have reached the end of the continents section
                     if(!line_is_valid) {
                       break;
                     } else if (line[0] == '\n' || line.length() == 0) {
                         continue;
                     } else {
-                        string country_data = line;
+                        string* country_data = &line;
                         string delim = " ";
                         //parse the name of the continent
                         string country_num_str = StripString(country_data, "", delim);
@@ -159,17 +156,17 @@ void MapLoader::ParseMap() {
                             return;
                         }
 
-                        country_data.erase(0, country_num_str.length() + delim.length());
+                        country_data->erase(0, country_num_str.length() + delim.length());
 
-                        if(country_data.length() == 0) {
+                        if(country_data->length() == 0) {
                             cout << "country " << country_num << " is not associated to any continent. Please load a valid file\n\n";
                             return;
                         }
 
                         string continent_name = StripString(country_data, "", delim);
-                        country_data.erase(0, continent_name.length() + delim.length());
+                        country_data->erase(0, continent_name.length() + delim.length());
 
-                        if(country_data.length() == 0) {
+                        if(country_data->length() == 0) {
                             cout << "country " << country_num << " continent is missing its index value. Please load a valid file\n\n";
                             return;
                         }
@@ -183,9 +180,9 @@ void MapLoader::ParseMap() {
                             cout << "the index given for continent " << continent_name << " for country " << country_num << " is invalid. Please load a valid file.\n\n";
                             return;
                         }
-                        country_data.erase(0, continent_index_str.length() + delim.length());
+                        country_data->erase(0, continent_index_str.length() + delim.length());
 
-                        if(country_data.length() == 0) {
+                        if(country_data->length() == 0) {
                             cout << "country " << country_num << " is missing its X coordinate. Please load a valid file\n\n";
                             return;
                         }
@@ -199,9 +196,9 @@ void MapLoader::ParseMap() {
                             cout << "the X coordinate for country" << country_num << " is invalid. Please load a valid file.\n\n";
                             return;
                         }
-                        country_data.erase(0, x_coordinate_str.length() + delim.length());
+                        country_data->erase(0, x_coordinate_str.length() + delim.length());
 
-                        if(country_data.length() == 0) {
+                        if(country_data->length() == 0) {
                             //throw error
                             cout << "country " << country_num << " is missing its Y coordinate. Please load a valid file\n\n";
                             return;
@@ -216,7 +213,7 @@ void MapLoader::ParseMap() {
                             cout << "the Y coordinate for country" << country_num << " is invalid. Please load a valid file.\n\n";
                             return;
                         }
-                        country_data.erase(0, y_coordinate_str.length() + delim.length());
+                        country_data->erase(0, y_coordinate_str.length() + delim.length());
 
                         //debug string
                         //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
@@ -240,21 +237,21 @@ void MapLoader::ParseMap() {
                 }
                 //get the next line
                 int current_country = 0;
-                while(getline (file_to_load,line, '\n')) {
-                    bool line_is_valid = line.find("[") == -1 && line[0] != '\r';
+                while(getline (file_to_load,line, line_delim)) {
+                    bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
                     //we have reached the end of the border section
                     if(!line_is_valid) {
                         break;
                     } else if (line[0] == '\n' || line.length() == 0) {
                         continue;
                     } else {
-                        string border_data = line;
+                        string* border_data = &line;
                         vector<int> borders;
 
-                        while(border_data.length() > 0 && border_data[0] != '\r') {
+                        while(border_data->length() > 0 && border_data[0] != "\r") {
                             string delim = " ";
                             string border_str = StripString(border_data, "", delim);
-                            border_data.erase(0, border_str.length() + delim.length());
+                            border_data->erase(0, border_str.length() + delim.length());
 
                             int border;
                             try{
@@ -274,7 +271,7 @@ void MapLoader::ParseMap() {
                            // cout << border << " ";
                         }
 
-                        if(borders.size() == 0) {
+                        if(borders.empty()) {
                             cout << "No borders specified for entry in borders section. Please load a valid file\n\n";
                             return;
 
@@ -283,7 +280,7 @@ void MapLoader::ParseMap() {
                             return;
                         } else {
 
-                            for(int i = 1; i < borders.size(); ++i) {
+                            for(size_t i = 1; i < borders.size(); ++i) {
 
                                 if(borders[i] -1 == -1) {
                                     cout << "invalid values given for border. Please load a valid file\n\n";

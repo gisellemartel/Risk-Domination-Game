@@ -25,8 +25,8 @@ private:
     Map* parsed_map_;
 
 public:
-    MapLoader(string file_name);
-    MapLoader(const MapLoader &map);
+    explicit MapLoader(string file_name);
+    MapLoader(const MapLoader& map);
     ~MapLoader();
 
     MapLoader& operator=(const MapLoader& map);
@@ -34,7 +34,8 @@ public:
     Map* GetParsedMap() const;
 
     void ParseMap();
-    string StripString(string string_to_strip, string left_delim, string right_delim);
+
+    static string StripString(string* string_to_strip, const string& left_delim, const string& right_delim);
 };
 
 #endif //MAP_LOADER_H
