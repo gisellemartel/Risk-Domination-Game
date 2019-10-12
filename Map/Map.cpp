@@ -318,6 +318,7 @@ string* Map::GetMapName() const {
 
 Country* Map::GetCountryById(int id) const {
     if(id < 1 || id > countries_->size()) {
+        cout << "Invalid Id given. Countries start from 1" << endl;
         return nullptr;
     }
     return (*countries_)[id - 1];
@@ -430,6 +431,80 @@ void Map::DisplayAdjacencyMatrix() const {
     }
 
     cout << endl;
+}
+
+void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_country) const {
+    size_t index_a = origin_country->GetCountryID() - 1;
+    size_t index_b = destination_country->GetCountryID() - 1;
+
+    if(index_a < 0 || index_a > num_countries_ || index_b < 0 || index_a > num_countries_) {
+        cout << "Invalid country given. Please try again" << endl;
+        return;
+    }
+
+    if(index_a == index_b) {
+        cout << "Origin country and destination country are the same. No need to traverse\n\n";
+        return;
+    }
+
+    cout << "Traversing from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl << endl;
+
+    if (adjacency_matrix_[index_a][index_b]) {
+        cout << *origin_country->GetCountryName() << " and " << *destination_country->GetCountryName() << " are neighbours\n";
+        cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << ". Traversal complete\n";
+        return;
+    }
+
+    if(index_a < index_b) {
+        int current_country = index_a;
+
+        for (size_t i = 0; i < num_countries_; ++i) {
+
+            if (i == current_country) {
+                continue;
+            }
+
+            //if the country at index i is a neighbour to origin country, then traverse to it
+            if (adjacency_matrix_[current_country][i]) {
+                cout << "Leaving " << *(*countries_)[current_country]->GetCountryName()
+                     << " and traversing to neighbour " << *(*countries_)[i]->GetCountryName() << endl;
+
+                if (adjacency_matrix_[current_country][index_b]) {
+                    cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to "
+                         << *destination_country->GetCountryName() << ". Traversal complete\n";
+                    return;
+                }
+                current_country = i;
+            }
+        }
+
+        //if we have reached this point we have failed to find a path
+        cout << "Failed to find a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl;
+    } else if (index_a > index_b) {
+        int current_country = index_a;
+
+        for(size_t i = num_countries_ - 1; i >= 0; --i) {
+
+            if(i == current_country ) {
+                continue;
+            }
+
+            //if the country at index i is a neighbour to origin country, then traverse to it
+            if(adjacency_matrix_[current_country][i]) {
+                cout << "Leaving " << *(*countries_)[current_country]->GetCountryName() << " and traversing to neighbour " << *(*countries_)[i]->GetCountryName() << endl;
+
+                if (adjacency_matrix_[current_country][index_b]) {
+                    cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << ". Traversal complete\n";
+                    return;
+                }
+                current_country = i;
+            }
+
+        }
+
+        //if we have reached this point we have failed to find a path
+        cout << "Failed to find a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl;
+    }
 }
 
 void Map::AddCountryEdges(vector<int> *edges){

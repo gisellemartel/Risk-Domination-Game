@@ -15,6 +15,7 @@ int main()
 {
     cout << "Testing MapLoader Driver" << endl << endl;
     cout << "\nLoading various map files to generate maps...\n**************************************************************************************************\n\n";
+
     //various custom test cases
     MapLoader* testmap1 = new MapLoader("test-map-files/generaltest.map");
     testmap1->ParseMap();
@@ -64,6 +65,12 @@ int main()
 
     MapLoader* testmap16 = new MapLoader("test-map-files/kosova.map");
     testmap16->ParseMap();
+
+    cout << "\n----------------------------------------------------" << endl;
+    cout << "Testing that graph is connected:\n\n";
+    testmap16->GetParsedMap()->DisplayGraphTraversal( testmap16->GetParsedMap()->GetCountryById(30),  testmap16->GetParsedMap()->GetCountryById(11));
+    cout << endl << endl;
+    testmap16->GetParsedMap()->DisplayGraphTraversal( testmap16->GetParsedMap()->GetCountryById(1),  testmap16->GetParsedMap()->GetCountryById(7));
 
     return 0;
 }

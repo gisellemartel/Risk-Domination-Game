@@ -24,10 +24,10 @@ int main()
     cout << "Displaying Continents of Map:\n" << endl;
     test_map->DisplayContinents();
 
-    test_map->AddCountryToMap(1,"Alaska", 1, 0, 0);
-    test_map->AddCountryToMap(2, "Alberta", 1, 0, 0);
+    test_map->AddCountryToMap(1,"Canada", 1, 0, 0);
+    test_map->AddCountryToMap(2, "United States", 1, 0, 0);
     test_map->AddCountryToMap(3, "Brazil", 2, 0, 0);
-    test_map->AddCountryToMap(4, "British Columbia", 1, 0, 0);
+    test_map->AddCountryToMap(4, "Mexico", 1, 0, 0);
     test_map->AddCountryToMap(5, "Portugal", 3, 0, 0);
 
     cout << "----------------------------------------------------" << endl;
@@ -43,7 +43,7 @@ int main()
     test_map->SetTwoCountriesAsNeighbours(false, 2, 4);
     test_map->SetTwoCountriesAsNeighbours(false, 3, 2);
     test_map->SetTwoCountriesAsNeighbours(true, 3, 1);
-    test_map->SetTwoCountriesAsNeighbours(true, 3, 0);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 0);
     test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
 
     cout << "----------------------------------------------------" << endl;
@@ -54,15 +54,19 @@ int main()
     cout << "----------------------------------------------------" << endl;
     cout << "\nDisplaying comparison between country nodes and edges:" << endl;
 
-    cout << "\nAre Alaska (country 1) and Brazil (country 3) neighbours?\nResult: ";
+    cout << "\nAre Canada (country 1) and Brazil (country 3) neighbours?\nResult: ";
     cout << (test_map->AreCountriesNeighbors(test_map->GetCountryById(1), test_map->GetCountryById(3))? "true\n" : "false\n");
 
 
-    cout << "\nAre British Columbia (country 4) and Alberta (country 2) neighbours?\nResult: ";
+    cout << "\nAre Mexico (country 4) and United States (country 2) neighbours?\nResult: ";
     cout << (test_map->AreCountriesNeighbors(test_map->GetCountryById(4), test_map->GetCountryById(2)) ? "true\n" : "false\n");
 
-    cout << "\nAre British Columbia (country 4) and Portugal (country 5) neighbours?\nResult: ";
+    cout << "\nAre Mexico (country 4) and Portugal (country 5) neighbours?\nResult: ";
     cout << (test_map->AreCountriesNeighbors(test_map->GetCountryById(4), test_map->GetCountryById(5)) ? "true\n" : "false\n");
+
+    cout << "\n----------------------------------------------------" << endl;
+    cout << "Testing that graph is connected:\n\n";
+    test_map->DisplayGraphTraversal(test_map->GetCountryById(1), test_map->GetCountryById(4));
 
     delete test_map;
 }
