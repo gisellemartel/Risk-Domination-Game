@@ -126,7 +126,7 @@ void MapLoader::ParseMap() {
                     cout << "Failed to generate map, file was missing continents!\n\n";
                     return;
                 }
-                int current_index = 0;
+                int current_index = 1;
                 //get the next line
                 while(getline (file_to_load,line, line_delim)) {
                     bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
@@ -149,9 +149,8 @@ void MapLoader::ParseMap() {
                             return;
                         }
 
-                        Country* country = parsed_map_->GetCountryById(current_index);
                         //ensure countries are in order
-                        if(country_num !=0 && parsed_map_->GetNumCountries() > 0 && country && country_num < country->GetCountryID()) {
+                        if(country_num != 0 && parsed_map_->GetNumCountries() > 0 && current_index > 0 && country_num < current_index) {
                             cout << "Countries are not in order in the file. Please load a valid file\n\n";
                             return;
                         }

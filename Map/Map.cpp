@@ -83,9 +83,9 @@ void Continent::AddCountryToContinent(const string& country){
 
 void Continent::DisplayInfo(){
     cout
-    <<"Continent ID: "<< Continent::GetContinentID() <<endl
-    <<"Continent Name: "<< Continent::GetContinentName()<<endl
-    <<"Continent Army Value: "<< Continent::GetContinentArmyValue()<<endl<<endl;
+    <<"Continent ID: "<< GetContinentID() <<endl
+    <<"Continent Name: "<< *GetContinentName()<<endl
+    <<"Continent Army Value: "<< GetContinentArmyValue()<<endl<<endl;
 }
 
 //START OF COUNTRY CLASS FUNCTIONS ------------------------------------------------------------------------
@@ -232,10 +232,10 @@ void Country::AddNeighborCountry(Country* neighbor) {
 
 void Country::DisplayInfo(){
     cout
-            <<"Country ID: "<<Country::GetCountryID() << endl
-            <<"Country Name: " <<Country::GetCountryName()<<endl
-            <<"Occupying Army Value: "<<Country::GetNumberOfArmies()<<endl
-            <<"Continent: " <<Country::GetContinentID()<<endl<<endl;
+            << "Country ID: " << GetCountryID() << endl
+            << "Country Name: " << *GetCountryName() << endl
+            << "Occupying Army Value: " << GetNumberOfArmies() << endl
+            << "Continent: " << GetContinentID() << endl << endl;
 }
 // END OF COUNTRY CLASS ----------------------------------------------------------------------------------------
 

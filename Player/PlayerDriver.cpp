@@ -28,7 +28,7 @@ int main()
     new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
     cout << "\nPlayer owns collection of following countries: " << endl;
     for(Country* country : *new_player->GetPlayersCountries()) {
-        cout << country->GetCountryName() << endl;
+        cout << *country->GetCountryName() << endl;
     }
 
     //Player has Cards
