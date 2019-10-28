@@ -72,5 +72,27 @@ int main()
     cout << endl << endl;
     testmap16->GetParsedMap()->DisplayGraphTraversal( testmap16->GetParsedMap()->GetCountryById(1),  testmap16->GetParsedMap()->GetCountryById(7));
 
+
+
+
+    //delete all map loader objects
+    testmap1 = testmap2 = testmap3 = testmap4 = testmap5 = testmap6 = testmap7 = testmap8 = testmap9 = testmap10 = testmap11 = testmap12 =testmap13 =testmap14 = testmap15 = testmap16 = nullptr;
+    delete testmap1;
+    delete testmap2;
+    delete testmap3;
+    delete testmap4;
+    delete testmap5;
+    delete testmap6;
+    delete testmap7;
+    delete testmap8;
+    delete testmap9;
+    delete testmap10;
+    delete testmap11;
+    delete testmap12;
+    delete testmap13;
+    delete testmap14;
+    delete testmap15;
+    delete testmap16;
+
     return 0;
 }
