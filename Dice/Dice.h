@@ -28,5 +28,7 @@ public:
     int GetTotalRolls();
 
     vector<int> Roll(int num_of_dice);
+
+    void PromptPlayerToRollDice();
 };
 #endif
