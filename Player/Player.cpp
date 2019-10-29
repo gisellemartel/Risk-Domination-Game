@@ -15,8 +15,8 @@ Player::Player(string player_name) {
     player_name_ = new string(player_name);
     is_player_turn_ = false;
     countries_ = new vector<Country*>;
-    risk_cards_ = new Hand;
-    dice_roll_ = new Dice;
+    risk_cards_ = nullptr;
+    dice_roll_ = nullptr;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -24,8 +24,8 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
-    risk_cards_ = new Hand;
-    dice_roll_ = new Dice;
+    risk_cards_ = nullptr;
+    dice_roll_ = nullptr;
 }
 
 Player::Player(const Player &player) {
@@ -78,6 +78,10 @@ void Player::SetPlayerDice(Dice *dice) {
     dice_roll_ = dice;
 }
 
+void Player::SetPlayerHand(Hand* hand) {
+    risk_cards_ = hand;
+}
+
 bool Player::isCurrentlyPlayersTurn() const {
     return is_player_turn_;
 }
@@ -103,25 +107,38 @@ void Player::AddCountryToCollection(Country *country) {
 }
 
 void Player::AddCardToCollection(Cards* card) {
+    if(!risk_cards_) {
+        risk_cards_ = new Hand;
+    }
     risk_cards_->AddCardToHand(card);
 }
 
 void Player::DisplayPlayerStats() const {
-    cout << "Player Name: "<< player_name_ << endl;
-    cout << "Countries" << player_name_ << " owns: \n";
+    cout << "\n****************************************\nPlayer Name: "<< *player_name_ << endl;
+    cout << "Countries " << *player_name_ << " owns: \n";
 
-    for(const Country* country : *countries_) {
-        country->DisplayInfo();
+    if(countries_->empty()) {
+        cout << *player_name_ << " does not currently own any countries" << endl;
+    } else {
+        for(const Country* country : *countries_) {
+            country->DisplayInfo();
+        }
+        cout << endl;
     }
 
-    cout << "Cards " << player_name_ << " owns: \n";
-    risk_cards_->DisplayHand();
+    if(risk_cards_->GetNumberOfCardsInHand() > 0) {
+        cout << "Cards " << *player_name_ << " owns: \n";
+        risk_cards_->DisplayHand();
+        cout << endl;
+    } else {
+        cout << *player_name_ << " does not currently have any cards in hand" << endl;
+    }
 
-    cout << "Is it player's turn?\n";
+    cout << "Is it " << *player_name_ << "'s turn? ";
 
     string result = is_player_turn_ ? "true" : "false";
 
-    cout << result;
+    cout << result << "\n****************************************\n";
 }
 
 void Player::Reinforce() {

@@ -9,7 +9,6 @@
 #include "MapLoader.h"
 using namespace std;
 
-
 int main()
 {
     cout << "Testing MapLoader Driver" << endl << endl;
@@ -17,7 +16,11 @@ int main()
 
     //various custom test cases
     MapLoader* testmap1 = new MapLoader("test-map-files/generaltest.map");
-    testmap1->ParseMap();
+    if(testmap1->ParseMap()) {
+        cout << "Success! Generated map for file generaltest.map!" << endl << "\nHere is the resulting graph:\n";
+        testmap1->GetParsedMap()->DisplayAdjacencyMatrix();
+        cout << "**************************************************************************************************\n\n\n";
+    }
 
     MapLoader* testmap2 = new MapLoader("test-map-files/emptyfiletest.map");
     testmap2->ParseMap();

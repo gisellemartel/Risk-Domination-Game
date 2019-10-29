@@ -95,7 +95,7 @@ bool MapLoader::ParseMap() {
                    //we have reached the end of the continents section
                    if(!line_is_valid) {
                        break;
-                   } else if (line[0] == '\n' || line.length() == 0) {
+                   } else if (line[0] == '\n' || line.length() == 0 ||  line.at(0) == ';') {
                        continue;
                    } else {
                        string continent_data = line;
@@ -142,7 +142,7 @@ bool MapLoader::ParseMap() {
                     //we have reached the end of the continents section
                     if(!line_is_valid) {
                       break;
-                    } else if (line[0] == '\n' || line.length() == 0) {
+                    } else if (line[0] == '\n' || line.length() == 0 || line.at(0) == ';') {
                         continue;
                     } else {
                         string country_data = line;
@@ -250,7 +250,7 @@ bool MapLoader::ParseMap() {
                     //we have reached the end of the border section
                     if(!line_is_valid) {
                         break;
-                    } else if (line[0] == '\n' || line.length() == 0) {
+                    } else if (line[0] == '\n' || line.length() == 0 || line.at(0) == ';') {
                         continue;
                     } else {
                         string border_data = line;
@@ -325,10 +325,6 @@ bool MapLoader::ParseMap() {
             cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
             return false;
         }
-
-        cout << "Success! Generated map for file " << file_name_ << "!" << endl << "\nHere is the resulting graph:\n";
-        parsed_map_->DisplayAdjacencyMatrix();
-        cout << "**************************************************************************************************\n\n\n";
         return true;
 
     } else {

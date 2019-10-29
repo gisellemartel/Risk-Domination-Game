@@ -16,7 +16,7 @@ using namespace std;
 GameEngine::GameEngine() {
     game_map_ = nullptr;
     cards_deck_ = nullptr;
-    players_ = nullptr;
+    players_ = new vector<Player*>;
     //2 players by default
     num_of_players_ = 2;
 }
@@ -175,16 +175,12 @@ void GameEngine::CreatePlayers() {
         num_of_players_ = 2;
     }
 
-    vector<Player*> players;
 
     for(size_t i = 0; i < num_of_players_; ++i) {
         string player_name = "Player " + std::to_string(i + 1);
-        Player player = Player(player_name);
 
-        players.push_back(new Player(player_name));
+        players_->push_back(new Player(player_name));
     }
-
-    players_ = &players;
 }
 
 void GameEngine::AssignDiceToPlayers() {
@@ -200,7 +196,7 @@ void GameEngine::AssignDiceToPlayers() {
     }
 
     for(Player* player: *players_) {
-        player->SetPlayerDice(new Dice());
+        player->SetPlayerDice(new Dice);
     }
 
 }
@@ -218,7 +214,7 @@ void GameEngine::AssignHandOfCardsToPlayers() {
     }
 
     for(Player* player: *players_) {
-        player->AddCardToCollection(cards_deck_->Draw());
+        player->SetPlayerHand(new Hand);
     }
 }
 
@@ -231,21 +227,26 @@ void GameEngine::CreateCardsDeck() {
     cards_deck_ = new Deck();
     int num_cards = game_map_->GetParsedMap()->GetNumCountries();
     cards_deck_ ->CreateDeck(num_cards);
-    cards_deck_ ->DisplayDeck();
 }
 
 void GameEngine::DisplayCurrentGame() {
-
-    game_map_->GetParsedMap()->DisplayCountries();
-    game_map_->GetParsedMap()->DisplayCountries();
-    game_map_->GetParsedMap()->DisplayAdjacencyMatrix();
-
-    cards_deck_->DisplayDeck();
-
-    cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats: " << endl;
+    cout << "\nThere are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
     for(const Player* player : *players_) {
         player->DisplayPlayerStats();
+        cout << endl;
     }
 
+    cout << "There are " << game_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
+
+//    cout << "Displaying generated deck of cards:\n";
+//    cards_deck_->DisplayDeck();
+//
+//    cout << endl;
+//
+//    cout << "\nDisplaying Countries of map:" << endl;
+//    game_map_->GetParsedMap()->DisplayCountries();
+//
+//    cout << "\n\nDisplaying Continents of map:" << endl;
+//    game_map_->GetParsedMap()->DisplayContinents();
     cout << endl;
 }

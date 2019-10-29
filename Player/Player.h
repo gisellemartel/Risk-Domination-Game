@@ -41,6 +41,7 @@ public:
     void SetPlayersTurn(bool is_turn);
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
+    void SetPlayerHand(Hand* hand);
 
     bool isCurrentlyPlayersTurn() const;
     string* GetPlayerName() const;

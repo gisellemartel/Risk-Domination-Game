@@ -189,6 +189,7 @@ int Hand::Exchange(int exchanges_done) {
             }
         }
     }
+    return 0;
 }
 
 size_t Hand::InputCard() {

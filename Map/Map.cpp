@@ -434,8 +434,8 @@ void Map::DisplayAdjacencyMatrix() const {
 }
 
 void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_country) const {
-    size_t index_a = origin_country->GetCountryID() - 1;
-    size_t index_b = destination_country->GetCountryID() - 1;
+    int index_a = origin_country->GetCountryID() - 1;
+    int index_b = destination_country->GetCountryID() - 1;
 
     if(index_a < 0 || index_a > num_countries_ || index_b < 0 || index_a > num_countries_) {
         cout << "Invalid country given. Please try again" << endl;
@@ -483,7 +483,7 @@ void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_co
     } else if (index_a > index_b) {
         int current_country = index_a;
 
-        for(size_t i = num_countries_ - 1; i >= 0; --i) {
+        for(int i = num_countries_ - 1; i >= 0; --i) {
 
             if(i == current_country ) {
                 continue;
