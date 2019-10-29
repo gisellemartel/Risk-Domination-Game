@@ -11,16 +11,16 @@ using namespace std;
 
 #include "Player.h"
 
-Player::Player(string* player_name) {
-    player_name_ = player_name;
+Player::Player(string player_name) {
+    player_name_ = new string(player_name);
     is_player_turn_ = false;
     countries_ = new vector<Country*>;
     risk_cards_ = new vector<Cards*>;
     dice_roll_ = new Dice();
 }
 
-Player::Player(string* player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
-    player_name_ = player_name;
+Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
+    player_name_ = new string(player_name);
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
@@ -81,6 +81,10 @@ void Player::SetPlayersTurn(bool is_turn) {
 
 void Player::SetPlayerName(string* player_name) {
     player_name_ = player_name;
+}
+
+void Player::SetPlayerDice(Dice *dice) {
+    dice_roll_ = dice;
 }
 
 bool Player::isCurrentlyPlayersTurn() const {

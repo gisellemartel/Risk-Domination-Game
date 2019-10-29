@@ -30,8 +30,8 @@ private:
 
 public:
 
-    explicit Player(string* player_name);
-    Player(string* player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
+    explicit Player(string player_name);
+    Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
 
@@ -39,6 +39,7 @@ public:
 
     void SetPlayersTurn(bool is_turn);
     void SetPlayerName(string* player_name);
+    void SetPlayerDice(Dice* dice);
 
     bool isCurrentlyPlayersTurn() const;
     string* GetPlayerName() const;

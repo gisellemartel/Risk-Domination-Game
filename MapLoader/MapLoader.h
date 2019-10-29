@@ -32,9 +32,9 @@ public:
 
     Map* GetParsedMap() const;
 
-    void ParseMap();
+    bool ParseMap();
 
-    static string StripString(string* string_to_strip, const string& left_delim, const string& right_delim);
+    static string StripString(string string_to_strip, const string& left_delim, const string& right_delim);
 };
 
 #endif //MAP_LOADER_H

@@ -16,14 +16,13 @@ int main() {
 
     GameEngine* game_engine = new GameEngine;
 
-    game_engine->LoadSelectedMap();
-    game_engine->LoadSelectedMap();
+    if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
+        game_engine->SelectNumOfPlayers();
 
-    game_engine->SelectNumOfPlayers();
+        game_engine->CreatePlayers();
 
-    game_engine->CreatePlayers();
-
-    game_engine->CreateCardsDeck();
+        game_engine->CreateCardsDeck();
+    }
 
     game_engine = nullptr;
     delete game_engine;

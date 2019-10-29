@@ -19,7 +19,7 @@ int main()
     cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
-    Player* new_player = new Player(new string("New player"));
+    Player* new_player = new Player("New player");
 
     //Player has Countries
     new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));

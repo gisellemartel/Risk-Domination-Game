@@ -20,7 +20,7 @@ using namespace std;
 class GameEngine {
 
 private:
-    Map* game_map_;
+    MapLoader* game_map_;
     vector<Cards*>* cards_deck_;
     vector<Player*>* players_;
     int num_of_players_;
@@ -34,7 +34,7 @@ public:
 
     GameEngine& operator=(const GameEngine& game_engine);
 
-    inline Map* GetGameMap() const;
+    inline MapLoader* GetGameMap() const;
 
     inline vector<Cards*>* GetCardsDeck() const;
 
@@ -42,17 +42,17 @@ public:
 
     inline int GetNumPlayers() const;
 
-    void SelectMap() const;
+    bool SelectMap();
+
+    bool LoadSelectedMap();
 
     void SelectNumOfPlayers();
 
-    void LoadSelectedMap();
-
     void CreatePlayers();
 
-    void AssignDiceToPlayer(Player* player);
+    void AssignDiceToPlayers();
 
-    void AssignHandOfCardsToPlayer(Player* player);
+    void AssignHandOfCardsToPlayers();
 
     void CreateCardsDeck();
 };
