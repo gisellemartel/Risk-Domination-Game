@@ -8,6 +8,7 @@
 #define GAME_ENGINE_H
 
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -17,16 +18,39 @@ using namespace std;
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
 
+class StartupPhase {
+
+private:
+    map<Player*, int>* player_order_;
+
+public:
+    StartupPhase();
+
+    StartupPhase(const StartupPhase& startup_phase);
+
+    ~StartupPhase();
+
+    StartupPhase& operator=(const StartupPhase& startup_phase);
+
+    inline map<Player*, int>* GetPlayerOrderMap() const;
+
+    void RandomlyDeterminePlayerOrder(vector<Player*>* players);
+
+    void AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign);
+
+};
+
 class GameEngine {
 
 private:
+    StartupPhase* game_start_;
     MapLoader* game_map_;
     Deck* cards_deck_;
     vector<Player*>* players_;
     int num_of_players_;
 
 public:
-    GameEngine();
+    explicit GameEngine();
 
     GameEngine(const GameEngine& game_engine);
 
@@ -34,13 +58,13 @@ public:
 
     GameEngine& operator=(const GameEngine& game_engine);
 
-    inline MapLoader* GetGameMap() const;
+    MapLoader* GetGameMap() const;
 
-    inline Deck* GetCardsDeck() const;
+    Deck* GetCardsDeck() const;
 
-    inline vector<Player*>* GetPlayers() const;
+    vector<Player*>* GetPlayers() const;
 
-    inline int GetNumPlayers() const;
+    int GetNumPlayers() const;
 
     bool SelectMap();
 

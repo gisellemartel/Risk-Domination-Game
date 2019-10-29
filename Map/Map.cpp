@@ -324,6 +324,10 @@ Country* Map::GetCountryById(int id) const {
     return (*countries_)[id - 1];
 }
 
+vector<Country*>* Map::GetCountries() const {
+    return countries_;
+}
+
 void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index) {
 
     if(country_index >= num_countries_ || border_index >= num_countries_ || country_index < 0 || border_index < 0) {

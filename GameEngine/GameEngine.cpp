@@ -6,13 +6,78 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
+#include <map>
+#include <algorithm>
+#include <iterator>
 #include <filesystem>
-#include <type_traits>
+#include <random>
 
 using namespace std;
 
 #include "GameEngine.h"
 
+// STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
+
+StartupPhase::StartupPhase() {
+    player_order_ = new map<Player*, int>;
+}
+
+StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
+    player_order_ = startup_phase.player_order_;
+
+    for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
+        player_order_->insert(*it);
+    }
+}
+
+StartupPhase::~StartupPhase() {
+    delete player_order_;
+}
+
+StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
+    player_order_ = startup_phase.player_order_;
+
+    for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
+        player_order_->insert(*it);
+    }
+
+    return *this;
+}
+
+map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
+    return player_order_;
+}
+
+void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
+    auto rng = std::default_random_engine{};
+    std::shuffle(std::begin(*players), std::end(*players), rng);
+
+    for (int i = 0; i < players->size(); ++i) {
+        player_order_->insert(std::pair<Player*, int>((*players)[i], i));
+    }
+}
+
+void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign) {
+    if(players->empty() || countries_to_assign->empty()) {
+        return;
+    }
+    int current_turn = 0;
+    int num_countries = countries_to_assign->size();
+    for(Player* player : *players) {
+        if((*player_order_)[player] == current_turn) {
+
+            int num_iterations = num_countries / players->size();
+            num_countries -= num_iterations;
+
+            for(int i = 0; i < num_iterations; ++i) {
+                
+            }
+        }
+    }
+}
+
+// GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 GameEngine::GameEngine() {
     game_map_ = nullptr;
     cards_deck_ = nullptr;
@@ -65,19 +130,19 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     return *this;
 }
 
-inline MapLoader* GameEngine::GetGameMap() const {
+MapLoader* GameEngine::GetGameMap() const {
     return game_map_;
 }
 
-inline Deck* GameEngine::GetCardsDeck() const {
+Deck* GameEngine::GetCardsDeck() const {
     return cards_deck_;
 }
 
-inline vector<Player*>* GameEngine::GetPlayers() const {
+vector<Player*>* GameEngine::GetPlayers() const {
     return players_;
 }
 
-inline int GameEngine::GetNumPlayers() const {
+int GameEngine::GetNumPlayers() const {
     return num_of_players_;
 }
 

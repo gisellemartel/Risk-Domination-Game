@@ -125,6 +125,7 @@ public:
     int GetNumContinents() const;
     string* GetMapName() const;
     Country* GetCountryById(int id) const;
+    vector<Country*>* GetCountries() const;
 
     //Setters --------------------------------------------------
     void SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index);
