@@ -50,31 +50,89 @@ map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
 }
 
 void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
-    auto rng = std::default_random_engine{};
-    std::shuffle(std::begin(*players), std::end(*players), rng);
+    cout << "Assigning random order to determine turn of each player at game start:\n";
+    vector<int> random_order;
+    int random = GenerateRandomNumInRange(0, players->size());
+
+    while(!HasValue(random_order, random) || random_order.size() < players->size()) {
+        random = GenerateRandomNumInRange(0, players->size());
+        if(!HasValue(random_order, random)) {
+            random_order.push_back(random);
+        }
+    }
 
     for (int i = 0; i < players->size(); ++i) {
-        player_order_->insert(std::pair<Player*, int>((*players)[i], i));
+        player_order_->insert(std::pair<Player*, int>((*players)[random_order[i]], i));
     }
+
+
+    //print the players in the generated order
+    for(map<Player*, int>::iterator it = player_order_->begin(); it != player_order_->end(); ++it) {
+        Player* player = dynamic_cast<Player*>(it->first);
+
+        for(int i = 0; i < players->size(); ++i ) {
+            if(player && player == (*players)[i]) {
+                cout << *player->GetPlayerName() << ": " << (it->second + 1) << "\n";
+            }
+        }
+    }
+
+    cout << endl;
 }
+
 
 void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign) {
     if(players->empty() || countries_to_assign->empty()) {
         return;
     }
-    int current_turn = 0;
+
+    cout << "Assigning random countries to each player in round-robin fashion:\n";
+
     int num_countries = countries_to_assign->size();
-    for(Player* player : *players) {
-        if((*player_order_)[player] == current_turn) {
+    int current_turn = 0;
 
-            int num_iterations = num_countries / players->size();
-            num_countries -= num_iterations;
+    //assign countries to each player in round robin fashion
+    while(num_countries > 0) {
 
-            for(int i = 0; i < num_iterations; ++i) {
-                player->AddCountryToCollection((*countries_to_assign)[i]);
+        cout << "Current turn: " << (current_turn + 1) << ". ";
+
+        for (auto &it : *player_order_) {
+            //find the player whose is currently to be assigned countries
+            if (it.second == current_turn) {
+                //calculate the number of countries to assign to current player
+                int num_countries_to_assign = (int) (num_countries / (players->size() - current_turn));
+                num_countries -= num_countries_to_assign;
+
+                //assign countries to the player
+                cout << "Assigning " << num_countries_to_assign << " countries to " << *it.first->GetPlayerName() << endl;
+                for (int i = 0; i < num_countries_to_assign; ++i) {
+                    it.first->AddCountryToCollection((*countries_to_assign)[i]);
+                }
             }
+
+        }
+
+        //get the current players turn
+        current_turn = (int)((current_turn + 1) % players->size());
+    }
+    cout << endl;
+}
+
+//static helper methods --------------------------------------------------------
+int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
+    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
+    std::random_device rd;
+    std::default_random_engine generator( rd() );
+    return distribution(generator);
+}
+
+bool StartupPhase::HasValue(const vector<int>& values, const int value) {
+    for(int i : values) {
+        if(i == value) {
+            return true;
         }
     }
+    return false;
 }
 
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
@@ -148,12 +206,10 @@ int GameEngine::GetNumPlayers() const {
 
 bool GameEngine::SelectMap() {
 
-    string user_response;
+    string path;
 
     do {
-        string path;
-
-        cout << "Please enter the name of the directory you would like to load a map file from: ";
+        cout << "Please enter the name of the directory you would like to load a map file from (enter 'exit' to leave): ";
         cin >> path;
         filesystem::directory_iterator iterator;
         vector<filesystem::path> map_filepaths;
@@ -168,10 +224,11 @@ bool GameEngine::SelectMap() {
             }
 
             if(map_filepaths.empty()) {
-                cout << "No files of .map type found in directory! Would you like to retry? Enter 'y' to continue: ";
-                cin >> user_response;
+                cout << "No files of .map type found in directory! Invalid directory.";
+                cin.clear();
+                cin.ignore(132,'\n');
             } else {
-                cout << "\n\nHere are the entries found in directory " << path << "\"\n\n";
+                cout << "\n\nHere are the entries found in directory \"" << path << "\"\n\n";
 
                 int user_selection = -1;
                 int counter = 1;
@@ -198,11 +255,12 @@ bool GameEngine::SelectMap() {
             }
         }
         catch (filesystem::filesystem_error& error) {
-            cout << "invalid directory. Would you like to try again? enter 'y': ";
-            cin >> user_response;
+            cout << "Invalid directory.";
+            cin.clear();
+            cin.ignore(132,'\n');
         }
         cout << endl << endl;
-    } while (user_response == "y");
+    } while (path != "exit");
 
     return false;
 }
@@ -231,7 +289,7 @@ void GameEngine::SelectNumOfPlayers() {
 void GameEngine::CreatePlayers() {
 
     if(!game_map_) {
-        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n\n";
+        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
 
@@ -240,7 +298,7 @@ void GameEngine::CreatePlayers() {
         num_of_players_ = 2;
     }
 
-
+    cout << "Creating " << num_of_players_ << " players for new game...\n";
     for(size_t i = 0; i < num_of_players_; ++i) {
         string player_name = "Player " + std::to_string(i + 1);
 
@@ -250,16 +308,17 @@ void GameEngine::CreatePlayers() {
 
 void GameEngine::AssignDiceToPlayers() {
     if(!game_map_) {
-        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n\n";
+        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
 
     if(players_->empty()) {
 
-        cout << "No Player created to assign dice to! Please try again\n\n";
+        cout << "No Player created to assign dice to! Please try again\n";
         return;
     }
 
+    cout << "Assigning dice rolling mechanism for each player...\n";
     for(Player* player: *players_) {
         player->SetPlayerDice(new Dice);
     }
@@ -268,16 +327,16 @@ void GameEngine::AssignDiceToPlayers() {
 
 void GameEngine::AssignHandOfCardsToPlayers() {
     if(!game_map_) {
-        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n\n";
+        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
 
     if(players_->empty()) {
-
-        cout << "No Player created to assign hand of cards to! Please try again\n\n";
+        cout << "No Player created to assign hand of cards to! Please try again\n";
         return;
     }
 
+    cout << "Assigning empty hand of cards for each player...\n";
     for(Player* player: *players_) {
         player->SetPlayerHand(new Hand);
     }
@@ -285,17 +344,18 @@ void GameEngine::AssignHandOfCardsToPlayers() {
 
 void GameEngine::CreateCardsDeck() {
     if(!game_map_) {
-        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n\n";
+        cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
 
+    cout << "Creating deck of cards for new game...\n";
     cards_deck_ = new Deck();
     int num_cards = game_map_->GetParsedMap()->GetNumCountries();
     cards_deck_ ->CreateDeck(num_cards);
 }
 
 void GameEngine::DisplayCurrentGame() {
-    cout << "\nThere are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
+    cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
     for(const Player* player : *players_) {
         player->DisplayPlayerStats();
         cout << endl;

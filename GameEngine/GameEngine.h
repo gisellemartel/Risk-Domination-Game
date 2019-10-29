@@ -23,6 +23,10 @@ class StartupPhase {
 private:
     map<Player*, int>* player_order_;
 
+    static int GenerateRandomNumInRange(int lower_bound, int upper_bound);
+
+    static bool HasValue(const vector<int>& values, const int value);
+
 public:
     StartupPhase();
 
@@ -37,7 +41,6 @@ public:
     void RandomlyDeterminePlayerOrder(vector<Player*>* players);
 
     void AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign);
-
 };
 
 class GameEngine {

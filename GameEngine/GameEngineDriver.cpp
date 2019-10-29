@@ -17,6 +17,7 @@ int main() {
     GameEngine* game_engine = new GameEngine;
 
     if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
+        cout << endl;
         game_engine->SelectNumOfPlayers();
 
         game_engine->CreatePlayers();
@@ -24,19 +25,23 @@ int main() {
         game_engine->CreateCardsDeck();
         game_engine->AssignHandOfCardsToPlayers();
         game_engine->AssignDiceToPlayers();
+
+        cout << endl;
+
         game_engine->DisplayCurrentGame();
+
+        StartupPhase* start_game = new StartupPhase;
+        start_game->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
+        start_game->AssignCountriesToAllPlayer(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
+
+        game_engine->DisplayCurrentGame();
+
+        start_game = nullptr;
+        delete start_game;
     }
 
-    StartupPhase* start_game = new StartupPhase;
-    start_game->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
-    start_game->AssignCountriesToAllPlayer(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
-
-    game_engine->DisplayCurrentGame();
-
-    start_game = nullptr;
     game_engine = nullptr;
     delete game_engine;
-    delete start_game;
 
     return 0;
 }

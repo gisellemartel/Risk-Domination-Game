@@ -37,6 +37,7 @@ public:
     ~Player();
 
     Player& operator=(const Player& player);
+    bool operator==(const Player& player);
 
     void SetPlayersTurn(bool is_turn);
     void SetPlayerName(string* player_name);

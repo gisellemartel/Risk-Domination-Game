@@ -66,6 +66,14 @@ Player& Player::operator=(const Player &player) {
     return *this;
 }
 
+bool Player::operator==(const Player& player) {
+    return player_name_ == player.player_name_
+            && is_player_turn_ == player.is_player_turn_
+            && countries_ == player.countries_
+            && risk_cards_ == player.risk_cards_
+            && dice_roll_ == player.dice_roll_;
+}
+
 void Player::SetPlayersTurn(bool is_turn) {
     is_player_turn_ = is_turn;
 }
@@ -117,31 +125,22 @@ void Player::AddCardToCollection(Cards* card) {
 }
 
 void Player::DisplayPlayerStats() const {
-    cout << "\n****************************************\nPlayer Name: "<< *player_name_ << endl;
+    cout << "\n===================================================\n" << *player_name_ << endl;
 
-    if(countries_->empty()) {
-        cout << *player_name_ << " does not currently own any countries" << endl;
-    } else {
-        cout << *player_name_ << " owns " << countries_->size() << " countries";
+    cout << "Number of countries owned: " << countries_->size();
 //        for(const Country* country : *countries_) {
 //            country->DisplayInfo();
 //        }
-        cout << endl;
-    }
+    cout << endl;
 
-    if(risk_cards_->GetNumberOfCardsInHand() > 0) {
-        cout << *player_name_ << " owns " << risk_cards_->GetNumberOfCardsInHand() << " cards";
-        risk_cards_->DisplayHand();
-        cout << endl;
-    } else {
-        cout << *player_name_ << " does not currently have any cards in hand" << endl;
-    }
+    cout << "Number cards in hand: " << risk_cards_->GetNumberOfCardsInHand();
+    risk_cards_->DisplayHand();
+    cout << endl;
 
     cout << "Is it " << *player_name_ << "'s turn? ";
-
     string result = is_player_turn_ ? "true" : "false";
 
-    cout << result << "\n****************************************\n";
+    cout << result << "\n===================================================\n";
 }
 
 void Player::Reinforce() {
