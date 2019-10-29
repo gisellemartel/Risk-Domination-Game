@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <map>
+#include <filesystem>
 
 using namespace std;
 
@@ -51,6 +52,13 @@ private:
     Deck* cards_deck_;
     vector<Player*>* players_;
     int num_of_players_;
+    bool exit_game_;
+
+    //used to store contents of current directory so that user may reattempt file selection if another fails to load
+    vector<filesystem::path>* file_paths_;
+
+    //helper function
+    MapLoader* SelectFile();
 
 public:
     explicit GameEngine();
@@ -68,6 +76,8 @@ public:
     vector<Player*>* GetPlayers() const;
 
     int GetNumPlayers() const;
+
+    bool ExitGameSelected() const;
 
     bool SelectMap();
 

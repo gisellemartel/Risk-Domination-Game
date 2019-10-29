@@ -144,6 +144,8 @@ GameEngine::GameEngine() {
     players_ = new vector<Player*>;
     //2 players by default
     num_of_players_ = 2;
+    exit_game_ = false;
+    file_paths_ = new vector<filesystem::path>;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
@@ -156,7 +158,14 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
         players_[i] = game_engine.players_[i];
     }
 
+    file_paths_ = game_engine.file_paths_;
+    for (size_t i = 0; i < game_engine.file_paths_->size(); ++i) {
+        file_paths_[i] = game_engine.file_paths_[i];
+    }
+
+
     num_of_players_ = game_engine.num_of_players_;
+    exit_game_ = game_engine.exit_game_;
 }
 
 GameEngine::~GameEngine() {
@@ -166,11 +175,17 @@ GameEngine::~GameEngine() {
         delete player;
     }
 
+    for (auto& filepath : *file_paths_) {
+        filepath = nullptr;
+    }
+
     game_map_ = nullptr;
     cards_deck_ = nullptr;
     players_ = nullptr;
+    file_paths_ = nullptr;
 
     delete players_;
+    delete file_paths_;
     delete cards_deck_;
     delete game_map_;
 }
@@ -185,7 +200,14 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
         players_[i] = game_engine.players_[i];
     }
 
+    file_paths_ = game_engine.file_paths_;
+    for (size_t i = 0; i < game_engine.file_paths_->size(); ++i) {
+        file_paths_[i] = game_engine.file_paths_[i];
+    }
+
     num_of_players_ = game_engine.num_of_players_;
+
+    exit_game_ = game_engine.exit_game_;
 
     return *this;
 }
@@ -206,52 +228,42 @@ int GameEngine::GetNumPlayers() const {
     return num_of_players_;
 }
 
+bool GameEngine::ExitGameSelected() const {
+    return exit_game_;
+}
+
 bool GameEngine::SelectMap() {
 
+    exit_game_ = false;
     string path;
 
     do {
         cout << "Please enter the name of the directory you would like to load a map file from (enter 'exit' to leave): ";
         cin >> path;
+
+        if(path == "exit") {
+            exit_game_ = true;
+            break;
+        }
         filesystem::directory_iterator iterator;
-        vector<filesystem::path> map_filepaths;
 
         try {
             iterator = filesystem::directory_iterator(path);
 
             for (const auto& entry : iterator) {
                 if (entry.path().extension() == ".map") {
-                    map_filepaths.push_back(entry.path());
+                    file_paths_->push_back(entry.path());
                 }
             }
 
-            if(map_filepaths.empty()) {
+            if(file_paths_->empty()) {
                 cout << "No files of .map type found in directory! Invalid directory.";
                 cin.clear();
                 cin.ignore(132,'\n');
             } else {
                 cout << "\n\nHere are the entries found in directory \"" << path << "\"\n\n";
-
-                int user_selection = -1;
-                int counter = 1;
-                for(const auto& map_filepath : map_filepaths) {
-                    cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
-                    ++counter;
-                }
-
-                cout << "\nTo select a file, enter its corresponding number here: ";
-
-                while(!(cin >> user_selection) || user_selection < 1 || user_selection > map_filepaths.size()) {
-                    cin.clear();
-                    cin.ignore(132, '\n');
-                    cout << "Error! Please enter a valid file number: ";
-                }
-
-                string file_to_load = map_filepaths[user_selection - 1].string();
-
-                cout << "Now loading map file: " << file_to_load << "..." << endl;
                 //Load the map file
-                game_map_ = new MapLoader(file_to_load);
+                game_map_ = SelectFile();
 
                 return game_map_ != nullptr;
             }
@@ -262,14 +274,48 @@ bool GameEngine::SelectMap() {
             cin.ignore(132,'\n');
         }
         cout << endl << endl;
-    } while (path != "exit");
+    } while (!exit_game_);
 
     return false;
 }
 
+MapLoader* GameEngine::SelectFile() {
+    int user_selection = 0;
+    int counter = 1;
+    for(const auto& map_filepath : *file_paths_) {
+        cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
+        ++counter;
+    }
+
+    cout << "\nTo select a file, enter its corresponding number here: (enter -1 to exit) ";
+
+    while(!(cin >> user_selection) || user_selection < 1 || user_selection > file_paths_->size()) {
+        if(user_selection == -1) {
+            exit_game_ = true;
+            return nullptr;
+        }
+        cin.clear();
+        cin.ignore(132, '\n');
+        cout << "Error! Please enter a valid file number: ";
+    }
+
+    string file_to_load = (*file_paths_)[user_selection - 1].string();
+
+    cout << "Now loading map file: " << file_to_load << "..." << endl;
+    //Load the map file
+    return new MapLoader(file_to_load);
+}
+
 bool GameEngine::LoadSelectedMap() {
     if(game_map_) {
-        return game_map_->ParseMap();
+        while(!game_map_->ParseMap() && !exit_game_) {
+            game_map_ = SelectFile();
+
+            if(!game_map_) {
+                return false;
+            }
+        }
+        return true;
     } else {
         return false;
     }
