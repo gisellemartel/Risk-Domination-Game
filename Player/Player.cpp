@@ -103,6 +103,9 @@ Hand* Player::GetPlayersCards() const {
 }
 
 void Player::AddCountryToCollection(Country *country) {
+    if(!countries_) {
+        countries_ = new vector<Country*>;
+    }
     countries_->push_back(country);
 }
 
@@ -115,19 +118,19 @@ void Player::AddCardToCollection(Cards* card) {
 
 void Player::DisplayPlayerStats() const {
     cout << "\n****************************************\nPlayer Name: "<< *player_name_ << endl;
-    cout << "Countries " << *player_name_ << " owns: \n";
 
     if(countries_->empty()) {
         cout << *player_name_ << " does not currently own any countries" << endl;
     } else {
-        for(const Country* country : *countries_) {
-            country->DisplayInfo();
-        }
+        cout << *player_name_ << " owns " << countries_->size() << " countries";
+//        for(const Country* country : *countries_) {
+//            country->DisplayInfo();
+//        }
         cout << endl;
     }
 
     if(risk_cards_->GetNumberOfCardsInHand() > 0) {
-        cout << "Cards " << *player_name_ << " owns: \n";
+        cout << *player_name_ << " owns " << risk_cards_->GetNumberOfCardsInHand() << " cards";
         risk_cards_->DisplayHand();
         cout << endl;
     } else {

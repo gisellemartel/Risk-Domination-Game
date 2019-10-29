@@ -71,7 +71,7 @@ void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<C
             num_countries -= num_iterations;
 
             for(int i = 0; i < num_iterations; ++i) {
-                
+                player->AddCountryToCollection((*countries_to_assign)[i]);
             }
         }
     }

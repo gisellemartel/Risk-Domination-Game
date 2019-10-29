@@ -31,6 +31,8 @@ int main() {
     start_game->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
     start_game->AssignCountriesToAllPlayer(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
 
+    game_engine->DisplayCurrentGame();
+
     start_game = nullptr;
     game_engine = nullptr;
     delete game_engine;
