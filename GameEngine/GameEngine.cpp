@@ -38,8 +38,8 @@ StartupPhase::~StartupPhase() {
 StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     player_order_ = startup_phase.player_order_;
 
-    for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
-        player_order_->insert(*it);
+    for(const auto& it : *startup_phase.player_order_) {
+        player_order_->insert(it);
     }
 
     return *this;
@@ -105,6 +105,8 @@ void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<C
 
                 //assign countries to the player
                 cout << "Assigning " << num_countries_to_assign << " countries to " << *it.first->GetPlayerName() << endl;
+
+                //TODO countries should be assigned in random and not in order
                 for (int i = 0; i < num_countries_to_assign; ++i) {
                     it.first->AddCountryToCollection((*countries_to_assign)[i]);
                 }
