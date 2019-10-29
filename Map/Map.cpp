@@ -81,7 +81,7 @@ void Continent::AddCountryToContinent(const string& country){
     countries_in_continent_->push_back(new string(country));
 }
 
-void Continent::DisplayInfo(){
+void Continent::DisplayInfo() const{
     cout
     <<"Continent ID: "<< GetContinentID() <<endl
     <<"Continent Name: "<< *GetContinentName()<<endl
@@ -230,7 +230,7 @@ void Country::AddNeighborCountry(Country* neighbor) {
     neighbors_->push_back(neighbor);
 }
 
-void Country::DisplayInfo(){
+void Country::DisplayInfo() const{
     cout
             << "Country ID: " << GetCountryID() << endl
             << "Country Name: " << *GetCountryName() << endl

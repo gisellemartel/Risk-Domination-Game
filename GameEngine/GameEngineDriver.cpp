@@ -22,6 +22,9 @@ int main() {
         game_engine->CreatePlayers();
 
         game_engine->CreateCardsDeck();
+        game_engine->AssignHandOfCardsToPlayers();
+        game_engine->AssignDiceToPlayers();
+        game_engine->DisplayCurrentGame();
     }
 
     game_engine = nullptr;

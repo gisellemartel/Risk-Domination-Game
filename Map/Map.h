@@ -48,7 +48,7 @@ public:
 
     //Methods -------------------------------------------------------
     void AddCountryToContinent(const string& country);
-    void DisplayInfo();
+    void DisplayInfo() const;
 };
 
 
@@ -91,7 +91,7 @@ public:
 
     //Methods -------------------------------------------------------
     void AddNeighborCountry(Country* neighbor);
-    void DisplayInfo();
+    void DisplayInfo() const;
     bool IsNeighbor(const Country* neighbor);
     bool BelongsToContinent(const Continent* continent);
 };

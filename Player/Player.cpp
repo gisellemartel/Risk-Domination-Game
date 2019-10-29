@@ -15,8 +15,8 @@ Player::Player(string player_name) {
     player_name_ = new string(player_name);
     is_player_turn_ = false;
     countries_ = new vector<Country*>;
-    risk_cards_ = new vector<Cards*>;
-    dice_roll_ = new Dice();
+    risk_cards_ = new Hand;
+    dice_roll_ = new Dice;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -24,16 +24,13 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     is_player_turn_ = is_player_turn;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
-    risk_cards_ = new vector<Cards*>;
-    dice_roll_ = new Dice();
+    risk_cards_ = new Hand;
+    dice_roll_ = new Dice;
 }
 
 Player::Player(const Player &player) {
     player_name_ = player.player_name_;
     is_player_turn_ = player.is_player_turn_;
-    for(size_t i = 0; i < player.risk_cards_->size(); ++i) {
-        risk_cards_[i] = player.risk_cards_[i];
-    }
 
     for(size_t i = 0; i < player.countries_->size(); ++i) {
         countries_[i] = player.countries_[i];
@@ -44,9 +41,6 @@ Player::Player(const Player &player) {
 }
 
 Player::~Player() {
-    for(Cards* risk_card : *risk_cards_) {
-        delete risk_card;
-    }
 
     for(Country* country : *countries_) {
         delete country;
@@ -61,9 +55,6 @@ Player& Player::operator=(const Player &player) {
     player_name_ = player.player_name_;
     is_player_turn_ = player.is_player_turn_;
 
-    for(size_t i = 0; i < player.risk_cards_->size(); ++i) {
-       risk_cards_[i] = player.risk_cards_[i];
-    }
 
     for(size_t i = 0; i < player.countries_->size(); ++i) {
         countries_[i] = player.countries_[i];
@@ -103,7 +94,7 @@ vector<Country*>* Player::GetPlayersCountries() const {
     return countries_;
 }
 
-vector<Cards*>* Player::GetPlayersCards() const {
+Hand* Player::GetPlayersCards() const {
     return risk_cards_;
 }
 
@@ -112,7 +103,25 @@ void Player::AddCountryToCollection(Country *country) {
 }
 
 void Player::AddCardToCollection(Cards* card) {
-    risk_cards_->push_back(card);
+    risk_cards_->AddCardToHand(card);
+}
+
+void Player::DisplayPlayerStats() const {
+    cout << "Player Name: "<< player_name_ << endl;
+    cout << "Countries" << player_name_ << " owns: \n";
+
+    for(const Country* country : *countries_) {
+        country->DisplayInfo();
+    }
+
+    cout << "Cards " << player_name_ << " owns: \n";
+    risk_cards_->DisplayHand();
+
+    cout << "Is it player's turn?\n";
+
+    string result = is_player_turn_ ? "true" : "false";
+
+    cout << result;
 }
 
 void Player::Reinforce() {

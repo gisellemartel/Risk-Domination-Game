@@ -25,9 +25,6 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     game_map_ = game_engine.game_map_;
 
     cards_deck_ = game_engine.cards_deck_;
-    for (size_t i = 0; i < game_engine.cards_deck_->size(); ++i) {
-        cards_deck_[i] = game_engine.cards_deck_[i];
-    }
 
     players_ = game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
@@ -38,11 +35,6 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
 }
 
 GameEngine::~GameEngine() {
-
-    for (auto& card : *cards_deck_) {
-        card = nullptr;
-        delete card;
-    }
 
     for (auto& player : *players_) {
         player = nullptr;
@@ -62,9 +54,6 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     game_map_ = game_engine.game_map_;
 
     cards_deck_ = game_engine.cards_deck_;
-    for (size_t i = 0; i < game_engine.cards_deck_->size(); ++i) {
-        cards_deck_[i] = game_engine.cards_deck_[i];
-    }
 
     players_ = game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
@@ -80,7 +69,7 @@ inline MapLoader* GameEngine::GetGameMap() const {
     return game_map_;
 }
 
-inline vector<Cards*>* GameEngine::GetCardsDeck() const {
+inline Deck* GameEngine::GetCardsDeck() const {
     return cards_deck_;
 }
 
@@ -140,11 +129,7 @@ bool GameEngine::SelectMap() {
                 //Load the map file
                 game_map_ = new MapLoader(file_to_load);
 
-                if(game_map_) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return game_map_ != nullptr;
             }
         }
         catch (filesystem::filesystem_error& error) {
@@ -168,7 +153,7 @@ bool GameEngine::LoadSelectedMap() {
 void GameEngine::SelectNumOfPlayers() {
     int num_players = -1;
 
-    cout << "Please enter the number of players joining the game (between 2 and 6 players per game)";
+    cout << "Please enter the number of players joining the game (between 2 and 6 players per game): ";
     while(!(cin >> num_players) || num_players < 2 || num_players > 6) {
         cout << "Invalid number of players entered. Please try again: ";
         cin.clear();
@@ -233,7 +218,7 @@ void GameEngine::AssignHandOfCardsToPlayers() {
     }
 
     for(Player* player: *players_) {
-       // player->AddCardToCollection(new Cards());
+        player->AddCardToCollection(cards_deck_->Draw());
     }
 }
 
@@ -243,4 +228,24 @@ void GameEngine::CreateCardsDeck() {
         return;
     }
 
+    cards_deck_ = new Deck();
+    int num_cards = game_map_->GetParsedMap()->GetNumCountries();
+    cards_deck_ ->CreateDeck(num_cards);
+    cards_deck_ ->DisplayDeck();
+}
+
+void GameEngine::DisplayCurrentGame() {
+
+    game_map_->GetParsedMap()->DisplayCountries();
+    game_map_->GetParsedMap()->DisplayCountries();
+    game_map_->GetParsedMap()->DisplayAdjacencyMatrix();
+
+    cards_deck_->DisplayDeck();
+
+    cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats: " << endl;
+    for(const Player* player : *players_) {
+        player->DisplayPlayerStats();
+    }
+
+    cout << endl;
 }

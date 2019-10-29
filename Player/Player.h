@@ -19,12 +19,13 @@ using namespace std;
 class Country;
 class Dice;
 class Cards;
+class Hand;
 
 class Player {
 private:
     string* player_name_;
     vector<Country*>* countries_;
-    vector<Cards*>* risk_cards_;
+    Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
 
@@ -45,10 +46,12 @@ public:
     string* GetPlayerName() const;
     Dice* GetPlayerDice() const;
     vector<Country*>* GetPlayersCountries() const;
-    vector<Cards*>* GetPlayersCards() const;
+    Hand* GetPlayersCards() const;
 
     void AddCountryToCollection(Country* country);
     void AddCardToCollection(Cards* card);
+
+    void DisplayPlayerStats() const;
 
     void Reinforce();
     void Attack();

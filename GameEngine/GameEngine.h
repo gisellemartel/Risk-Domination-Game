@@ -21,7 +21,7 @@ class GameEngine {
 
 private:
     MapLoader* game_map_;
-    vector<Cards*>* cards_deck_;
+    Deck* cards_deck_;
     vector<Player*>* players_;
     int num_of_players_;
 
@@ -36,7 +36,7 @@ public:
 
     inline MapLoader* GetGameMap() const;
 
-    inline vector<Cards*>* GetCardsDeck() const;
+    inline Deck* GetCardsDeck() const;
 
     inline vector<Player*>* GetPlayers() const;
 
@@ -55,6 +55,8 @@ public:
     void AssignHandOfCardsToPlayers();
 
     void CreateCardsDeck();
+
+    void DisplayCurrentGame();
 };
 
 #endif
