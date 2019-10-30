@@ -29,17 +29,13 @@ int main() {
 
             cout << endl;
 
+            //game_engine->DisplayCurrentGame();
+
+            game_engine->GetGameStart()->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
+            game_engine->GetGameStart()->AssignCountriesToAllPlayers(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
+            game_engine->GetGameStart()->AssignArmiesToAllPlayers(game_engine->GetPlayers());
+
             game_engine->DisplayCurrentGame();
-
-            StartupPhase* start_game = new StartupPhase;
-            start_game->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
-            start_game->AssignCountriesToAllPlayers(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
-            start_game->AssignArmiesToAllPlayers(game_engine->GetPlayers());
-
-            game_engine->DisplayCurrentGame();
-
-            start_game = nullptr;
-            delete start_game;
             break;
         } else if (game_engine->ExitGameSelected()) {
             return 0;

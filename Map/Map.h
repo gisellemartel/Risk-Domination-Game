@@ -90,6 +90,7 @@ public:
     Player* GetCountryOwner() const;
 
     //Methods -------------------------------------------------------
+    void AddArmyToCountry();
     void AddNeighborCountry(Country* neighbor);
     void DisplayInfo() const;
     bool IsNeighbor(const Country* neighbor);

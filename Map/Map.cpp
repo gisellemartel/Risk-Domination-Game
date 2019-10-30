@@ -225,6 +225,14 @@ bool Country::IsNeighbor(const Country* neighbor) {
     return false;
 }
 
+void Country::AddArmyToCountry() {
+    if(number_of_armies_ < 0) {
+        number_of_armies_ = 1;
+    }
+
+    ++number_of_armies_;
+}
+
 void Country::AddNeighborCountry(Country* neighbor) {
     //TODO add condition which checks if neighbour does not already exist
     neighbors_->push_back(neighbor);

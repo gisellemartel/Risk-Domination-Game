@@ -18,6 +18,7 @@ using namespace std;
 
 
 // STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
+
 //static helper methods --------------------------------------------------------
 int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
     std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
@@ -26,7 +27,8 @@ int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
     return distribution(generator);
 }
 
-//generic function which randomized order of passed vector. used to randomize both order of players and also order in which countries are assigned
+// generic function which randomized order of passed vector.
+// used to randomize both order of players, order in which countries are assigned
 template<class V>
 vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
     int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
@@ -41,6 +43,7 @@ vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& v
     return random_order;
 }
 
+//returns true if finds passed value within passed vector
 bool StartupPhase::HasValue(const vector<int>& values, const int value) {
     for(int i : values) {
         if(i == value) {
@@ -50,22 +53,6 @@ bool StartupPhase::HasValue(const vector<int>& values, const int value) {
     return false;
 }
 
-void StartupPhase::SetNumberOfArmies(int number_of_players) {
-    switch(number_of_players) {
-        case 2: number_of_armies_ = 40;
-        break;
-        case 3: number_of_armies_ = 35;
-            break;
-        case 4: number_of_armies_ = 30;
-            break;
-        case 5: number_of_armies_ = 25;
-            break;
-        case 6: number_of_armies_ = 20;
-        break;
-        default:
-            number_of_armies_ = 40;
-    }
-}
 
 // class constructors
 StartupPhase::StartupPhase() {
@@ -87,6 +74,8 @@ StartupPhase::~StartupPhase() {
     delete player_order_;
 }
 
+
+//operator overloader
 StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     player_order_ = startup_phase.player_order_;
 
@@ -99,7 +88,8 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     return *this;
 }
 
-//class methods
+
+//Getters
 map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
     return player_order_;
 }
@@ -108,6 +98,27 @@ int StartupPhase::GetCurrentTurn() const {
     return current_turn_;
 }
 
+
+//Setters
+void StartupPhase::SetNumberOfArmies(int number_of_players) {
+    switch(number_of_players) {
+        case 2: number_of_armies_ = 40;
+            break;
+        case 3: number_of_armies_ = 35;
+            break;
+        case 4: number_of_armies_ = 30;
+            break;
+        case 5: number_of_armies_ = 25;
+            break;
+        case 6: number_of_armies_ = 20;
+            break;
+        default:
+            number_of_armies_ = 40;
+    }
+}
+
+
+//class methods
 void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
     cout << "Assigning random order to determine turn of each player at game start:\n";
     //generate vector of indices which will contain randomized order of players
@@ -144,8 +155,6 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
 
     int num_countries = countries_to_assign->size();
 
-    //TODO fix logical error with country assignment
-
     //generate vector of indices which will contain randomized order of countries
     vector<int> random_order = GenerateRandomizedIndicesForVector(*countries_to_assign);
     //index used to track current position within countries vector after each loop iteration
@@ -153,25 +162,23 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
     //assign countries to each player in round robin fashion
     while(num_countries > 0) {
 
-        cout << "Current turn: " << (current_turn_ + 1) << ". ";
+        //debug string
+        cout << "Current turn: " << (current_turn_ + 1) << ".\n";
 
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_turn_) {
-                //calculate the number of countries to assign to current player
-                int num_countries_to_assign = (int) (num_countries / (players->size() - current_turn_));
-                num_countries -= num_countries_to_assign;
+                it.first->SetPlayersTurn(true);
+                int current_random_index = random_order[current_index];
 
-                cout << "Assigning " << num_countries_to_assign << " countries to " << *it.first->GetPlayerName() << endl;
+                //debug string
+                cout << "Assigning " << *(*countries_to_assign)[current_random_index]->GetCountryName() << " to " << *(it.first->GetPlayerName()) << endl;
 
-                //assign countries randomly to each player
-                for (int i = current_index; i < num_countries_to_assign + current_index; ++i) {
-                    int current_random_index = random_order[i];
-                    it.first->AddCountryToCollection((*countries_to_assign)[current_random_index]);
-                }
-
+                it.first->AddCountryToCollection((*countries_to_assign)[current_random_index]);
+                it.first->SetPlayersTurn(false);
                 //update position of current index
-                current_index += num_countries_to_assign;
+                ++current_index;
+                --num_countries;
             }
         }
 
@@ -183,19 +190,87 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
 
 void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
-    //find the player whose turn it currently is
-    for(Player* player : *players) {
-
-        if((*player_order_)[player] == current_turn_) {
-
-        }
+    if(players->empty()) {
+        return;
     }
+
+    cout << "Assigning " << number_of_armies_ << " armies to each player in round-robin fashion:\n";
+
+    int num_armies = number_of_armies_;
+
+    //index used to track current position within countries vector after each loop iteration
+    size_t current_index = 0;
+    //assign countries to each player in round robin fashion
+
+    while(num_armies > 0) {
+        //debug string
+        cout << "Current turn: " << (current_turn_ + 1) << ".\n";
+
+        for (auto &it : *player_order_) {
+            //find the player whose is currently to be assigned countries
+            if (it.second == current_turn_) {
+                it.first->SetPlayersTurn(true);
+                int random_country_index = GenerateRandomNumInRange(0, it.first->GetPlayersCountries()->size());
+
+                vector<Country*>& players_countries = *it.first->GetPlayersCountries();
+
+                if(players_countries.empty()) {
+                    cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n";
+                    break;
+                }
+                Country* current_country = players_countries[random_country_index];
+
+                if(current_country) {
+                    string name_country = *current_country->GetCountryName();
+                    //debug string
+                    cout << "Assigning army to " << name_country << endl;
+
+                    current_country->AddArmyToCountry();
+                    current_country->DisplayInfo();
+                    it.first->SetPlayersTurn(false);
+                    //update position of current index
+                    ++current_index;
+                    --num_armies;
+                }
+            }
+        }
+
+        //get the current players turn
+        current_turn_ = (int)((current_turn_ + 1) % players->size());
+    }
+    cout << endl;
 
 }
 
 
 
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
+
+
+//private helper methods
+MapLoader* GameEngine::SelectFile() {
+
+    cout << "\nTo select a file, enter its corresponding number here: (enter -1 to exit) ";
+    int user_selection = 0;
+    while(!(cin >> user_selection) || user_selection < 1 || user_selection > file_paths_->size()) {
+        if(user_selection == -1) {
+            exit_game_ = true;
+            return nullptr;
+        }
+        cin.clear();
+        cin.ignore(132, '\n');
+        cout << "Error! Please enter a valid file number: ";
+    }
+
+    string file_to_load = (*file_paths_)[user_selection - 1].string();
+
+    cout << "Now loading map file: " << file_to_load << "..." << endl;
+    //Load the map file
+    return new MapLoader(file_to_load);
+}
+
+
+//constructors
 GameEngine::GameEngine() {
     game_map_ = nullptr;
     cards_deck_ = nullptr;
@@ -204,6 +279,7 @@ GameEngine::GameEngine() {
     num_of_players_ = 2;
     exit_game_ = false;
     file_paths_ = new vector<filesystem::path>;
+    game_start_ = new StartupPhase;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
@@ -221,7 +297,7 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
         file_paths_[i] = game_engine.file_paths_[i];
     }
 
-
+    game_start_ = game_engine.game_start_;
     num_of_players_ = game_engine.num_of_players_;
     exit_game_ = game_engine.exit_game_;
 }
@@ -241,13 +317,17 @@ GameEngine::~GameEngine() {
     cards_deck_ = nullptr;
     players_ = nullptr;
     file_paths_ = nullptr;
+    game_start_ = nullptr;
 
     delete players_;
     delete file_paths_;
     delete cards_deck_;
     delete game_map_;
+    delete game_start_;
 }
 
+
+//operator overloader
 GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     game_map_ = game_engine.game_map_;
 
@@ -264,12 +344,14 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     }
 
     num_of_players_ = game_engine.num_of_players_;
-
+    game_start_ = game_engine.game_start_;
     exit_game_ = game_engine.exit_game_;
 
     return *this;
 }
 
+
+//getters
 MapLoader* GameEngine::GetGameMap() const {
     return game_map_;
 }
@@ -286,10 +368,16 @@ int GameEngine::GetNumPlayers() const {
     return num_of_players_;
 }
 
+StartupPhase* GameEngine::GetGameStart() const {
+    return game_start_;
+}
+
 bool GameEngine::ExitGameSelected() const {
     return exit_game_;
 }
 
+
+//class methods
 bool GameEngine::SelectMap() {
 
     exit_game_ = false;
@@ -342,27 +430,6 @@ bool GameEngine::SelectMap() {
     } while (!exit_game_);
 
     return false;
-}
-
-MapLoader* GameEngine::SelectFile() {
-
-    cout << "\nTo select a file, enter its corresponding number here: (enter -1 to exit) ";
-    int user_selection = 0;
-    while(!(cin >> user_selection) || user_selection < 1 || user_selection > file_paths_->size()) {
-        if(user_selection == -1) {
-            exit_game_ = true;
-            return nullptr;
-        }
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Error! Please enter a valid file number: ";
-    }
-
-    string file_to_load = (*file_paths_)[user_selection - 1].string();
-
-    cout << "Now loading map file: " << file_to_load << "..." << endl;
-    //Load the map file
-    return new MapLoader(file_to_load);
 }
 
 bool GameEngine::LoadSelectedMap() {
@@ -475,13 +542,13 @@ void GameEngine::DisplayCurrentGame() {
     cout << "There are " << game_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
 
     cout << "Verifying that each country only has one single owner\n";
-
     cout << setw(20) << left <<  "Country" << setw(30) << right << "Owner"<< endl;
+
     for(const Country* country : *game_map_->GetParsedMap()->GetCountries()) {
         string country_name = *country->GetCountryName();
         string owner_name = (country->GetCountryOwner()) ? *country->GetCountryOwner()->GetPlayerName() : "";
 
-        if(owner_name != "" && country_name != "") {
+        if(!owner_name.empty() && !country_name.empty()) {
             cout << setw(20) << left <<country_name << setw(30) << right << owner_name << endl;
         }
     }

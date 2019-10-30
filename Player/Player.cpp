@@ -128,10 +128,12 @@ void Player::AddCardToCollection(Cards* card) {
 void Player::DisplayPlayerStats() const {
     cout << "\n===================================================\n" << *player_name_ << endl;
 
-    cout << "Number of countries owned: " << countries_->size() << endl;
-    for(const Country* country : *countries_) {
-        cout << *country->GetCountryName() << endl;
-    }
+    cout << "Number of countries owned: " << countries_->size();
+//    debug string:
+//    cout << endl;
+//    for(const Country* country : *countries_) {
+//        cout << *country->GetCountryName() << endl;
+//    }
     cout << endl;
 
     cout << "Number cards in hand: " << risk_cards_->GetNumberOfCardsInHand();
