@@ -44,6 +44,9 @@ public:
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
 
+
+    Country* GetCountryById(int id) const;
+    bool DoesPlayerOwnCountry(int id) const;
     bool isCurrentlyPlayersTurn() const;
     string* GetPlayerName() const;
     Dice* GetPlayerDice() const;

@@ -90,6 +90,26 @@ void Player::SetPlayerHand(Hand* hand) {
     risk_cards_ = hand;
 }
 
+Country* Player::GetCountryById(int id) const {
+    for(Country* country : *countries_) {
+        int current_id = (country->GetCountryID());
+        if (id == current_id) {
+            return country;
+        }
+    }
+    return nullptr;
+}
+
+bool Player::DoesPlayerOwnCountry(int id) const {
+    for(const Country* country : *countries_) {
+        int current_id = (country->GetCountryID());
+        if (id == current_id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Player::isCurrentlyPlayersTurn() const {
     return is_player_turn_;
 }
@@ -226,4 +246,3 @@ void Player::Fortify() {
      */
 
 }
-

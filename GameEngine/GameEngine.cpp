@@ -211,11 +211,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         num_armies.push_back(number_of_armies_);
     }
 
-    //index used to track current position within countries vector after each loop iteration
-    size_t current_index = 0;
     //assign countries to each player in round robin fashion
-
-
     while(!ContainsAllZeros(num_armies)) {
         //debug string
         cout << "Current turn: " << (current_turn_ + 1) << ".\n";
@@ -223,32 +219,58 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_turn_) {
-                it.first->SetPlayersTurn(true);
-                int random_country_index = GenerateRandomNumInRange(0, it.first->GetPlayersCountries()->size());
 
                 vector<Country*>& players_countries = *it.first->GetPlayersCountries();
 
                 if(players_countries.empty()) {
-                    cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n";
+                    cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n\n";
                     break;
                 } else if (num_armies[it.second] == 0) {
-                    cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n";
+                    cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n\n";
                     break;
                 }
 
-                Country* current_country = players_countries[random_country_index];
+                it.first->SetPlayersTurn(true);
+              //  int random_country_index = GenerateRandomNumInRange(0, it.first->GetPlayersCountries()->size());
+
+                cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
+                for(const Country* country  : players_countries) {
+                  cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
+                }
+                cout << endl;
+
+                cout << "Please choose which country you would like to assign armies to (enter by numerical id):\n";
+
+                int user_selection;
+                while(!(cin >> user_selection) || !it.first->DoesPlayerOwnCountry(user_selection)) {
+                  cin.clear();
+                  cin.ignore(132, '\n');
+                  cout << "Invalid entry entered! Please try again: ";
+                }
+
+                Country* current_country = it.first->GetCountryById(user_selection);
+
 
                 if(current_country) {
                     string name_country = *current_country->GetCountryName();
-                    //debug string
-                    cout << "Assigning army to " << name_country << endl;
+                    cin.clear();
+                    cout << "Please enter the number of armies you would like to assign to " << name_country  << " (you currently have " << num_armies[it.second] << " armies remaining to assign)" << endl;
+                    while(!(cin >> user_selection) || user_selection < 1 || user_selection > num_armies[it.second]) {
+                        cin.clear();
+                        cin.ignore(132, '\n');
+                        cout << "Invalid value given! Please try again: ";
+                    }
 
-                    current_country->AddArmyToCountry();
+                    //debug string
+                    cout << "\nAssigning " << user_selection << " armies to " << name_country << "...\n";
+
+                    current_country->SetNumberOfArmies(user_selection);
                     current_country->DisplayInfo();
+
+                    //update number of armies for current player after assignment
+                    num_armies[it.second] = num_armies[it.second] - user_selection;
+
                     it.first->SetPlayersTurn(false);
-                    //update position of current index
-                    ++current_index;
-                    --num_armies[it.second];
                 }
             }
         }
