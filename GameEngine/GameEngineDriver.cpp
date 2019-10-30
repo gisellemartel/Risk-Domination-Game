@@ -33,7 +33,8 @@ int main() {
 
             StartupPhase* start_game = new StartupPhase;
             start_game->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
-            start_game->AssignCountriesToAllPlayer(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
+            start_game->AssignCountriesToAllPlayers(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
+            start_game->AssignArmiesToAllPlayers(game_engine->GetPlayers());
 
             game_engine->DisplayCurrentGame();
 

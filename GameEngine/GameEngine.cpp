@@ -16,8 +16,58 @@ using namespace std;
 
 #include "GameEngine.h"
 
-// STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
+// STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
+//static helper methods --------------------------------------------------------
+int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
+    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
+    std::random_device rd;
+    std::default_random_engine generator( rd() );
+    return distribution(generator);
+}
+
+//generic function which randomized order of passed vector. used to randomize both order of players and also order in which countries are assigned
+template<class V>
+vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
+    int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+    vector<int> random_order;
+    //randomize the order for the indices in the players vector
+    while(!HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
+        random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+        if(!HasValue(random_order, random)) {
+            random_order.push_back(random);
+        }
+    }
+    return random_order;
+}
+
+bool StartupPhase::HasValue(const vector<int>& values, const int value) {
+    for(int i : values) {
+        if(i == value) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void StartupPhase::SetNumberOfArmies(int number_of_players) {
+    switch(number_of_players) {
+        case 2: number_of_armies_ = 40;
+        break;
+        case 3: number_of_armies_ = 35;
+            break;
+        case 4: number_of_armies_ = 30;
+            break;
+        case 5: number_of_armies_ = 25;
+            break;
+        case 6: number_of_armies_ = 20;
+        break;
+        default:
+            number_of_armies_ = 40;
+    }
+}
+
+// class constructors
 StartupPhase::StartupPhase() {
     player_order_ = new map<Player*, int>;
     current_turn_ = 0;
@@ -49,6 +99,7 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     return *this;
 }
 
+//class methods
 map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
     return player_order_;
 }
@@ -84,8 +135,7 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
     cout << endl;
 }
 
-
-void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign) {
+void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign) {
     if(players->empty() || countries_to_assign->empty()) {
         return;
     }
@@ -120,9 +170,9 @@ void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<C
                     it.first->AddCountryToCollection((*countries_to_assign)[current_random_index]);
                 }
 
+                //update position of current index
                 current_index += num_countries_to_assign;
             }
-
         }
 
         //get the current players turn
@@ -131,37 +181,19 @@ void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<C
     cout << endl;
 }
 
-//static helper methods --------------------------------------------------------
-int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
-    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
-    std::random_device rd;
-    std::default_random_engine generator( rd() );
-    return distribution(generator);
-}
+void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
-//generic function which randomized order of passed vector. used to randomize both order of players and also order in which countries are assigned
-template<class V>
-vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
-    int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
-    vector<int> random_order;
-    //randomize the order for the indices in the players vector
-    while(!HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
-        random = GenerateRandomNumInRange(0, vector_to_randomize.size());
-        if(!HasValue(random_order, random)) {
-            random_order.push_back(random);
+    //find the player whose turn it currently is
+    for(Player* player : *players) {
+
+        if((*player_order_)[player] == current_turn_) {
+
         }
     }
-    return random_order;
+
 }
 
-bool StartupPhase::HasValue(const vector<int>& values, const int value) {
-    for(int i : values) {
-        if(i == value) {
-            return true;
-        }
-    }
-    return false;
-}
+
 
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 GameEngine::GameEngine() {
@@ -381,6 +413,8 @@ void GameEngine::CreatePlayers() {
 
         players_->push_back(new Player(player_name));
     }
+
+    game_start_->SetNumberOfArmies(num_of_players_);
 }
 
 void GameEngine::AssignDiceToPlayers() {

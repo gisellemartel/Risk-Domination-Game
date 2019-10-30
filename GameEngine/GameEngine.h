@@ -26,6 +26,8 @@ private:
 
     int current_turn_;
 
+    int number_of_armies_;
+
     static int GenerateRandomNumInRange(int lower_bound, int upper_bound);
 
     template <class V>
@@ -46,9 +48,13 @@ public:
 
     inline int GetCurrentTurn() const;
 
+    void SetNumberOfArmies(int number_of_players);
+
     void RandomlyDeterminePlayerOrder(vector<Player*>* players);
 
-    void AssignCountriesToAllPlayer(vector<Player*>* players, vector<Country*>* countries_to_assign);
+    void AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign);
+
+    void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
 class GameEngine {
