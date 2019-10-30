@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <map>
-#include <filesystem>
+#include <experimental/filesystem>
 
 using namespace std;
 
@@ -31,6 +31,7 @@ private:
     template <class V>
     static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
     static bool HasValue(const vector<int>& values, const int value);
+    static bool ContainsAllZeros(const vector<int>& vector_to_check);
 
 public:
     //Constructors

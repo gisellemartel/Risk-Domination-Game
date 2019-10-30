@@ -53,6 +53,15 @@ bool StartupPhase::HasValue(const vector<int>& values, const int value) {
     return false;
 }
 
+//returns true if all values in passed vector are 0
+bool StartupPhase::ContainsAllZeros(const vector<int> &vector_to_check) {
+    bool result = std::all_of(vector_to_check.begin(), vector_to_check.end(), [](int i) {
+        return i == 0;
+    });
+
+    return result;
+}
+
 
 // class constructors
 StartupPhase::StartupPhase() {
@@ -196,13 +205,18 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
     cout << "Assigning " << number_of_armies_ << " armies to each player in round-robin fashion:\n";
 
-    int num_armies = number_of_armies_;
+    //create vector to track number of armies left to assign for each player
+    vector<int> num_armies;
+    for(int i = 0; i < players->size(); ++i) {
+        num_armies.push_back(number_of_armies_);
+    }
 
     //index used to track current position within countries vector after each loop iteration
     size_t current_index = 0;
     //assign countries to each player in round robin fashion
 
-    while(num_armies > 0) {
+
+    while(!ContainsAllZeros(num_armies)) {
         //debug string
         cout << "Current turn: " << (current_turn_ + 1) << ".\n";
 
@@ -217,7 +231,11 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
                 if(players_countries.empty()) {
                     cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n";
                     break;
+                } else if (num_armies[it.second] == 0) {
+                    cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n";
+                    break;
                 }
+
                 Country* current_country = players_countries[random_country_index];
 
                 if(current_country) {
@@ -230,7 +248,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
                     it.first->SetPlayersTurn(false);
                     //update position of current index
                     ++current_index;
-                    --num_armies;
+                    --num_armies[it.second];
                 }
             }
         }
