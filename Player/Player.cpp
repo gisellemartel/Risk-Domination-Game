@@ -115,6 +115,7 @@ void Player::AddCountryToCollection(Country *country) {
         countries_ = new vector<Country*>;
     }
     countries_->push_back(country);
+    country->SetCountryOwner(this);
 }
 
 void Player::AddCardToCollection(Cards* card) {
@@ -127,14 +128,17 @@ void Player::AddCardToCollection(Cards* card) {
 void Player::DisplayPlayerStats() const {
     cout << "\n===================================================\n" << *player_name_ << endl;
 
-    cout << "Number of countries owned: " << countries_->size();
-//        for(const Country* country : *countries_) {
-//            country->DisplayInfo();
-//        }
+    cout << "Number of countries owned: " << countries_->size() << endl;
+    for(const Country* country : *countries_) {
+        cout << *country->GetCountryName() << endl;
+    }
     cout << endl;
 
     cout << "Number cards in hand: " << risk_cards_->GetNumberOfCardsInHand();
     risk_cards_->DisplayHand();
+    cout << endl;
+
+    cout << "Total dice rolls made: " << dice_roll_->GetTotalRolls();
     cout << endl;
 
     cout << "Is it " << *player_name_ << "'s turn? ";

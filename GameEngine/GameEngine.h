@@ -24,7 +24,12 @@ class StartupPhase {
 private:
     map<Player*, int>* player_order_;
 
+    int current_turn_;
+
     static int GenerateRandomNumInRange(int lower_bound, int upper_bound);
+
+    template <class V>
+    static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
 
     static bool HasValue(const vector<int>& values, const int value);
 
@@ -38,6 +43,8 @@ public:
     StartupPhase& operator=(const StartupPhase& startup_phase);
 
     inline map<Player*, int>* GetPlayerOrderMap() const;
+
+    inline int GetCurrentTurn() const;
 
     void RandomlyDeterminePlayerOrder(vector<Player*>* players);
 

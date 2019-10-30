@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 #include <map>
-#include <algorithm>
 #include <iterator>
 #include <filesystem>
 #include <random>
@@ -21,6 +20,7 @@ using namespace std;
 
 StartupPhase::StartupPhase() {
     player_order_ = new map<Player*, int>;
+    current_turn_ = 0;
 }
 
 StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
@@ -29,6 +29,8 @@ StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
     for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
         player_order_->insert(*it);
     }
+
+    current_turn_ = startup_phase.current_turn_;
 }
 
 StartupPhase::~StartupPhase() {
@@ -42,6 +44,8 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
         player_order_->insert(it);
     }
 
+    current_turn_ = startup_phase.current_turn_;
+
     return *this;
 }
 
@@ -49,22 +53,19 @@ map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
     return player_order_;
 }
 
+int StartupPhase::GetCurrentTurn() const {
+    return current_turn_;
+}
+
 void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
     cout << "Assigning random order to determine turn of each player at game start:\n";
-    vector<int> random_order;
-    int random = GenerateRandomNumInRange(0, players->size());
+    //generate vector of indices which will contain randomized order of players
+    vector<int> random_order = GenerateRandomizedIndicesForVector(*players);
 
-    while(!HasValue(random_order, random) || random_order.size() < players->size()) {
-        random = GenerateRandomNumInRange(0, players->size());
-        if(!HasValue(random_order, random)) {
-            random_order.push_back(random);
-        }
-    }
-
+    //assign the generated random order to each player
     for (int i = 0; i < players->size(); ++i) {
         player_order_->insert(std::pair<Player*, int>((*players)[random_order[i]], i));
     }
-
 
     //print the players in the generated order
     for(map<Player*, int>::iterator it = player_order_->begin(); it != player_order_->end(); ++it) {
@@ -72,6 +73,9 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
 
         for(int i = 0; i < players->size(); ++i ) {
             if(player && player == (*players)[i]) {
+                //set the turn for the current player
+                (*players)[i]->SetPlayersTurn(it->second == current_turn_);
+                //display order for current player
                 cout << *player->GetPlayerName() << ": " << (it->second + 1) << "\n";
             }
         }
@@ -89,33 +93,40 @@ void StartupPhase::AssignCountriesToAllPlayer(vector<Player*>* players, vector<C
     cout << "Assigning random countries to each player in round-robin fashion:\n";
 
     int num_countries = countries_to_assign->size();
-    int current_turn = 0;
 
+    //TODO fix logical error with country assignment
+
+    //generate vector of indices which will contain randomized order of countries
+    vector<int> random_order = GenerateRandomizedIndicesForVector(*countries_to_assign);
+    //index used to track current position within countries vector after each loop iteration
+    size_t current_index = 0;
     //assign countries to each player in round robin fashion
     while(num_countries > 0) {
 
-        cout << "Current turn: " << (current_turn + 1) << ". ";
+        cout << "Current turn: " << (current_turn_ + 1) << ". ";
 
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
-            if (it.second == current_turn) {
+            if (it.second == current_turn_) {
                 //calculate the number of countries to assign to current player
-                int num_countries_to_assign = (int) (num_countries / (players->size() - current_turn));
+                int num_countries_to_assign = (int) (num_countries / (players->size() - current_turn_));
                 num_countries -= num_countries_to_assign;
 
-                //assign countries to the player
                 cout << "Assigning " << num_countries_to_assign << " countries to " << *it.first->GetPlayerName() << endl;
 
-                //TODO countries should be assigned in random and not in order
-                for (int i = 0; i < num_countries_to_assign; ++i) {
-                    it.first->AddCountryToCollection((*countries_to_assign)[i]);
+                //assign countries randomly to each player
+                for (int i = current_index; i < num_countries_to_assign + current_index; ++i) {
+                    int current_random_index = random_order[i];
+                    it.first->AddCountryToCollection((*countries_to_assign)[current_random_index]);
                 }
+
+                current_index += num_countries_to_assign;
             }
 
         }
 
         //get the current players turn
-        current_turn = (int)((current_turn + 1) % players->size());
+        current_turn_ = (int)((current_turn_ + 1) % players->size());
     }
     cout << endl;
 }
@@ -126,6 +137,21 @@ int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
     std::random_device rd;
     std::default_random_engine generator( rd() );
     return distribution(generator);
+}
+
+//generic function which randomized order of passed vector. used to randomize both order of players and also order in which countries are assigned
+template<class V>
+vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
+    int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+    vector<int> random_order;
+    //randomize the order for the indices in the players vector
+    while(!HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
+        random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+        if(!HasValue(random_order, random)) {
+            random_order.push_back(random);
+        }
+    }
+    return random_order;
 }
 
 bool StartupPhase::HasValue(const vector<int>& values, const int value) {
@@ -262,6 +288,13 @@ bool GameEngine::SelectMap() {
                 cin.ignore(132,'\n');
             } else {
                 cout << "\n\nHere are the entries found in directory \"" << path << "\"\n\n";
+
+                int counter = 1;
+                for(const auto& map_filepath : *file_paths_) {
+                    cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
+                    ++counter;
+                }
+
                 //Load the map file
                 game_map_ = SelectFile();
 
@@ -280,15 +313,9 @@ bool GameEngine::SelectMap() {
 }
 
 MapLoader* GameEngine::SelectFile() {
-    int user_selection = 0;
-    int counter = 1;
-    for(const auto& map_filepath : *file_paths_) {
-        cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
-        ++counter;
-    }
 
     cout << "\nTo select a file, enter its corresponding number here: (enter -1 to exit) ";
-
+    int user_selection = 0;
     while(!(cin >> user_selection) || user_selection < 1 || user_selection > file_paths_->size()) {
         if(user_selection == -1) {
             exit_game_ = true;
@@ -309,12 +336,14 @@ MapLoader* GameEngine::SelectFile() {
 bool GameEngine::LoadSelectedMap() {
     if(game_map_) {
         while(!game_map_->ParseMap() && !exit_game_) {
+            cout << "Failed to parse map, please select another one!\n";
             game_map_ = SelectFile();
 
             if(!game_map_) {
                 return false;
             }
         }
+        cout << "Success! Loaded map " << *game_map_->GetParsedMap()->GetMapName() << endl;
         return true;
     } else {
         return false;
@@ -410,6 +439,18 @@ void GameEngine::DisplayCurrentGame() {
     }
 
     cout << "There are " << game_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
+
+    cout << "Verifying that each country only has one single owner\n";
+
+    cout << setw(20) << left <<  "Country" << setw(30) << right << "Owner"<< endl;
+    for(const Country* country : *game_map_->GetParsedMap()->GetCountries()) {
+        string country_name = *country->GetCountryName();
+        string owner_name = (country->GetCountryOwner()) ? *country->GetCountryOwner()->GetPlayerName() : "";
+
+        if(owner_name != "" && country_name != "") {
+            cout << setw(20) << left <<country_name << setw(30) << right << owner_name << endl;
+        }
+    }
 
 //    cout << "Displaying generated deck of cards:\n";
 //    cards_deck_->DisplayDeck();
