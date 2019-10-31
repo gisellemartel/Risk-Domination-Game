@@ -7,6 +7,7 @@
 #include "Cards.h"
 #include <iostream>
 #include <utility>
+#include <ctime>
 using namespace std;
 
 
