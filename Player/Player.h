@@ -20,11 +20,13 @@ class Country;
 class Dice;
 class Cards;
 class Hand;
+class Continent;
 
 class Player {
 private:
     string* player_name_;
     vector<Country*>* countries_;
+    vector<Continent*>* continents_;
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
@@ -61,5 +63,15 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
+};
+
+class Reinforcement
+{
+private:
+    int divider;
+public:
+    Reinforcement();
+    ~Reinforcement();
+
 };
 #endif //PLAYER_H

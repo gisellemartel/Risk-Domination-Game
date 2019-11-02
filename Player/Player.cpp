@@ -174,7 +174,7 @@ void Player::Reinforce() {
 
     //the number of armies the player is assigned at their current turn is the number of countries
     //they own divided by 3 rounded down
-    int num_of_armies_to_assign = (int)floor((float)(countries_->size() / 3));
+//    int num_of_armies_to_assign = (int)floor((float)(countries_->size() / 3));
 
     //TODO implementation of the rules below
     /**
@@ -192,6 +192,14 @@ void Player::Reinforce() {
      * the player may place the armies on any country he owns, divided as he wants amongst his countries
 
      */
+     int num_of_armies_to_assign = 0;
+     int country_owned = countries_->size();
+     int continents_owned = continents_->size();
+
+
+
+
+
 }
 
 void Player::Attack() {
