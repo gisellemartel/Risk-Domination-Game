@@ -269,7 +269,9 @@ void Player::Fortify() {
         }
 
         if(valid_country) {
-            //cout << "country ID" << country_source_->GetCountryID() <<endl;
+            Map *neighbors = new Map("test map");//take out
+            //int value = neighbors->GetCountryById(country_source_->GetCountryID());
+            cout << "country ID" << neighbors->GetCountryById(country_source_->GetCountryID()) <<endl;//why??
             break;
         }
     }
@@ -286,7 +288,7 @@ void Player::Fortify() {
             if(country_target == country_source){
                 cout << "Target country cannot be the same as source country." << endl;
                 break;
-            }else if (country_target == *country_target_->GetCountryName() && neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//implement case insensitive
+            }else if (country_target == *country_target_->GetCountryName() && neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//causing problems implement case insensitive
                 cout<< "These countries are neighbors" << endl;
                 valid_country = true;
                 break;
@@ -307,6 +309,9 @@ void Player::Fortify() {
     }
 
     cout << "How many armies do you wish to move.(Enter a number)" << endl;
+    cout << country_source_->GetNumberOfArmies();
+    cin >> input;
+
 
 
     //TODO implementation of rules below
