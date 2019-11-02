@@ -20,6 +20,7 @@ class Country;
 class Dice;
 class Cards;
 class Hand;
+class Map;//added this for countries neighbors?
 
 class Player {
 private:

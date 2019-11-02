@@ -229,20 +229,97 @@ void Player::Attack() {
 }
 
 void Player::Fortify() {
+    string country_target;
+    string country_source;
+    string input;
+
     cout << "In fortify method" << endl;
+    cout << "Do you wish to fortify a country?(Enter y, any other char otherwise):" << endl;
+    cin >> input;
+
+    if (input.find('y') == -1) {
+        cout << "Ending Fortify phase" << endl;//"next player"?
+        return;//end Fortify phase
+    }
+
+    cout << "You have armies in the following countries:" << endl;
+    for (int i = 0; i < countries_->size(); i++) {
+        Country *countries_owned = countries_->at(i);
+        cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " units)" << endl;
+    }
+
+    while(true) {
+        bool valid_country = false;
+        cout << "Which country do you wish to move your armies from?(Choose a country)" << endl;
+        cin >> country_source;
+
+        for (int i = 0; i < countries_->size(); i++) {
+            Country *countries_owned = countries_->at(i);
+            if (country_source == *countries_owned->GetCountryName() && countries_owned->GetNumberOfArmies() > 1){//implement case insensitive
+                valid_country = true;
+                break;
+            }else if (country_source == *countries_owned->GetCountryName() && countries_owned->GetNumberOfArmies() <= 1){
+                cout << "Not enough units in this country. Please choose another country.\n" << endl;
+                break;
+            }
+
+            if(i == countries_->size()) {
+                cout << "Invalid country name entered, please choose another country.\n" << endl;
+            }
+        }
+
+        if(valid_country) {
+            break;
+        }
+    }
+
+    while(true) {
+        bool valid_country = false;
+        cout << "Which country to you wish to fortify?(Choose a country)" << endl;
+        cin >> country_target;
+
+
+
+        for (int i = 0; i < countries_->size(); i++) {
+            Country *countries_owned = countries_->at(i);
+            if(country_target == country_source){
+                cout << "Target country cannot be the same as source country." << endl;
+                break;
+            }else if (country_target == *countries_owned->GetCountryName() && ) {//implement case insensitive
+                break;
+            }
+        }
+
+
+        if(valid_country){
+            break;
+        }else{
+            cout << "Invalid country name entered, please choose another country.\n" << endl;
+        }
+    }
+
+
+
     //TODO implementation of rules below
     /**
      	The player may move any number of armies from one of his owed countries to the other,
          provided that there is a path between these two countries that is composed of countries that he owns.
+
+         X number of countries from source country to target country(with path)
+         X in range of  [1 to (number of armies on the source country - 1)]
 
      	Only one such move is allowed per fortification phase
 
      	Once the move is made, or the place forfeits his fortification phase, the player’s turn ends,
          and it is now the next player’s turn.
 
-     	Any player that does not control at least one country is removed from the game
 
-     	The game end at any time one of the players owns all the countries in the map
+
+      You must deliver a driver that demonstrates that 1) only valid
+countries can be selected as source/target; 2) only a valid number of armies can be moved; 3) the right number of
+armies is effectively moved.
+
+
      */
 
 }
