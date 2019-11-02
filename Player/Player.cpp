@@ -245,59 +245,68 @@ void Player::Fortify() {
     cout << "You have armies in the following countries:" << endl;
     for (int i = 0; i < countries_->size(); i++) {
         Country *countries_owned = countries_->at(i);
-        cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " units)" << endl;
+        cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " armies)" << endl;
     }
 
     while(true) {
         bool valid_country = false;
-        cout << "Which country do you wish to move your armies from?(Choose a country)" << endl;
+        cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
         cin >> country_source;
 
         for (int i = 0; i < countries_->size(); i++) {
-            Country *countries_owned = countries_->at(i);
-            if (country_source == *countries_owned->GetCountryName() && countries_owned->GetNumberOfArmies() > 1){//implement case insensitive
+            country_source_ = countries_->at(i);
+            if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() > 1){//implement case insensitive
                 valid_country = true;
                 break;
-            }else if (country_source == *countries_owned->GetCountryName() && countries_owned->GetNumberOfArmies() <= 1){
+            }else if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() <= 1){
                 cout << "Not enough units in this country. Please choose another country.\n" << endl;
                 break;
             }
 
-            if(i == countries_->size()) {
-                cout << "Invalid country name entered, please choose another country.\n" << endl;
+            if((i+1) == countries_->size()) {
+                cout << "Invalid country name entered. Please choose another country.\n" << endl;
             }
         }
 
         if(valid_country) {
+            //cout << "country ID" << country_source_->GetCountryID() <<endl;
             break;
         }
     }
 
     while(true) {
         bool valid_country = false;
-        cout << "Which country to you wish to fortify?(Choose a country)" << endl;
+        cout << "Which country to you wish to fortify?(Choose a country):" << endl;
         cin >> country_target;
 
-
-
+        //AreCountriesNeighbors(Country* country_a, Country* country_b){
         for (int i = 0; i < countries_->size(); i++) {
-            Country *countries_owned = countries_->at(i);
+            country_target_ = countries_->at(i);
+            Map *neighbors = new Map("test map");
             if(country_target == country_source){
                 cout << "Target country cannot be the same as source country." << endl;
                 break;
-            }else if (country_target == *countries_owned->GetCountryName() && ) {//implement case insensitive
+            }else if (country_target == *country_target_->GetCountryName() && neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//implement case insensitive
+                cout<< "These countries are neighbors" << endl;
+                valid_country = true;
                 break;
+            }else if(country_target == *country_target_->GetCountryName()){
+                cout <<"These countries are not neighbors. Please choose another country." << endl;
+                break;
+            }
+
+            if((i+1) == countries_->size()) {
+                cout << "Invalid country name entered. Please choose another country.\n" << endl;
             }
         }
 
-
         if(valid_country){
+            //cout <<"valid";
             break;
-        }else{
-            cout << "Invalid country name entered, please choose another country.\n" << endl;
         }
     }
 
+    cout << "How many armies do you wish to move.(Enter a number)" << endl;
 
 
     //TODO implementation of rules below

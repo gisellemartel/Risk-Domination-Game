@@ -29,6 +29,8 @@ private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
+    Country* country_source_;//added
+    Country* country_target_;//added
 
 public:
 
