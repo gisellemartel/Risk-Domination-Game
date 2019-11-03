@@ -281,10 +281,10 @@ void Player::Fortify() {
 
         for (size_t i = 0; i < countries_->size(); i++) {
             country_target_ = countries_->at(i);
-            if(country_target == *country_source_->GetCountryName()){
+            if(country_target == *country_source_->GetCountryName()) {
                 cout << "Target country cannot be the same as source country." << endl;
                 break;
-            }else if (country_target == *country_target_->GetCountryName() && country_target_->IsNeighbor(country_source_)){
+            }else if(country_target == *country_target_->GetCountryName() && map_loaded_->AreCountriesNeighbors(country_target_, country_source_)){
                 cout<< "These countries are neighbors:" << endl;
                 cout<< "There are " << country_source_->GetNumberOfArmies() << " armies in " << *country_source_->GetCountryName() << "." << endl;
                 cout<< "There are " << country_target_->GetNumberOfArmies() << " armies in " << *country_target_->GetCountryName() << "." << endl;
@@ -334,6 +334,9 @@ void Player::Fortify() {
                      << " armies)" << endl;
             }
             cout << *player_name_ << "'s turn end." << endl;
+            delete country_source_;
+            delete country_target_;
+            delete map_loaded_;
             return;
         }
     }

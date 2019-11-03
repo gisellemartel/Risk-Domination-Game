@@ -20,7 +20,7 @@ class Country;
 class Dice;
 class Cards;
 class Hand;
-class Map;//added this for countries neighbors?
+class Map;
 
 class Player {
 private:
@@ -29,8 +29,9 @@ private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
-    Country* country_source_;//added
-    Country* country_target_;//added
+    Country* country_source_;
+    Country* country_target_;
+    Map* map_loaded_;
 
 public:
 

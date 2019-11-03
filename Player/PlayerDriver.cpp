@@ -20,25 +20,47 @@ int main()
     string name = "Canada";
 
     auto* new_player = new Player("New player");
-    //added
-    auto* canada = new Country(1, new string("Canada"),1);
-    auto* us = new Country(2, new string("US"),1);
-    auto* mexico = new Country(3, new string("Mexico"),1);
+    auto* test_map = new Map("Test map");
 
-    canada->AddNeighborCountry(us);
-    us->AddNeighborCountry(canada);
-    us->AddNeighborCountry(mexico);
-    mexico->AddNeighborCountry(us);
+    test_map->AddContinentToMap("North America", 5, 1);
+    test_map->AddContinentToMap("South America", 2, 2);
+    test_map->AddContinentToMap("Europe", 5, 3);
+
+    cout << "----------------------------------------------------" << endl;
+    cout << "Displaying Continents of Map:\n" << endl;
+    test_map->DisplayContinents();
+
+    test_map->AddCountryToMap(1,"Canada", 1, 0, 0);
+    test_map->AddCountryToMap(2, "United States", 1, 0, 0);
+    test_map->AddCountryToMap(3, "Brazil", 2, 0, 0);
+    test_map->AddCountryToMap(4, "Mexico", 1, 0, 0);
+    test_map->AddCountryToMap(5, "Portugal", 3, 0, 0);
+
+    cout << "----------------------------------------------------" << endl;
+    cout << "\nDisplaying Countries of Map:\n" << endl;
+    test_map->DisplayCountries();
+
+    test_map->CreateAdjacencyMatrix();
+    test_map->SetTwoCountriesAsNeighbours(true, 0, 1);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 2, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 2);
+    test_map->SetTwoCountriesAsNeighbours(true, 3, 1);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 0);
+    test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
 
     //Player has Countries
-    new_player->AddCountryToCollection(canada);
-    new_player->AddCountryToCollection(us);
-    new_player->AddCountryToCollection(mexico);
+    new_player->AddCountryToCollection(test_map->GetCountryById(1));
+    new_player->AddCountryToCollection(test_map->GetCountryById(2));
+    new_player->AddCountryToCollection(test_map->GetCountryById(4));
 
-    //Armies in each Countries
-    canada->SetNumberOfArmies(5);
-    us->SetNumberOfArmies(9);
-    mexico->SetNumberOfArmies(4);
+    //Armies in each Country
+    test_map->GetCountryById(1)->SetNumberOfArmies(5);
+    test_map->GetCountryById(2)->SetNumberOfArmies(9);
+    test_map->GetCountryById(4)->SetNumberOfArmies(4);
 
     cout << "\nPlayer owns collection of following countries: " << endl;
     for(Country* country : *new_player->GetPlayersCountries()) {
@@ -73,9 +95,6 @@ int main()
     new_player->Reinforce();
 
     delete new_player;
-    delete canada;
-    delete us;
-    delete mexico;
 
     return 0;
 }
