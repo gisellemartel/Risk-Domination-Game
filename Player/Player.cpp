@@ -381,11 +381,14 @@ void AttackPhase::AttackHelper() {
         //prompt player to select a country they wish to attack with
         attacking_country_ = SelectCountryToAttackFrom();
         if (attacking_country_) {
+            cout << "You have chosen to attack with " << *attacking_country_->GetCountryName() << endl;
             defending_country_ = SelectCountryToAttack();
             if (!defending_country_) {
                 cout << "Cannot proceed attack, invalid country selected to attack!";
                 return;
             }
+
+            cout << "You have chosen to attack " << *defending_country_->GetCountryName() << endl;
         } else {
             cout << "Cannot proceed attack, invalid country selected to attack from!";
             return;
@@ -499,7 +502,7 @@ void AttackPhase::AttackHelper() {
 Country* AttackPhase::PromptPlayerToSelectAttacker() {
     cout << "Please choose which country you would like to attack from (enter by numerical id):\n";
     int attacker_id;
-    while(!(cin >> attacker_id) ) {
+    while(!(cin >> attacker_id) || attacker_id < 1 || !attacker_->DoesPlayerOwnCountry(attacker_id) ) {
         cin.clear();
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";
@@ -528,25 +531,38 @@ Country* AttackPhase::SelectCountryToAttackFrom() {
     return nullptr;
 }
 
-Country* AttackPhase::PromptPlayerToSelectDefender() {
+Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries) {
+    //Display neighboring countries
+    cout << "\nHere are the neighbouring countries to " << *attacking_country_->GetCountryName() << endl << endl;
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
+    for (const Country *country : *neighbouring_countries) {
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
+        cout << endl;
+    }
+
     cout << "Please choose which country you would like to attack (enter by numerical id):\n";
     int defender_id;
-    while(!(cin >> defender_id) ) {
+    while(!(cin >> defender_id) || defender_id < 1 || defender_id >= neighbouring_countries->size()) {
         cin.clear();
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";
     }
 
-    return defender_->GetCountryById(defender_id);
+    //debug string
+    game_map_->DisplayAdjacencyMatrix();
+    return (*neighbouring_countries)[defender_id];
 }
 
 //Prompt user for which country they would like to attack
 Country *AttackPhase::SelectCountryToAttack() {
-    //TODO: finish implementation of GetNeighbouringCountries
     vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(attacking_country_);
 
-    //TODO: print the neighbours and prompt user for selection using PromptPlayerToSelectDefender
+    if(neighbouring_countries->empty()) {
+        cout << *attacking_country_->GetCountryName() << " has no neighbours! Aborting operation\n";
+        return nullptr;
+    }
 
-    defending_country_ = PromptPlayerToSelectDefender();
+    //prompt player to select country to attack from list of neighbours
+    defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);
     return defending_country_;
 }

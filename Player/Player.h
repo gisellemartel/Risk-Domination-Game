@@ -81,7 +81,7 @@ private:
 
     //private helper methods
     Country* PromptPlayerToSelectAttacker();
-    Country* PromptPlayerToSelectDefender();
+    Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
 
 public:
 
@@ -92,12 +92,6 @@ public:
 
     AttackPhase& operator=(const AttackPhase& attack);
 
-//    vector<Country*>* GetCountriesThatCanAttack() const;
-////
-////    void SetAttacker(Player attacker);
-////    void SetVectorOfPlayers(vector<Player*>* players);
-////    void SetMap(Map* m);
-
     bool PromptUserToAttack();
     Country* SelectCountryToAttackFrom();
     Country* SelectCountryToAttack();
@@ -105,7 +99,6 @@ public:
 
     //TODO move everything in attackhelper to Attack() in Player class
     void AttackHelper();
-
 };
 
 
