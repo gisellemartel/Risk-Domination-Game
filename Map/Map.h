@@ -94,6 +94,8 @@ public:
     void AddNeighborCountry(Country* neighbor);
     void DisplayInfo() const;
     bool IsNeighbor(const Country* neighbor);
+
+    bool IsNeighborByName(string *neighborName, Country *neighbor);
     bool BelongsToContinent(const Continent* continent);
 };
 

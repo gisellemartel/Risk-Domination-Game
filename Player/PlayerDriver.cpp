@@ -25,7 +25,7 @@ int main()
     new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
     new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
     new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
-    cout << "\nPlayer owns collection of following countries: " << endl;
+    cout << "\nPlayer " << *new_player->GetPlayerName() << " owns collection of following countries: " << endl;
     for(Country* country : *new_player->GetPlayersCountries()) {
         cout << *country->GetCountryName() << endl;
     }
@@ -57,7 +57,24 @@ int main()
     new_player->Fortify();
     new_player->Reinforce();
 
-    delete new_player;
+    Attack *attack = new Attack(new_player, nullptr, nullptr);
 
+    string *cname = new string;
+    *cname = "Mexico";
+    //    cout << *displayName;
+
+    //attack->attackOrNot();
+
+
+
+    Country *soso = new Country(15, cname, 1);
+    cout << " test position of country" << new_player->positionOfCountry(soso);
+
+    attack->CheckBaseCountry();
+
+
+
+    delete new_player;
+    //delete attack;
     return 0;
 }

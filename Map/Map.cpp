@@ -225,6 +225,19 @@ bool Country::IsNeighbor(const Country* neighbor) {
     return false;
 }
 
+bool Country::IsNeighborByName(string *neighborName, Country *neighbor) {
+    //return neighbors_.contains(neighbor->GetCountryName());
+    for (Country *country : *neighbors_) {
+        if (*country->GetCountryName() == *neighborName) {
+            //set the neighbor object to the country that matched by name so that we can reference the object later in player.cpp
+            neighbor = country;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Country::AddArmyToCountry() {
     if(number_of_armies_ < 0) {
         number_of_armies_ = 1;

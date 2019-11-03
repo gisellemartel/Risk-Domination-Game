@@ -26,9 +26,15 @@ class Player {
 private:
     string* player_name_;
     vector<Country*>* countries_;
+public:
+    vector<Country *> *getCountries() const;
+
+private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
+    int *numOFArmy;
+
 
 public:
 
@@ -44,6 +50,9 @@ public:
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
+
+    void setArmies(int i);
+
 
 
     Country* GetCountryById(int id) const;
@@ -62,5 +71,54 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
+
+
+    void DisplayCountires() const;
+
+    int positionOfCountry(Country *country) const;
+
+    int positionOfCountryByName(string *countryName) const;
+
 };
+
+
+class Attack {
+
+
+private:
+
+    Player *attacker;
+    Player *defender;
+    vector<Player> *vectorOfPlayers;
+    Map *map;
+    Country *Base;
+    Country *Target;
+
+public:
+
+    Attack();
+
+    Attack(Player *p, vector<Player> *v, Map *m);
+
+    Country *CheckBaseCountry();
+
+    Country *ChecktargetCountry(Country *baseCountry);
+
+    void attack();
+
+    bool attackOrNot();
+
+    vector<Country *> getCountriesThatCanAttack();
+
+    void setAttacker(Player attacker);
+
+    void setVectorOfPlayers(vector<Player> *players);
+
+    void setMap(Map *m);
+
+    ~Attack();
+
+};
+
+
 #endif //PLAYER_H
