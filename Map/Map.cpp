@@ -520,7 +520,7 @@ bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
     return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
 }
 
-vector<Country*>* Map::GetNeighbouringCountries(Country* country) {
+vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) {
     int country_index = country->GetCountryID() - 1;
     vector<Country*>* neighbouring_countries = new vector<Country*>;
     vector<int> neighbouring_countries_indices;
@@ -538,7 +538,7 @@ vector<Country*>* Map::GetNeighbouringCountries(Country* country) {
                     if(adjacency_matrix_[row][col] && col != country_index) {
                         int id_of_neighbour = col + 1;
                         Country* neighbouring_country = GetCountryById(id_of_neighbour);
-                        if(neighbouring_country) {
+                        if(neighbouring_country && neighbouring_country->GetNumberOfArmies() > 0) {
                             neighbouring_countries->push_back(neighbouring_country);
                         }
                     }

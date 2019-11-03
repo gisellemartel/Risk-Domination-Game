@@ -99,6 +99,7 @@ public:
 
     //TODO move everything in attackhelper to Attack() in Player class
     void AttackHelper();
+    void PerformDiceRoll();
 };
 
 

@@ -140,7 +140,7 @@ public:
     void DisplayGraphTraversal(Country* origin_country, Country* destination_country) const;
 
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    vector<Country*>* GetNeighbouringCountries(Country* country);
+    vector<Country*>* GetNeighbouringCountriesWithArmies(Country* country);
 
     static bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     static bool IsCountryDuplicate(Country* country_a, Country* country_b);
