@@ -203,7 +203,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         return;
     }
 
-    cout << "Assigning " << number_of_armies_ << " armies to each player in round-robin fashion:\n";
+    cout << "* * * * * * * Assigning " << number_of_armies_ << " armies to each player in round-robin fashion... * * * * * * *\n";
 
     //create vector to track number of armies left to assign for each player
     vector<int> num_armies;
@@ -213,12 +213,11 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
     //assign countries to each player in round robin fashion
     while(!ContainsAllZeros(num_armies)) {
-        //debug string
-        cout << "Current turn: " << (current_turn_ + 1) << ".\n";
-
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_turn_) {
+                //debug string
+                cout << "\nCurrent turn is " << (current_turn_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
 
                 vector<Country*>& players_countries = *it.first->GetPlayersCountries();
 
@@ -233,12 +232,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
                 it.first->SetPlayersTurn(true);
               //  int random_country_index = GenerateRandomNumInRange(0, it.first->GetPlayersCountries()->size());
 
-                cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
-                for(const Country* country  : players_countries) {
-                  cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
-                }
-                cout << endl;
-
+                it.first->DisplayCountries();
                 cout << "Please choose which country you would like to assign armies to (enter by numerical id):\n";
 
                 int user_selection;
@@ -285,6 +279,29 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
 
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
+
+//Function purely for testing purposes
+void GameEngine::LoadMapDebugTest() {
+    exit_game_ = false;
+    game_map_ = new MapLoader("maploader/test-map-files/google.map");
+    if(game_map_->ParseMap()) {
+        num_of_players_ = 3;
+        CreatePlayers();
+        CreateCardsDeck();
+        AssignHandOfCardsToPlayers();
+        AssignDiceToPlayers();
+        game_start_->RandomlyDeterminePlayerOrder(players_);
+        game_start_->AssignCountriesToAllPlayers(players_, game_map_->GetParsedMap()->GetCountries());
+        game_start_->AssignArmiesToAllPlayers(players_);
+    }
+
+    //test Attack phase on each player
+    cout << "Testing the Attack phase" << endl;
+    for(Player* player : *players_) {
+        player->SetGameMap(game_map_->GetParsedMap());
+        player->Attack();
+    }
+}
 
 
 //private helper methods

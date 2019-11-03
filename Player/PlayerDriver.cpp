@@ -25,7 +25,7 @@ int main()
     new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
     new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
     new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
-    cout << "\nPlayer owns collection of following countries: " << endl;
+    cout << "\nPlayer " << *new_player->GetPlayerName() << " owns collection of following countries: " << endl;
     for(Country* country : *new_player->GetPlayersCountries()) {
         cout << *country->GetCountryName() << endl;
     }
@@ -58,6 +58,6 @@ int main()
     new_player->Reinforce();
 
     delete new_player;
-
+    //delete attack;
     return 0;
 }

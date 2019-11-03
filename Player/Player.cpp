@@ -7,6 +7,13 @@
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <utility>
+#include <string>
+#include <map>
+#include <iterator>
+#include <filesystem>
+#include <random>
+
 using namespace std;
 
 #include "Player.h"
@@ -17,6 +24,7 @@ Player::Player(string player_name) {
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
+    game_map_ = nullptr;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -26,6 +34,7 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     countries_ = countries_to_assign_to_player;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
+    game_map_ = nullptr;
 }
 
 Player::Player(const Player &player) {
@@ -38,6 +47,7 @@ Player::Player(const Player &player) {
     countries_ = player.countries_;
     risk_cards_ = player.risk_cards_;
     dice_roll_ = player.dice_roll_;
+    game_map_ = player.game_map_;
 }
 
 Player::~Player() {
@@ -49,6 +59,7 @@ Player::~Player() {
     delete risk_cards_;
     delete countries_;
     delete dice_roll_;
+    delete game_map_;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -63,6 +74,7 @@ Player& Player::operator=(const Player &player) {
     risk_cards_ = player.risk_cards_;
     countries_ = player.countries_;
     dice_roll_ = player.dice_roll_;
+    game_map_ = player.game_map_;
     return *this;
 }
 
@@ -71,7 +83,8 @@ bool Player::operator==(const Player& player) {
             && is_player_turn_ == player.is_player_turn_
             && countries_ == player.countries_
             && risk_cards_ == player.risk_cards_
-            && dice_roll_ == player.dice_roll_;
+            && dice_roll_ == player.dice_roll_
+            && game_map_ == player.game_map_;
 }
 
 void Player::SetPlayersTurn(bool is_turn) {
@@ -88,6 +101,14 @@ void Player::SetPlayerDice(Dice *dice) {
 
 void Player::SetPlayerHand(Hand* hand) {
     risk_cards_ = hand;
+}
+
+void Player::SetNumberOfArmies(int number_of_armies) {
+    number_of_armies_ = number_of_armies;
+}
+
+void Player::SetGameMap(Map* map) {
+    game_map_ = map;
 }
 
 Country* Player::GetCountryById(int id) const {
@@ -110,7 +131,7 @@ bool Player::DoesPlayerOwnCountry(int id) const {
     return false;
 }
 
-bool Player::isCurrentlyPlayersTurn() const {
+bool Player::IsCurrentlyPlayersTurn() const {
     return is_player_turn_;
 }
 
@@ -128,6 +149,39 @@ vector<Country*>* Player::GetPlayersCountries() const {
 
 Hand* Player::GetPlayersCards() const {
     return risk_cards_;
+}
+
+Map* Player::GetGameMap() const {
+    return game_map_;
+}
+
+//method to get country id
+int Player::FindPositionOfCountry(Country* country) const {
+    for (int i = 0; i < countries_->size(); i++) {
+
+        //to list all countries
+        //cout << *countries_->at(i)->GetCountryName() << endl;
+
+        if (*countries_->at(i)->GetCountryName() == *country->GetCountryName()) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int Player::FindPositionOfCountryByName(string* country_name) const {
+
+
+    for (int i = 0; i < countries_->size(); ++i) {
+
+        //to list all countries
+        //cout << *countries_->at(i)->GetCountryName() << endl;
+
+        if (*countries_->at(i)->GetCountryName() == *country_name) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 void Player::AddCountryToCollection(Country *country) {
@@ -169,6 +223,14 @@ void Player::DisplayPlayerStats() const {
     cout << result << "\n===================================================\n";
 }
 
+void Player::DisplayCountries() const {
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
+    for (const Country *country : *countries_) {
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
+        cout << endl;
+    }
+}
+
 void Player::Reinforce() {
     cout << "In reinforce method" << endl;
 
@@ -197,6 +259,9 @@ void Player::Reinforce() {
 
 void Player::Attack() {
     cout << "In attack method" << endl;
+
+    AttackPhase* attack_phase = new AttackPhase(this);
+    attack_phase->AttackHelper();
 
     //TODO implementation of rules below
     /**
@@ -248,6 +313,10 @@ void Player::Fortify() {
 
 }
 
+Reinforcement::Reinforcement() {
+
+}
+
 Reinforcement::Reinforcement(Cards* player_cards, int num_of_swaps){
     Cards* player_cards_ = player_cards;
     num_of_swaps_ = num_of_swaps;
@@ -259,19 +328,241 @@ Reinforcement::~Reinforcement(){
 
 }
 
-int Reinforcement::TotalReinforcementArmy(){
-    reinforcement_army = PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
+// Attack class implementation -----------------------------------------------------------------------------------------
+AttackPhase::AttackPhase() {
+    attacking_country_ = nullptr;
+    defending_country_ = nullptr;
+    defender_ = nullptr;
+    attacker_ = nullptr;
+    game_map_ = nullptr;
 }
 
-int Reinforcement::PerCountryReinforceArmy(){
-    return (int)floor((float)(turn_player_->GetPlayersCountries() / divider));
+AttackPhase::AttackPhase(Player* player) {
+    attacking_country_ = nullptr;
+    defending_country_ = nullptr;
+    defender_ = nullptr;
+    attacker_ = player;
+    game_map_ = player->GetGameMap();
 }
 
-int Reinforcement::PerContinentReinforce(){
+AttackPhase::~AttackPhase() {
+    game_map_ = nullptr;
+    delete game_map_;
 
-    return turn_player_->;
+    attacking_country_ = nullptr;
+    delete attacking_country_;
+
+    defending_country_ = nullptr;
+    delete defending_country_;
+
+    defender_ = nullptr;
+    delete defender_;
+
+    attacker_ = nullptr;
+    delete attacker_;
 }
 
-int Reinformcement::CardSwapReinforceArmy(){
-    return turn_player_->risk_cards_->exchange(num_of_swaps_);
+AttackPhase::AttackPhase(const AttackPhase& attack) {
+    attacking_country_ = attack.attacking_country_;
+    defending_country_ = attack.defending_country_;
+    defender_ = attack.defender_;
+    attacker_ = attack.attacker_;
+    game_map_ = attack.game_map_;
+}
+
+AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
+    attacking_country_ = attack.attacking_country_;
+    defending_country_ = attack.defending_country_;
+    defender_ = attack.defender_;
+    attacker_ = attack.attacker_;
+    game_map_ = attack.game_map_;
+    return *this;
+}
+
+bool AttackPhase::PromptUserToAttack() {
+    string answer;
+    cout << "Do you Mr/Miss " << *attacker_->GetPlayerName() << " want to issue an attack ? (enter 'y' to attack and any other character otherwise)" << endl;
+    while(!(cin >> answer)) {
+        cout << "Your answer is not correct, please choose a valid answer" << endl;
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+    return answer == "y" ? true : false;
+}
+
+void AttackPhase::AttackHelper() {
+    //ask player if they wish to carry-out an attack
+    if (PromptUserToAttack()) {
+        //prompt player to select a country they wish to attack with
+        attacking_country_ = SelectCountryToAttackFrom();
+        if (attacking_country_) {
+            cout << "You have chosen to attack with " << *attacking_country_->GetCountryName() << endl;
+            defending_country_ = SelectCountryToAttack();
+            if (!defending_country_) {
+                cout << "Cannot proceed attack, invalid country selected to attack!";
+                return;
+            }
+
+            cout << "You have chosen to attack " << *defending_country_->GetCountryName() << endl;
+        } else {
+            cout << "Cannot proceed attack, invalid country selected to attack from!";
+            return;
+        }
+    } else {
+        cout << "You do not wish to attack, aborting";
+        return;
+    }
+
+
+    PerformDiceRoll();
+
+//    //to try to attack again
+//    AttackHelper();
+}
+
+Country* AttackPhase::PromptPlayerToSelectAttacker() {
+    cout << "Please choose which country you would like to attack from (enter by numerical id):\n";
+    int attacker_id;
+    while(!(cin >> attacker_id) || attacker_id < 1 || !attacker_->DoesPlayerOwnCountry(attacker_id) ) {
+        cin.clear();
+        cin.ignore(132, '\n');
+        cout << "Invalid entry entered! Please try again: ";
+    }
+
+    return attacker_->GetCountryById(attacker_id);
+}
+
+//Select which country Player would like to be the attacker
+Country* AttackPhase::SelectCountryToAttackFrom() {
+
+    cout << "The Countries that you own are " << endl;
+    attacker_->DisplayCountries();
+
+    //ask the player to select the country the wish to attack with
+    Country* current_country = PromptPlayerToSelectAttacker();
+
+    if(current_country) {
+        while(current_country->GetNumberOfArmies() < 2) {
+            cout << "You do not have enough armies in country " << *current_country->GetCountryName() << ". Please Try Again." << endl;
+            current_country = PromptPlayerToSelectAttacker();
+        }
+        return current_country;
+    }
+
+    return nullptr;
+}
+
+Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries) {
+    //Display neighboring countries
+    cout << "\nHere are the neighbouring countries to " << *attacking_country_->GetCountryName() << endl << endl;
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
+    for (const Country *country : *neighbouring_countries) {
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
+        cout << endl;
+    }
+
+    cout << "Please choose which country you would like to attack (enter by numerical id):\n";
+    int defender_id;
+    while(!(cin >> defender_id) || defender_id < 1 || defender_id >= neighbouring_countries->size()) {
+        cin.clear();
+        cin.ignore(132, '\n');
+        cout << "Invalid entry entered! Please try again: ";
+    }
+
+    //debug string
+    game_map_->DisplayAdjacencyMatrix();
+    return (*neighbouring_countries)[defender_id];
+}
+
+//Prompt user for which country they would like to attack
+Country *AttackPhase::SelectCountryToAttack() {
+    vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(attacking_country_);
+
+    if(neighbouring_countries->empty()) {
+        cout << *attacking_country_->GetCountryName() << " has no neighbours with armies!\n";
+        return nullptr;
+    }
+
+    //prompt player to select country to attack from list of neighbours
+    defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);
+    return defending_country_;
+}
+
+void AttackPhase::PerformDiceRoll() {
+    //determine maximum number of rolls for each player based on rules of Risk
+    const int MAX_NUM_OF_DICE_ATTACKER = (attacking_country_->GetNumberOfArmies() - 1) < 3 ? attacking_country_ ->GetNumberOfArmies() : 3;
+    const int MAX_NUM_OF_DICE_DEFENDER = (defending_country_->GetNumberOfArmies()) < 2 ? defending_country_ ->GetNumberOfArmies() : 2;
+
+    //prompt each player to enter the num of dice they wish to roll
+    cout << "\nIt is " << *attacker_->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << " dice: ";
+    int attacker_num_dice;
+    while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
+        cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
+    }
+
+    cout << "\nIt is " << *defender_->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << " dice: ";
+    int defender_num_dice;
+    while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
+        cout << "You have entered an invalid number of dice to roll. Please try again: ";
+    }
+
+    vector<int> attacker_dice_rolls = attacker_->GetPlayerDice()->Roll(attacker_num_dice);
+    cout << "Attacker dice rolled:\n";
+    vector<int> defender_dice_rolls = defender_->GetPlayerDice()->Roll(defender_num_dice);
+    cout << "Defender dice rolled:\n";
+
+    //sort the rolls from highest value to lowest value
+    sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
+    reverse(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
+    sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
+    reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
+
+
+    //compare the values in pairwise manner
+//    int compares = 0;
+//    if (num_of_attacker_dice < num_of_defender_dice) {
+//        compares = num_of_attacker_dice;
+//    } else {
+//        compares = num_of_defender_dice;
+//    }
+//
+//    for (int i = 0; i < compares; ++i) {
+//        if (attackerDiceArray[i] <= defenderDiceArray[i]) {
+//            cout << "Defender has won this turn ! Attacker Role : " << attackerDiceArray[i] << "; Defender Role: "
+//                 << defenderDiceArray[i] << endl;
+//            attacking_country_->SetNumberOfArmies(attacking_country_->GetNumberOfArmies() - 1);
+//        } else {
+//            cout << "Attacker has won this turn ! Attacker Role : " << attackerDiceArray[i] << "; Defender Role: "
+//                 << defenderDiceArray[i] << endl;
+//            defending_country_->SetNumberOfArmies(defending_country_->GetNumberOfArmies() - 1);
+//        }
+//
+//
+//        cout << "Number of armies left on base country  <<Attacker>>" << attacking_country_->GetNumberOfArmies() << endl;
+//        cout << "Number of armies left on target country <<Defender>> : " << defending_country_->GetNumberOfArmies() << endl;
+//
+//        //attacker won
+//        if (defending_country_->GetNumberOfArmies() < 1) {
+//            cout << "Attacker " << *attacker_->GetPlayerName() << " has won this round of attack! They now own : "
+//                 << *defending_country_->GetCountryName() << endl;
+//            attacker_->AddCountryToCollection(defending_country_);
+//            //move army from base to target
+//            while (true) {
+//                cout << "Choose number of army to move between 1 and " << attacking_country_->GetNumberOfArmies() - 1 << endl;
+//                int moveNo;
+//                cin >> moveNo;
+//                if (moveNo > 0 && moveNo < attacking_country_->GetNumberOfArmies()) {
+//                    attacking_country_->SetNumberOfArmies(attacking_country_->GetNumberOfArmies() - moveNo);
+//                    defending_country_->SetNumberOfArmies(moveNo);
+//                    break;
+//                } else {
+//                    cout << "The number you choose is not valid, try again" << endl;
+//                }
+//            }
+//            break;
+//        } else if (attacking_country_->GetNumberOfArmies() < 1) {
+//            cout << "Attacker has no more army in base country, ending attack" << endl;
+//            break;
+//        }
+//    }
 }
