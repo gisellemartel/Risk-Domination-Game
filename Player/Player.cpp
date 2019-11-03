@@ -229,12 +229,12 @@ void Player::Attack() {
 }
 
 void Player::Fortify() {
-    string country_target;
-    string country_source;
+    int country_target;
+    int country_source;
     string input;
 
     cout << "In fortify method" << endl;
-    cout << "Do you wish to fortify a country?(Enter y, any other char otherwise):" << endl;
+    cout << "Do you wish to fortify a country? (Enter y, any other char otherwise):" << endl;
     cin >> input;
 
     if (input.find('y') == -1) {
@@ -243,64 +243,49 @@ void Player::Fortify() {
     }
 
     cout << "You have armies in the following countries:" << endl;
-    for (int i = 0; i < countries_->size(); i++) {
+    for (int i = 0; i < countries_->size(); ++i) {
         Country *countries_owned = countries_->at(i);
-        cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " armies)" << endl;
+        cout << "ID: " << countries_owned->GetCountryID() << "\t. Name:\t"<< *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " armies)" << endl;
     }
 
-    while(true) {
-        bool valid_country = false;
-        cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
-        cin >> country_source;
+    cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
+    while(!(cin >> country_source) || country_source < 1 || country_source >> countries_->size() ) {
+        cout << "Invalid country name entered. Please choose another country.\n" << endl;
+        cin.clear();
+        cin.ignore(132,'\n');
+    }
 
-        for (int i = 0; i < countries_->size(); i++) {
-            country_source_ = countries_->at(i);
-            if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() > 1){//implement case insensitive
-                valid_country = true;
-                break;
-            }else if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() <= 1){
-                cout << "Not enough units in this country. Please choose another country.\n" << endl;
-                break;
-            }
-
-            if((i+1) == countries_->size()) {
-                cout << "Invalid country name entered. Please choose another country.\n" << endl;
-            }
-        }
-
-        if(valid_country) {
-            break;
+    for (int i = 0; i < countries_->size(); i++) {
+        country_source_ = countries_->at(i);
+        if (country_source == country_source_->GetCountryID() && country_source_->GetNumberOfArmies() > 1){//implement case insensitive
+        } else if (country_source == country_source_->GetCountryID() && country_source_->GetNumberOfArmies() <= 1){
+            cout << "Not enough units in this country. Please choose another country.\n" << endl;
         }
     }
 
-    while(true) {
-        bool valid_country = false;
-        cout << "Which country to you wish to fortify?(Choose a country):" << endl;
-        cin >> country_target;
+    cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
+    while(!(cin >> country_target) || country_source < 1 || country_source >> countries_->size()) {
+        cout << "Invalid country name entered. Please choose another country.\n" << endl;
+        cin.clear();
+        cin.ignore(132,'\n');
+    }
 
-        for (int i = 0; i < countries_->size(); i++) {
-            country_target_ = countries_->at(i);
-            Map *neighbors = new Map("test map");
-            if(country_target == country_source){
-                cout << "Target country cannot be the same as source country." << endl;
-                break;
-            }else if (country_target == *country_target_->GetCountryName() &&
-                        neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//causing problems implement case insensitive
-                cout<< "These countries are neighbors" << endl;
-                valid_country = true;
-                break;
-            }else if(country_target == *country_target_->GetCountryName()){
-                cout <<"These countries are not neighbors. Please choose another country." << endl;
-                break;
-            }
+    bool valid_country = false;
+    cout << "Which country to you wish to fortify?(Choose a country):" << endl;
+    cin >> country_target;
 
-            if((i+1) == countries_->size()) {
-                cout << "Invalid country name entered. Please choose another country.\n" << endl;
-            }
-        }
+    for (int i = 0; i < countries_->size(); i++) {
+        country_target_ = countries_->at(i);
+        Map *neighbors = new Map("test map");
 
-        if(valid_country){
+        if(country_target == country_source){
+            cout << "Target country cannot be the same as source country." << endl;
             break;
+        } else if (country_target == country_target_->GetCountryID() &&
+                    neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//causing problems implement case insensitive
+            cout<< "These countries are neighbors" << endl;
+        } else if(country_target == country_target_->GetCountryID()){
+            cout <<"These countries are not neighbors. Please choose another country." << endl;
         }
     }
 
