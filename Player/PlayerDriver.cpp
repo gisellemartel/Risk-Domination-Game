@@ -19,15 +19,29 @@ int main()
     cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
-    Player* new_player = new Player("New player");
+    auto* new_player = new Player("New player");
+    //added
+    auto* canada = new Country(1, new string("Canada"),1);
+    auto* us = new Country(2, new string("US"),1);
+    auto* mexico = new Country(3, new string("Mexico"),1);
+
+    canada->AddNeighborCountry(us);
+    us->AddNeighborCountry(canada);
+    us->AddNeighborCountry(mexico);
+    mexico->AddNeighborCountry(us);
 
     //Player has Countries
-    new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
-    new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
-    new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
+    new_player->AddCountryToCollection(canada);
+    new_player->AddCountryToCollection(us);
+    new_player->AddCountryToCollection(mexico);
+
+    //Armies in each Countries
+    canada->SetNumberOfArmies(5);
+    us->SetNumberOfArmies(9);
+    mexico->SetNumberOfArmies(4);
+
     cout << "\nPlayer owns collection of following countries: " << endl;
     for(Country* country : *new_player->GetPlayersCountries()) {
-        country->SetNumberOfArmies(9);//set number of armies in country for Assignment6/Task6
         cout << *country->GetCountryName() << " (" << country->GetNumberOfArmies() << " armies)" << endl;
     }
 
@@ -59,6 +73,9 @@ int main()
     new_player->Reinforce();
 
     delete new_player;
+    delete canada;
+    delete us;
+    delete mexico;
 
     return 0;
 }

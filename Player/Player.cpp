@@ -229,92 +229,112 @@ void Player::Attack() {
 }
 
 void Player::Fortify() {
-    int country_target;
-    int country_source;
     string input;
 
     cout << "In fortify method" << endl;
-    cout << "Do you wish to fortify a country? (Enter y, any other char otherwise):" << endl;
+    cout << "Do you wish to fortify a country?(Enter y, any other char otherwise):" << endl;
     cin >> input;
 
     if (input.find('y') == -1) {
-        cout << "Ending Fortify phase" << endl;//"next player"?
-        return;//end Fortify phase
+        cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
+        return;//Skips/End Fortify phase
     }
 
     cout << "You have armies in the following countries:" << endl;
-    for (int i = 0; i < countries_->size(); ++i) {
-        Country *countries_owned = countries_->at(i);
-        cout << "ID: " << countries_owned->GetCountryID() << "\t. Name:\t"<< *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " armies)" << endl;
+    for (auto countries_owned : *countries_) {
+        cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies() << " armies)" << endl;
     }
 
-    cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
-    while(!(cin >> country_source) || country_source < 1 || country_source >> countries_->size() ) {
-        cout << "Invalid country name entered. Please choose another country.\n" << endl;
-        cin.clear();
-        cin.ignore(132,'\n');
-    }
+    //SOURCE COUNTRY
+    while(true) {
+        string country_source;
+        bool valid_country = false;
+        cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
+        cin >> country_source;
 
-    for (int i = 0; i < countries_->size(); i++) {
-        country_source_ = countries_->at(i);
-        if (country_source == country_source_->GetCountryID() && country_source_->GetNumberOfArmies() > 1){//implement case insensitive
-        } else if (country_source == country_source_->GetCountryID() && country_source_->GetNumberOfArmies() <= 1){
-            cout << "Not enough units in this country. Please choose another country.\n" << endl;
+        for (size_t i = 0; i < countries_->size(); i++) {
+            country_source_ = countries_->at(i);
+            if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() > 1){
+                valid_country = true;
+                break;
+            }else if (country_source == *country_source_->GetCountryName() && country_source_->GetNumberOfArmies() <= 1){
+                cout << "Not enough units in this country. Please choose another country.\n" << endl;
+                break;
+            }
+
+            if((i+1) == countries_->size()) {
+                cout << "Invalid country name entered. Please choose another country.\n" << endl;
+            }
         }
-    }
 
-    cout << "Which country do you wish to move your armies from?(Choose a country):" << endl;
-    while(!(cin >> country_target) || country_source < 1 || country_source >> countries_->size()) {
-        cout << "Invalid country name entered. Please choose another country.\n" << endl;
-        cin.clear();
-        cin.ignore(132,'\n');
-    }
-
-    bool valid_country = false;
-    cout << "Which country to you wish to fortify?(Choose a country):" << endl;
-    cin >> country_target;
-
-    for (int i = 0; i < countries_->size(); i++) {
-        country_target_ = countries_->at(i);
-        Map *neighbors = new Map("test map");
-
-        if(country_target == country_source){
-            cout << "Target country cannot be the same as source country." << endl;
+        if(valid_country) {
             break;
-        } else if (country_target == country_target_->GetCountryID() &&
-                    neighbors->AreCountriesNeighbors(neighbors->GetCountryById(country_target_->GetCountryID()), neighbors->GetCountryById(country_source_->GetCountryID()))){//causing problems implement case insensitive
-            cout<< "These countries are neighbors" << endl;
-        } else if(country_target == country_target_->GetCountryID()){
-            cout <<"These countries are not neighbors. Please choose another country." << endl;
         }
     }
 
-    cout << "How many armies do you wish to move.(Enter a number)" << endl;
-    cout << country_source_->GetNumberOfArmies();
-    cin >> input;
+    //TARGET COUNTRY
+    while(true) {
+        bool valid_country = false;
+        string country_target;
+        cout << "Which country to you wish to fortify?(Choose a country):" << endl;
+        cin >> country_target;
 
+        for (size_t i = 0; i < countries_->size(); i++) {
+            country_target_ = countries_->at(i);
+            if(country_target == *country_source_->GetCountryName()){
+                cout << "Target country cannot be the same as source country." << endl;
+                break;
+            }else if (country_target == *country_target_->GetCountryName() && country_target_->IsNeighbor(country_source_)){
+                cout<< "These countries are neighbors:" << endl;
+                cout<< "There are " << country_source_->GetNumberOfArmies() << " armies in " << *country_source_->GetCountryName() << "." << endl;
+                cout<< "There are " << country_target_->GetNumberOfArmies() << " armies in " << *country_target_->GetCountryName() << "." << endl;
+                valid_country = true;
+                break;
+            }else if(country_target == *country_target_->GetCountryName()){
+                cout <<"These countries are not neighbors. Please choose another country." << endl;
+                break;
+            }
 
+            if((i+1) == countries_->size()) {
+                cout << "Invalid country name entered. Please choose another country.\n" << endl;
+            }
+        }
 
-    //TODO implementation of rules below
-    /**
-     	The player may move any number of armies from one of his owed countries to the other,
-         provided that there is a path between these two countries that is composed of countries that he owns.
+        if(valid_country){
+            break;
+        }
+    }
 
-         X number of countries from source country to target country(with path)
-         X in range of  [1 to (number of armies on the source country - 1)]
+    //ARMIES
+    while(true) {
+        int armies_number;
+        cout << "How many armies do you wish to move.(Enter a number):" << endl;
 
-     	Only one such move is allowed per fortification phase
+        try{
+            cin >> input;
+            armies_number = stoi(input);
+        }catch(invalid_argument& e){
+            cout <<"Please enter a number." << endl;
+            continue;
+        }
 
-     	Once the move is made, or the place forfeits his fortification phase, the player’s turn ends,
-         and it is now the next player’s turn.
-
-
-
-      You must deliver a driver that demonstrates that 1) only valid
-countries can be selected as source/target; 2) only a valid number of armies can be moved; 3) the right number of
-armies is effectively moved.
-
-
-     */
-
+        if (armies_number > country_source_->GetNumberOfArmies()) {
+            cout << "You do not have enough armies in this country." << endl;
+        } else if (armies_number > country_source_->GetNumberOfArmies() - 1) {
+            cout << "You must leave at least 1 army in the country." << endl;
+        } else if (armies_number < 1) {
+            cout << "You must move at least 1 army." << endl;
+        } else {
+            cout << "Fortifying " << *country_target_->GetCountryName() << " with " << armies_number << " armies."
+                 << endl;
+            country_target_->SetNumberOfArmies(country_target_->GetNumberOfArmies() + armies_number);
+            country_source_->SetNumberOfArmies(country_source_->GetNumberOfArmies() - armies_number);
+            for (auto countries_owned : *countries_) {
+                cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies()
+                     << " armies)" << endl;
+            }
+            cout << *player_name_ << "'s turn end." << endl;
+            return;
+        }
+    }
 }
