@@ -192,13 +192,6 @@ void Player::Reinforce() {
      * the player may place the armies on any country he owns, divided as he wants amongst his countries
 
      */
-     int num_of_armies_to_assign = 0;
-     int country_owned = countries_->size();
-     int continents_owned = continents_->size();
-
-
-
-
 
 }
 
@@ -253,4 +246,32 @@ void Player::Fortify() {
      	The game end at any time one of the players owns all the countries in the map
      */
 
+}
+
+Reinforcement::Reinforcement(Cards* player_cards, int num_of_swaps){
+    Cards* player_cards_ = player_cards;
+    num_of_swaps_ = num_of_swaps;
+    divider = 3;
+    reinforcement_army = 0;
+}
+
+Reinforcement::~Reinforcement(){
+
+}
+
+int Reinforcement::TotalReinforcementArmy(){
+    reinforcement_army = PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
+}
+
+int Reinforcement::PerCountryReinforceArmy(){
+    return (int)floor((float)(turn_player_->GetPlayersCountries() / divider));
+}
+
+int Reinforcement::PerContinentReinforce(){
+
+    return turn_player_->;
+}
+
+int Reinformcement::CardSwapReinforceArmy(){
+    return turn_player_->risk_cards_->exchange(num_of_swaps_);
 }

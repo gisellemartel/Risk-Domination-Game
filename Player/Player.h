@@ -26,7 +26,6 @@ class Player {
 private:
     string* player_name_;
     vector<Country*>* countries_;
-    vector<Continent*>* continents_;
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
@@ -68,10 +67,19 @@ public:
 class Reinforcement
 {
 private:
+    Cards* player_cards_;
+    int num_of_swaps_;
     int divider;
+    int reinforcement_army;
+
 public:
     Reinforcement();
     ~Reinforcement();
+
+    int TotalReinforceArmy();
+    int PerCountryReinforceArmy();
+    int PerContinentReinforceArmy();
+    int CardSwapReinforceArmy();
 
 };
 #endif //PLAYER_H
