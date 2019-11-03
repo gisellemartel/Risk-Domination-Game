@@ -20,6 +20,7 @@ class Country;
 class Dice;
 class Cards;
 class Hand;
+class Map;
 
 class Player {
 private:
