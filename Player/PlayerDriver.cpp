@@ -21,16 +21,6 @@ int main()
 
     Player* new_player = new Player("New player");
 
-    //Assignment2/task6
-   // Map* test_map = new Map("Test Map");
-   // test_map->AddCountryToMap(1,"Canada", 1, 0, 0);
-   // test_map->AddCountryToMap(2, "United States", 1, 0, 0);
-    //test_map->AddCountryToMap(3, "Mexico", 1, 0, 0);
-
-   // SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index);
-
-
-
     //Player has Countries
     new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
     new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
