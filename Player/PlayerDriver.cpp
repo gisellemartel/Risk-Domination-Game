@@ -95,6 +95,7 @@ int main()
     new_player->Reinforce();
 
     delete new_player;
+    delete test_map;
 
     return 0;
 }
