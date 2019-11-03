@@ -278,14 +278,12 @@ void Attack::attack() {
     int numofAttackerDice = 0;
     int numberofDefenderDice = 0;
 
-    bool check = true;
 
-    Base = CheckBaseCountry();
+    if (attackOrNot()) {
+        Base = CheckBaseCountry();
 
-    if (Base) {
-        int BaseArmyNo = Base->GetNumberOfArmies();
-
-        if (attackOrNot()) {
+        if (Base) {
+            int BaseArmyNo = Base->GetNumberOfArmies();
             Target = ChecktargetCountry(Base);
             if (Target) {
             } else {
@@ -293,11 +291,11 @@ void Attack::attack() {
                 return;
             }
         } else {
-            cout << "You do not wish to attack, aborting";
+            cout << "Cannot proceed attack without base country";
             return;
         }
     } else {
-        cout << "Cannot proceed attack without base country";
+        cout << "You do not wish to attack, aborting";
         return;
     }
 
@@ -396,8 +394,14 @@ void Attack::attack() {
                 }
             }
             break;
+        } else if (Base->GetNumberOfArmies() < 1) {
+            cout << "Attacker has no more army in base country, ending attack" << endl;
+            break;
         }
     }
+
+//to try to attack again
+    Attack();
 }
 
 
