@@ -64,7 +64,6 @@ private:
     int coordinate_y_;
     Player* country_owner_;
     Continent* continent_;
-    vector<Country*>* neighbors_;
 
 public:
     //Constructors
@@ -91,11 +90,8 @@ public:
 
     //Methods -------------------------------------------------------
     void AddArmyToCountry();
-    void AddNeighborCountry(Country* neighbor);
     void DisplayInfo() const;
-    bool IsNeighbor(const Country* neighbor);
 
-    bool IsNeighborByName(string *neighborName, Country *neighbor);
     bool BelongsToContinent(const Continent* continent);
 };
 
@@ -144,6 +140,7 @@ public:
     void DisplayGraphTraversal(Country* origin_country, Country* destination_country) const;
 
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
+    vector<Country*>* GetNeighbouringCountries(Country* country);
 
     static bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     static bool IsCountryDuplicate(Country* country_a, Country* country_b);

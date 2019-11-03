@@ -57,23 +57,6 @@ int main()
     new_player->Fortify();
     new_player->Reinforce();
 
-    Attack *attack = new Attack(new_player, nullptr, nullptr);
-
-    string *cname = new string;
-    *cname = "Mexico";
-    //    cout << *displayName;
-
-    //attack->attackOrNot();
-
-
-
-    Country *soso = new Country(15, cname, 1);
-    cout << " test position of country" << new_player->positionOfCountry(soso);
-
-    attack->CheckBaseCountry();
-
-
-
     delete new_player;
     //delete attack;
     return 0;

@@ -21,23 +21,19 @@ class Dice;
 class Cards;
 class Hand;
 class Map;
+class Attack;
 
 class Player {
 private:
     string* player_name_;
     vector<Country*>* countries_;
-public:
-    vector<Country *> *getCountries() const;
-
-private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     bool is_player_turn_;
-    int *numOFArmy;
-
+    int  number_of_armies_;
+    Map* game_map_;
 
 public:
-
     explicit Player(string player_name);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
@@ -50,73 +46,65 @@ public:
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
+    void SetNumberOfArmies(int number_of_armies);
+    void SetGameMap(Map* map);
 
-    void setArmies(int i);
-
-
-
-    Country* GetCountryById(int id) const;
-    bool DoesPlayerOwnCountry(int id) const;
-    bool isCurrentlyPlayersTurn() const;
-    string* GetPlayerName() const;
-    Dice* GetPlayerDice() const;
     vector<Country*>* GetPlayersCountries() const;
+    Country* GetCountryById(int id) const;
     Hand* GetPlayersCards() const;
+    Dice* GetPlayerDice() const;
+    Map* GetGameMap() const;
+    string* GetPlayerName() const;
+    bool DoesPlayerOwnCountry(int id) const;
+    bool IsCurrentlyPlayersTurn() const;
+    int FindPositionOfCountry(Country* country) const;
+    int FindPositionOfCountryByName(string* country_name) const;
 
     void AddCountryToCollection(Country* country);
     void AddCardToCollection(Cards* card);
-
     void DisplayPlayerStats() const;
+    void DisplayCountries() const;
 
     void Reinforce();
     void Attack();
     void Fortify();
-
-
-    void DisplayCountires() const;
-
-    int positionOfCountry(Country *country) const;
-
-    int positionOfCountryByName(string *countryName) const;
-
 };
 
 
-class Attack {
-
-
+class AttackPhase {
 private:
+    Player* attacker_;
+    Player* defender_;
+    Map* game_map_;
+    Country* attacking_country_;
+    Country* defending_country_;
 
-    Player *attacker;
-    Player *defender;
-    vector<Player> *vectorOfPlayers;
-    Map *map;
-    Country *Base;
-    Country *Target;
+    //private helper methods
+    Country* PromptPlayerToSelectAttacker();
+    Country* PromptPlayerToSelectDefender();
 
 public:
 
-    Attack();
+    explicit AttackPhase();
+    AttackPhase(Player *player);
+    AttackPhase(const AttackPhase& attack);
+    ~AttackPhase();
 
-    Attack(Player *p, vector<Player> *v, Map *m);
+    AttackPhase& operator=(const AttackPhase& attack);
 
-    Country *CheckBaseCountry();
+//    vector<Country*>* GetCountriesThatCanAttack() const;
+////
+////    void SetAttacker(Player attacker);
+////    void SetVectorOfPlayers(vector<Player*>* players);
+////    void SetMap(Map* m);
 
-    Country *ChecktargetCountry(Country *baseCountry);
+    bool PromptUserToAttack();
+    Country* SelectCountryToAttackFrom();
+    Country* SelectCountryToAttack();
 
-    void attack();
 
-    bool attackOrNot();
-
-    vector<Country *> getCountriesThatCanAttack();
-
-    void setAttacker(Player attacker);
-
-    void setVectorOfPlayers(vector<Player> *players);
-
-    void setMap(Map *m);
-
-    ~Attack();
+    //TODO move everything in attackhelper to Attack() in Player class
+    void AttackHelper();
 
 };
 

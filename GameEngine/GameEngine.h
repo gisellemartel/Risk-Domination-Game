@@ -72,6 +72,9 @@ private:
     MapLoader* SelectFile();
 
 public:
+    // Function to perform unit tests
+    void LoadMapDebugTest();
+
     //Constructors
     explicit GameEngine();
     GameEngine(const GameEngine& game_engine);
