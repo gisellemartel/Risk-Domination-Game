@@ -435,7 +435,7 @@ Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbourin
 
     //debug string
     game_map_->DisplayAdjacencyMatrix();
-   
+
     //TODO: fix logical error here
     return (*neighbouring_countries)[defender_id];
 }
