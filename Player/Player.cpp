@@ -12,7 +12,6 @@
 #include <map>
 #include <iterator>
 #include <filesystem>
-#include <random>
 
 using namespace std;
 
@@ -462,7 +461,7 @@ bool AttackPhase::PromptUserToAttack() {
         cin.clear();
         cin.ignore(132, '\n');
     }
-    return answer == "y" ? true : false;
+    return answer == "y";
 }
 
 
@@ -665,7 +664,7 @@ bool FortifyPhase::PromptUserToFortify() {
         cin.clear();
         cin.ignore(132, '\n');
     }
-    return answer == "y" ? true : false;
+    return answer == "y";
 }
 
 void FortifyPhase::SelectSourceCountry() {

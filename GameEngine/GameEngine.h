@@ -30,7 +30,7 @@ private:
     static int GenerateRandomNumInRange(int lower_bound, int upper_bound);
     template <class V>
     static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
-    static bool HasValue(const vector<int>& values, const int value);
+    static bool HasValue(const vector<int>& values, int value);
     static bool ContainsAllZeros(const vector<int>& vector_to_check);
 
 public:
@@ -109,7 +109,7 @@ private:
 
 public:
     explicit GameLoop();
-    GameLoop(vector<Player*>* all_players);
+    explicit GameLoop(vector<Player*>* all_players);
     GameLoop(const GameLoop& game_loop);
     ~GameLoop();
 

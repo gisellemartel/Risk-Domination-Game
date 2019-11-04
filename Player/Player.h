@@ -36,7 +36,7 @@ private:
     Map* game_map_;
 
 public:
-    Player(string player_name);
+    explicit Player(string player_name);
     Player(string player_name, Map* game_map);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
@@ -118,7 +118,7 @@ private:
 public:
 
     explicit AttackPhase();
-    AttackPhase(Player *player);
+    explicit AttackPhase(Player *player);
     AttackPhase(const AttackPhase& attack);
     ~AttackPhase();
 
@@ -142,7 +142,7 @@ private:
 public:
 
     explicit FortifyPhase();
-    FortifyPhase(Player* player);
+    explicit FortifyPhase(Player* player);
     FortifyPhase(const FortifyPhase& fortify);
     ~FortifyPhase();
 

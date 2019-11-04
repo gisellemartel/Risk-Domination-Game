@@ -6,7 +6,6 @@
 
 #include "Cards.h"
 #include <iostream>
-#include <utility>
 #include <ctime>
 using namespace std;
 
@@ -197,6 +196,8 @@ int Hand::Exchange() {
             }
         }
     }
+
+    return 0;
 }
 
 size_t Hand::InputCard() {

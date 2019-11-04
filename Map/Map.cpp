@@ -76,8 +76,8 @@ vector<Country*>* Continent::GetCountriesInContinent() const{
 
 void Continent::AddCountryToContinent(const Country& country){
     //need to add condition to check if country is already in any other continent
-    for(int i = 0; i<countries_in_continent_->size();i++) {
-        if(*countries_in_continent_->at(i) == (country)) {
+    for(auto & i : *countries_in_continent_) {
+        if(*i == (country)) {
             cout << "Country already in continent";
             return;
         }
@@ -453,7 +453,7 @@ void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_co
     }
 
     if(index_a < index_b) {
-        int current_country = index_a;
+        size_t current_country = index_a;
 
         for (size_t i = 0; i < num_countries_; ++i) {
 
@@ -589,7 +589,7 @@ string Map::GenerateListOfNeighboringCountries(Country *country) const {
         return "";
     }
 
-    string neighbour_list = "";
+    string neighbour_list = neighbour_list;
 
     for(int neighbour = 0; neighbour < neighbours->size(); ++neighbour) {
         string name;
