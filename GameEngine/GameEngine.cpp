@@ -656,12 +656,13 @@ GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
 
 void GameLoop::StartLoop(){
     int turn = 0;
+    cout<<"Game Start"<<endl;
     while(WinCondition(all_players_->at(turn))){
 
         if(!all_players_->at(turn)->GetPlayersCountries()->empty()){
             all_players_->at(turn)->Reinforce();
-            all_players_->at(turn)->Attack();
-            all_players_->at(turn)->Fortify();
+//            all_players_->at(turn)->Attack();
+//            all_players_->at(turn)->Fortify();
         }
 
         turn += 1;
@@ -671,9 +672,12 @@ void GameLoop::StartLoop(){
 }
 
 bool GameLoop::WinCondition(Player* cur_player){
+
     for(int i=0; i<cur_player->GetGameMap()->GetCountries()->size();i++){
         if(cur_player->DoesPlayerOwnCountry(cur_player->GetGameMap()->GetCountries()->at(i)->GetCountryID()))
             return false;
     }
+    cout<<"Game Over"<<endl;
+    cout<<"Winner: "<<cur_player->GetPlayerName();
     return true;
 }
