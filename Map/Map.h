@@ -17,6 +17,7 @@
 using namespace std;
 
 class Player;
+class Country;
 
 //Continent class ------------------------------------------------------------------------------------
 class Continent{

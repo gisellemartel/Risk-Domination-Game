@@ -36,10 +36,7 @@ int main()
     new_player->AddCardToCollection(new Cards("artillery"));
     cout << "\nPlayer owns collection of following cards: " << endl;
 
-    for(size_t i = 0; i < new_player->GetPlayersCards()->GetNumberOfCardsInHand(); ++i) {
-        cout << "card " << (i + 1) << ": ";
-        new_player->GetPlayersCards()->DisplayHand();
-    }
+    new_player->GetPlayersCards()->DisplayHand();
 
     //Player has Dice Rolling mechanism
     cout << "\nPlayer owns dice rolling mechanism and can roll 2 dice: " << endl;
@@ -53,8 +50,8 @@ int main()
 
     //Methods
     cout << "\nPlayer implements Attack, Fortify, and Reinforce methods:" << endl;
-    new_player->Attack();
-    new_player->Fortify();
+//    new_player->Attack();
+//    new_player->Fortify();
     new_player->Reinforce();
 
     delete new_player;

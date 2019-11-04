@@ -145,9 +145,14 @@ int Hand::Exchange(int exchanges_done) {
         cout << "Not enough cards to exchange" << endl;
         return 0;
     }
-
-    size_t card_1 = 0, card_2 = 0, card_3 = 0;
     string user_response;
+    if(cards_in_hand_->size() < 5){
+        cout<< "Do you wish to exchange cards? Input 'y' to exchange, else no: ";
+        cin >> user_response;
+        if(user_response != "y")
+            return 0;
+    }
+    size_t card_1 = 0, card_2 = 0, card_3 = 0;
     bool valid_input = false;
     bool valid_cards = false;
 

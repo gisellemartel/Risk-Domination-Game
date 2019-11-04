@@ -77,7 +77,7 @@ vector<Country*>* Continent::GetCountriesInContinent() const{
 void Continent::AddCountryToContinent(const Country& country){
     //need to add condition to check if country is already in any other continent
     for(int i = 0; i<countries_in_continent_->size();i++) {
-        if(countries_in_continent_->at(i)->GetCountryName()->compare(country.GetCountryName()) == 0) {
+        if(*countries_in_continent_->at(i) == (country)) {
             cout << "Country already in continent";
             return;
         }

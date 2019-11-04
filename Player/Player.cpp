@@ -230,11 +230,16 @@ void Player::Reinforce() {
         cout<<"Currently on Country "<<endl;
         countries_->at(looping_counter)->DisplayInfo();
         while(true){
-            cout<<"Armies to add to current country: "<<endl;
+
+            cout<<"Armies to assign: "<<bonus_army<<"\nArmies to add to current country: ";
             cin >> reinforce_value;
-            if(reinforce_value < bonus_army)
-                break;
-            cout<<"You must add a valid number to add"<<endl;
+            while (cin.fail() || reinforce_value > bonus_army || reinforce_value < 0) {
+                cout<<"Invalid input. Pick a valid number: ";
+                cin.clear();
+                cin.ignore(256, '\n');
+                cin >> reinforce_value;
+            }
+            break;
         }
 
         cout<<reinforce_value<<" armies added to current country"<<endl;
@@ -245,6 +250,7 @@ void Player::Reinforce() {
         looping_counter = looping_counter % countries_->size();
     }
 }
+
 
 void Player::Attack() {
     cout << "In attack method" << endl;
@@ -335,7 +341,10 @@ Reinforcement& Reinforcement::operator=(const Reinforcement& reinforce){
 }
 
 int Reinforcement::TotalReinforceArmy(){
-    return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
+
+//    return PerContinentReinforceArmy();
+    return CardSwapReinforceArmy();
+//    return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
 }
 
 int Reinforcement::PerCountryReinforceArmy(){
@@ -347,7 +356,7 @@ int Reinforcement::PerCountryReinforceArmy(){
 int Reinforcement::PerContinentReinforceArmy(){
     int armies_from_continent_bonus = 0;
     for(int i = 0; i<turn_player_->GetGameMap()->GetContinents()->size();i++){
-        for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent();i++){
+        for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent()->size();i++){
             if(!turn_player_->DoesPlayerOwnCountry(turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent()->at(j)->GetCountryID()))
                 return 0;
         }
@@ -357,7 +366,13 @@ int Reinforcement::PerContinentReinforceArmy(){
 }
 
 int Reinforcement::CardSwapReinforceArmy(){
-    return turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
+    int army_from_cards = 0;
+    while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5)
+        army_from_cards =+ turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
+    if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() <3)
+        return army_from_cards;
+    army_from_cards =+ turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
+    return army_from_cards;
 }
 
 
