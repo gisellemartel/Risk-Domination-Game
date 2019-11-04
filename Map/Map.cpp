@@ -101,7 +101,6 @@ Country::Country(int country_ID, string* country_name, int continent_ID) {
     coordinate_y_ = 0;
     country_owner_ = nullptr;
     continent_ = nullptr;
-    neighbors_ = new vector<Country*>;
 }
 
 Country::Country(int country_ID, string* country_name, int continent_ID, int coordinate_x, int coordinate_y) {
@@ -113,7 +112,6 @@ Country::Country(int country_ID, string* country_name, int continent_ID, int coo
     number_of_armies_ = 0;
     country_owner_ = nullptr;
     continent_ = nullptr;
-    neighbors_ = new vector<Country*>;
 }
 
 Country::Country(const Country &country) {
@@ -125,14 +123,9 @@ Country::Country(const Country &country) {
     coordinate_y_ = country.coordinate_y_;
     country_owner_ = country.country_owner_;
     continent_ = country.continent_;
-    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
-       neighbors_[i] = country.neighbors_[i];
-    }
-    neighbors_ = country.neighbors_;
 }
 
 Country::~Country() {
-    delete neighbors_;
     delete continent_;
 }
 
@@ -145,10 +138,6 @@ Country& Country::operator=(const Country &country) {
     coordinate_y_ = country.coordinate_y_;
     country_owner_ = country.country_owner_;
     continent_ = country.continent_;
-    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
-        neighbors_[i] = country.neighbors_[i];
-    }
-    neighbors_ = country.neighbors_;
     return *this;
 }
 
@@ -162,10 +151,6 @@ bool Country::operator==(const Country &country) {
     is_equal &= coordinate_y_ == country.coordinate_y_;
     is_equal &= country_owner_ == country.country_owner_;
     is_equal &= continent_ == country.continent_;
-
-    for(size_t i = 0; i < country.neighbors_->size(); ++i) {
-        is_equal &= neighbors_[i] == country.neighbors_[i];
-    }
 
     return is_equal;
 }
@@ -210,32 +195,23 @@ Player* Country::GetCountryOwner() const {
 
 //TODO implementation
 bool Country::BelongsToContinent(const Continent* continent) {
-
     return GetContinentID() == continent->GetContinentID();
-}
-
-bool Country::IsNeighbor(const Country* neighbor) {
-    //return neighbors_.contains(neighbor->GetCountryName());
-    for(Country* country : *neighbors_) {
-        if (country == neighbor) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 void Country::AddArmyToCountry() {
     if(number_of_armies_ < 0) {
         number_of_armies_ = 1;
     }
-
     ++number_of_armies_;
 }
 
-void Country::AddNeighborCountry(Country* neighbor) {
-    //TODO add condition which checks if neighbour does not already exist
-    neighbors_->push_back(neighbor);
+void Country::RemoveArmiesFromCountry(int num_armies_to_remove) {
+
+    if(num_armies_to_remove > number_of_armies_ || num_armies_to_remove < 1) {
+        cout << "Invalid number of armies to remove. Aborting operation\n";
+        return;
+    }
+    number_of_armies_ -= num_armies_to_remove;
 }
 
 void Country::DisplayInfo() const{
@@ -245,6 +221,7 @@ void Country::DisplayInfo() const{
             << "Occupying Army Value: " << GetNumberOfArmies() << endl
             << "Continent: " << GetContinentID() << endl << endl;
 }
+
 // END OF COUNTRY CLASS ----------------------------------------------------------------------------------------
 
 //START OF MAP CLASS FUNCTIONS ---------------------------------------------------------------------------------
@@ -550,5 +527,35 @@ bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
 
 bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
     return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
+}
+
+vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) {
+    int country_index = country->GetCountryID() - 1;
+    vector<Country*>* neighbouring_countries = new vector<Country*>;
+    vector<int> neighbouring_countries_indices;
+
+    //need access to the map object
+    if(country_index < 0 || country_index > num_countries_) {
+        cout << "Country " << *country->GetCountryName() << " has no neighbours!\n";
+    } else {
+        //iterate over adjacency matrix to obtain the list of neighbours
+        for(int row = 0; row < num_countries_; ++row) {
+            //find the current country's neighbour list
+            if(row == country_index) {
+                for(int col = 0; col < num_countries_; ++col) {
+                    //find the countries that are neighbours
+                    if(adjacency_matrix_[row][col] && col != country_index) {
+                        int id_of_neighbour = col + 1;
+                        Country* neighbouring_country = GetCountryById(id_of_neighbour);
+                        if(neighbouring_country && neighbouring_country->GetNumberOfArmies() > 0) {
+                            neighbouring_countries->push_back(neighbouring_country);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return neighbouring_countries;
 }
 //--------------------------------------------------------------------------------------------

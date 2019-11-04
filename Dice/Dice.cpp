@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ vector<int> Dice::Roll(int num_of_dice) {
     mt19937 randomGenerator(rd());
     uniform_int_distribution<int> dist(1, 6); //random number of equal distribution from 1 to 6
 
-    for (size_t i = 0; i < num_of_dice; i++) {
+    for (std::size_t i = 0; i < num_of_dice; i++) {
         int dice_roll = dist(randomGenerator);
         dice_rolls.push_back(dice_roll);
         roll_num_stats_->at((size_t)dice_roll - 1)++;

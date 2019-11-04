@@ -21,20 +21,23 @@ class Dice;
 class Cards;
 class Hand;
 class Map;
+class Continent;
 
 class Player {
+
 private:
+    int number_of_armies_;
+    bool is_player_turn_;
     string* player_name_;
     vector<Country*>* countries_;
     Hand* risk_cards_;
     Dice* dice_roll_;
-    bool is_player_turn_;
+    Map* game_map_;
+
     Country* country_source_;
     Country* country_target_;
-    Map* map_loaded_;
 
 public:
-
     explicit Player(string player_name);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
@@ -47,23 +50,106 @@ public:
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
+    void SetNumberOfArmies(int number_of_armies);
+    void SetGameMap(Map* map);
 
-
-    Country* GetCountryById(int id) const;
-    bool DoesPlayerOwnCountry(int id) const;
-    bool isCurrentlyPlayersTurn() const;
-    string* GetPlayerName() const;
-    Dice* GetPlayerDice() const;
     vector<Country*>* GetPlayersCountries() const;
+    Country* GetCountryById(int id) const;
     Hand* GetPlayersCards() const;
+    Dice* GetPlayerDice() const;
+    Map* GetGameMap() const;
+    string* GetPlayerName() const;
+
+    bool DoesPlayerOwnCountry(int id) const;
+    bool IsCurrentlyPlayersTurn() const;
+
+    int Find(Country* country) const;
 
     void AddCountryToCollection(Country* country);
+    void RemoveCountryFromCollection(Country* country);
     void AddCardToCollection(Cards* card);
-
     void DisplayPlayerStats() const;
+    void DisplayCountries() const;
 
     void Reinforce();
     void Attack();
     void Fortify();
+};
+
+class Reinforcement
+{
+private:
+    Cards* player_cards_;
+    int num_of_swaps_;
+    int divider;
+    int reinforcement_army;
+
+public:
+    Reinforcement();
+    Reinforcement(Cards* player_cards, int num_of_swaps);
+    ~Reinforcement();
+
+    int TotalReinforceArmy();
+
+};
+
+
+// AttackPhase --------------------------------------
+class AttackPhase {
+
+private:
+    Player* attacker_;
+    Player* defender_;
+    Map* game_map_;
+    Country* attacking_country_;
+    Country* defending_country_;
+
+    //private helper methods
+    Country* PromptPlayerToSelectAttacker();
+    Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
+
+public:
+
+    explicit AttackPhase();
+    AttackPhase(Player *player);
+    AttackPhase(const AttackPhase& attack);
+    ~AttackPhase();
+
+    AttackPhase& operator=(const AttackPhase& attack);
+
+    void SetAttackingCountry(Country* country);
+    void SetDefendingCountry(Country* country);
+
+    Country* GetAttackingCountry() const;
+    Country* GetDefendingCountry() const;
+
+    bool PromptUserToAttack();
+    Country* SelectCountryToAttackFrom();
+    Country* SelectCountryToAttack();
+    void PerformDiceRoll();
+};
+
+
+class FortifyPhase {
+
+private:
+    Player* attacker_;
+    Player* defender_;
+    Map* game_map_;
+    Country* attacking_country_;
+    Country* defending_country_;
+
+public:
+
+    explicit FortifyPhase();
+    FortifyPhase(Player* player);
+    FortifyPhase(const FortifyPhase& fortify);
+    ~FortifyPhase();
+
+    FortifyPhase& operator=(const FortifyPhase& fortify);
+
+
+    void FortifyHelper();
+
 };
 #endif //PLAYER_H

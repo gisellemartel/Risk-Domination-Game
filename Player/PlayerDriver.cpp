@@ -19,8 +19,7 @@ int main()
     cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
-    auto* new_player = new Player("New player");
-    auto* test_map = new Map("Test map");
+    Map* test_map = new Map("Test map");
 
     test_map->AddContinentToMap("North America", 5, 1);
     test_map->AddContinentToMap("South America", 2, 2);
@@ -52,50 +51,12 @@ int main()
     test_map->SetTwoCountriesAsNeighbours(false, 3, 0);
     test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
 
-    //Player has Countries
-    new_player->AddCountryToCollection(test_map->GetCountryById(1));
-    new_player->AddCountryToCollection(test_map->GetCountryById(2));
-    new_player->AddCountryToCollection(test_map->GetCountryById(4));
-
     //Armies in each Country
     test_map->GetCountryById(1)->SetNumberOfArmies(5);
     test_map->GetCountryById(2)->SetNumberOfArmies(9);
     test_map->GetCountryById(4)->SetNumberOfArmies(4);
 
-    cout << "\nPlayer owns collection of following countries: " << endl;
-    for(Country* country : *new_player->GetPlayersCountries()) {
-        cout << *country->GetCountryName() << " (" << country->GetNumberOfArmies() << " armies)" << endl;
-    }
-
-    //Player has Cards
-    new_player->AddCardToCollection(new Cards("calvary"));
-    new_player->AddCardToCollection(new Cards("infantry"));
-    new_player->AddCardToCollection(new Cards("artillery"));
-    cout << "\nPlayer owns collection of following cards: " << endl;
-
-    for(size_t i = 0; i < new_player->GetPlayersCards()->GetNumberOfCardsInHand(); ++i) {
-        cout << "card " << (i + 1) << ": ";
-        new_player->GetPlayersCards()->DisplayHand();
-    }
-
-    //Player has Dice Rolling mechanism
-    cout << "\nPlayer owns dice rolling mechanism and can roll 2 dice: " << endl;
-    new_player->SetPlayerDice(new Dice);
-    vector<int> dice_rolls = new_player->GetPlayerDice()->Roll(2);
-    cout << "Dice rolled:\n";
-    for (int & dice_roll : dice_rolls) {
-        cout << ' ' << dice_roll << endl;//print dice rolls
-    }
-    cout << "Total Rolls: " << new_player->GetPlayerDice()->GetTotalRolls() << endl;
-
-    //Methods
-    cout << "\nPlayer implements Attack, Fortify, and Reinforce methods:" << endl;
-    new_player->Attack();
-    new_player->Fortify();
-    new_player->Reinforce();
-
-    delete new_player;
+    test_map = nullptr;
     delete test_map;
-
     return 0;
 }
