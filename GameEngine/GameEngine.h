@@ -72,8 +72,8 @@ private:
     MapLoader* SelectFile();
 
 public:
-    // Function to perform unit tests
-    void LoadMapDebugTest();
+    // Function to test Player functions within game
+    void TestAutoLoadMapAndCreateGame(string file_path);
 
     //Constructors
     explicit GameEngine();

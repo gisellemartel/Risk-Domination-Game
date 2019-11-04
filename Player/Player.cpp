@@ -435,7 +435,7 @@ Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbourin
     cout << "Please choose which country you would like to attack (enter by numerical id):\n";
     int defender_id = -1;
     Country* defender = nullptr;
-    while(!(cin >> defender_id) || defender_id < 1 || !defender = GetCountryInVectorById(neighbouring_countries, defender_id)) {
+    while(!(cin >> defender_id) || defender_id < 1 || !(defender = GetCountryInVectorById(neighbouring_countries, defender_id))) {
         cin.clear();
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";

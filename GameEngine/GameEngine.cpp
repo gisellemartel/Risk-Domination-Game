@@ -281,9 +281,9 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::LoadMapDebugTest() {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path) {
     exit_game_ = false;
-    loaded_map_ = new MapLoader("maploader/test-map-files/google.map");
+    loaded_map_ = new MapLoader(file_path);
     if(loaded_map_->ParseMap()) {
         num_of_players_ = 3;
         CreatePlayers();
@@ -297,22 +297,6 @@ void GameEngine::LoadMapDebugTest() {
 
     for(Player* player : *players_) {
         player->SetGameMap(loaded_map_->GetParsedMap());
-    }
-
-    cout << "Testing the Reinforce phase" << endl;
-    for(Player* player : *players_) {
-        player->Reinforce();
-    }
-
-    cout << "Testing the Attack phase" << endl;
-    for(Player* player : *players_) {
-        player->Attack();
-    }
-
-    //test Attack phase on each player
-    cout << "Testing the Fortify  phase" << endl;
-    for(Player* player : *players_) {
-        player->Fortify();
     }
 }
 

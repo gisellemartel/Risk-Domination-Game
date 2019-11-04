@@ -28,6 +28,7 @@ class Player {
 private:
 private:
     bool is_player_turn_;
+    int number_of_armies_;
     string* player_name_;
     vector<Country*>* countries_;
     Hand* risk_cards_;
@@ -106,6 +107,7 @@ private:
 
     //private helper methods
     Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
+    Country* GetCountryInVectorById(vector<Country*>* countries, int country_id) const;
 
 public:
 
@@ -130,9 +132,6 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
-
-    //private helper method
-    Country* AttackPhase::GetCountryInVectorById(vector<Country*>* countries, int country_id) const;
 
 public:
 
