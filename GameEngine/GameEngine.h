@@ -102,4 +102,24 @@ public:
     void DisplayCurrentGame();
 };
 
+class GameLoop{
+private:
+    vector<Player*>* all_players_;
+    vector<Player*>* active_players_;
+    int num_of_swaps_;
+
+public:
+    explicit GameLoop();
+    GameLoop(vector<Player*>* all_players);
+    GameLoop(const GameLoop& game_loop);
+    ~GameLoop();
+
+    GameLoop& operator=(const GameLoop& game_loop);
+
+    int GetNumberOfSwaps() const;
+
+    void StartLoop();
+    bool WinCondition(Player* cur_player);
+};
+
 #endif

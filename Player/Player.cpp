@@ -313,11 +313,9 @@ Reinforcement::Reinforcement(Player* turn_player, int num_of_swaps){
 }
 
 Reinforcement::~Reinforcement(){
-    for(int i=0; i < turn_player_->size(); i++){
-        turn_player_->at(i) = nullptr;
-        delete turn_player_;
-    }
-    delete[] turn_player_;
+    turn_player_ = nullptr;
+    delete turn_player_;
+
 }
 
 Reinforcement::Reinforcement(const Reinforcement& reinforce){
@@ -346,16 +344,19 @@ int Reinforcement::PerCountryReinforceArmy(){
 }
 
 int Reinforcement::PerContinentReinforceArmy(){
+    int armies_from_continent_bonus = 0;
     for(int i = 0; i<turn_player_->GetGameMap()->GetContinents()->size();i++){
-        for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->GetCountriesInContinent();i++){
-            if(turn_player_->GetGameMap()->GetContinents()->GetCountriesInContinent() != turn_player_->GetPlayerName())
+        for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent();i++){
+            if(turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent()->at(j) != turn_player_->GetPlayerName())
+                return 0;
         }
+        armies_from_continent_bonus += turn_player_->GetGameMap()->GetContinents()->at(i)->GetContinentArmyValue();
     }
-    return 0;
+    return armies_from_continent_bonus;
 }
 
 int Reinforcement::CardSwapReinforceArmy(){
-
+    return turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
 }
 
 

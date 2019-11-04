@@ -622,3 +622,58 @@ void GameEngine::DisplayCurrentGame() {
 //    game_map_->GetParsedMap()->DisplayContinents();
     cout << endl;
 }
+
+// GAME LOOP CLASS --------------------------------------------------------------------------------------------------
+
+GameLoop::GameLoop(){
+    all_players_ = nullptr;
+    active_players_ = nullptr;
+    int num_of_swaps_ = 0;
+}
+
+GameLoop::GameLoop(vector<Player*>* all_players){
+    all_players_ = all_players;
+    active_players_ = all_players;
+}
+
+GameLoop::GameLoop(const GameLoop& game_loop){
+    all_players_ = game_loop.all_players_;
+    active_players_ = game_loop.active_players_;
+    num_of_swaps_ = game_loop.num_of_swaps_;
+}
+
+GameLoop::~GameLoop(){
+    for(int i=0; i<all_players_->size();i++){
+        all_players_->at(i) = nullptr;
+        delete all_players_->at(i);
+    }
+    delete[] all_players_;
+}
+
+
+GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
+    all_players_ = game_loop.all_players_;
+    active_players_ = game_loop.active_players_;
+    num_of_swaps_ = game_loop.num_of_swaps_;
+    return *this;
+}
+
+void GameLoop::StartLoop(){
+    int turn = 0;
+    while(WinCondition(active_players_->at(turn))){
+        active_players_->at(turn)->Reinforce();
+        active_players_->at(turn)->Attack();
+        active_players_->at(turn)->Fortify();
+
+        turn = turn % active_players_->size();
+
+    }
+}
+
+bool GameLoop::WinCondition(Player* cur_player){
+    for(int i=0; i<cur_player->GetGameMap()->GetCountries()->size();i++){
+        if(cur_player->DoesPlayerOwnCountry(cur_player->GetGameMap()->GetCountries()->at(i)->GetCountryID()))
+            return false;
+    }
+    return true;
+}
