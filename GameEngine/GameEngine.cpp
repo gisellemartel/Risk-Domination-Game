@@ -627,18 +627,20 @@ void GameEngine::DisplayCurrentGame() {
 
 GameLoop::GameLoop(){
     all_players_ = nullptr;
-    active_players_ = nullptr;
+    eliminated_players_ = nullptr;
     int num_of_swaps_ = 0;
 }
 
 GameLoop::GameLoop(vector<Player*>* all_players){
     all_players_ = all_players;
-    active_players_ = all_players;
+    for(int i=0; i<eliminated_players_->size();i++){
+        eliminated_players_->at(i) = false;
+    }
 }
 
 GameLoop::GameLoop(const GameLoop& game_loop){
     all_players_ = game_loop.all_players_;
-    active_players_ = game_loop.active_players_;
+    eliminated_players_ = game_loop.eliminated_players_;
     num_of_swaps_ = game_loop.num_of_swaps_;
 }
 
@@ -648,24 +650,28 @@ GameLoop::~GameLoop(){
         delete all_players_->at(i);
     }
     delete[] all_players_;
+    delete[] eliminated_players_;
 }
 
 
 GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
     all_players_ = game_loop.all_players_;
-    active_players_ = game_loop.active_players_;
+    eliminated_players_ = game_loop.eliminated_players_;
     num_of_swaps_ = game_loop.num_of_swaps_;
     return *this;
 }
 
 void GameLoop::StartLoop(){
     int turn = 0;
-    while(WinCondition(active_players_->at(turn))){
-        active_players_->at(turn)->Reinforce();
-        active_players_->at(turn)->Attack();
-        active_players_->at(turn)->Fortify();
+    while(WinCondition(all_players_->at(turn))){
+        if(eliminated_players_->at(turn) == false){
+            all_players_->at(turn)->Reinforce();
+            all_players_->at(turn)->Attack();
+            all_players_->at(turn)->Fortify();
+        }
 
-        turn = turn % active_players_->size();
+        turn += 1;
+        turn = turn % all_players_->size();
 
     }
 }

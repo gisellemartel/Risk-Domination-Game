@@ -105,7 +105,7 @@ public:
 class GameLoop{
 private:
     vector<Player*>* all_players_;
-    vector<Player*>* active_players_;
+    vector<bool>* eliminated_players_;
     int num_of_swaps_;
 
 public:

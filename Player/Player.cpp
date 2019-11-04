@@ -222,9 +222,8 @@ void Player::DisplayCountries() const {
 void Player::Reinforce() {
     cout << "In reinforce method" << endl;
 
-    //the number of armies the player is assigned at their current turn is the number of countries
-    //they own divided by 3 rounded down
-//    int num_of_armies_to_assign = (int)floor((float)(countries_->size() / 3));
+    Reinforcement* reinforce = new Reinforcement(this, 0);
+
 
     //TODO implementation of the rules below
     /**
@@ -347,7 +346,7 @@ int Reinforcement::PerContinentReinforceArmy(){
     int armies_from_continent_bonus = 0;
     for(int i = 0; i<turn_player_->GetGameMap()->GetContinents()->size();i++){
         for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent();i++){
-            if(turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent()->at(j) != turn_player_->GetPlayerName())
+            if(!turn_player_->DoesPlayerOwnCountry(turn_player_->GetGameMap()->GetContinents()->at(i)->GetCountriesInContinent()->at(j)->GetCountryID()))
                 return 0;
         }
         armies_from_continent_bonus += turn_player_->GetGameMap()->GetContinents()->at(i)->GetContinentArmyValue();
@@ -358,7 +357,6 @@ int Reinforcement::PerContinentReinforceArmy(){
 int Reinforcement::CardSwapReinforceArmy(){
     return turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
 }
-
 
 
 // Attack class implementation -----------------------------------------------------------------------------------------
