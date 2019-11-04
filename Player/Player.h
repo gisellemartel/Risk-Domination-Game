@@ -38,7 +38,8 @@ private:
     Country* country_target_;
 
 public:
-    explicit Player(string player_name);
+    Player(string player_name);
+    Player(string player_name, Map* game_map);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
@@ -146,7 +147,6 @@ public:
 
     void SelectTargetCountry();
     void SelectSourceCountry();
-
-    void FortifyHelper();
+    void MoveArmies();
 };
 #endif //PLAYER_H

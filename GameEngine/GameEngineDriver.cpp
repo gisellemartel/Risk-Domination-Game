@@ -16,8 +16,10 @@ int main() {
 
     GameEngine* game_engine = new GameEngine;
 
-    //DEBUG TEST CODE
+    //DEBUG TEST CODE PART 4, 5, 6
     game_engine->LoadMapDebugTest();
+
+
 //
 //    while(!game_engine->ExitGameSelected()) {
 //        if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
