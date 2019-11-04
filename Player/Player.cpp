@@ -223,25 +223,27 @@ void Player::Reinforce() {
     cout << "In reinforce method" << endl;
 
     Reinforcement* reinforce = new Reinforcement(this, 0);
+    int bonus_army = reinforce->TotalReinforceArmy();
+    int looping_counter = 0;
+    int reinforce_value = 0;
+    while(bonus_army > 0){
+        cout<<"Currently on Country "<<endl;
+        countries_->at(looping_counter)->DisplayInfo();
+        while(true){
+            cout<<"Armies to add to current country: "<<endl;
+            cin >> reinforce_value;
+            if(reinforce_value < bonus_army)
+                break;
+            cout<<"You must add a valid number to add"<<endl;
+        }
 
+        cout<<reinforce_value<<" armies added to current country"<<endl;
 
-    //TODO implementation of the rules below
-    /**
-     * If the player owns all the countries of entire continent,
-     * then the player is given # of armies corresponding to the continents control value
-     *
-     * If the player owns 3 cards of different sorts or same sorts, he can exchange them for armies
-     *
-     * The # armies a player will get for 3 cards is first 5,
-     * and then increases by 5 every time player trades 3 cards (5, 10, 15, 20, …)
-     *
-     * Minimal number reinforcement armies is 3
-     *
-     * Once total number or reinforcements is determined for the players turn,
-     * the player may place the armies on any country he owns, divided as he wants amongst his countries
-
-     */
-
+        countries_->at(looping_counter)->SetNumberOfArmies(countries_->at(looping_counter)->GetNumberOfArmies() + reinforce_value);
+        bonus_army -= reinforce_value;
+        looping_counter +=1;
+        looping_counter = looping_counter % countries_->size();
+    }
 }
 
 void Player::Attack() {
