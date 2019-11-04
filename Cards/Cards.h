@@ -73,6 +73,7 @@ public:
     Hand(const Hand& hand);
     ~Hand();
 
+    static int exchanges_done = 0;
     size_t GetNumberOfCardsInHand() const;
 
     // Methods---------------------------------------------

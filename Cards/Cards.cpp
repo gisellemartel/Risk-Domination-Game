@@ -182,7 +182,8 @@ int Hand::Exchange(int exchanges_done) {
             cards_in_hand_->erase(cards_in_hand_->begin() + Max(card_1, card_2, card_3));
             cards_in_hand_->erase(cards_in_hand_->begin() + Mid(card_1, card_2, card_3));
             cards_in_hand_->erase(cards_in_hand_->begin() + Min(card_1, card_2, card_3));
-            return AcquireArmy(exchanges_done);
+
+            return AcquireArmy(exchanges_done++);
         }
         else {
             cout << "Cards are invalid for exchange. Input y to retry: ";
@@ -195,7 +196,6 @@ int Hand::Exchange(int exchanges_done) {
             }
         }
     }
-    return 0;
 }
 
 size_t Hand::InputCard() {
