@@ -28,6 +28,11 @@ int main()
     hand->AddCardToHand(deck->Draw());
     hand->AddCardToHand(deck->Draw());
     hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
+    hand->AddCardToHand(deck->Draw());
 
     cout << "\n\nCurrent number cards in deck after draw: " << deck->GetNumberOfCardsInDeck() << "\n\nContents of deck:\n";
     deck->DisplayDeck();
@@ -35,7 +40,10 @@ int main()
     cout << "\nContents of Hand: \n";
     hand->DisplayHand();
 
-    cout << "\n\nAttempting to exchange card 0: " << hand->Exchange(0) << "\n\nHere is the resulting hand:\n\n";
+    cout << "\n\nAttempting to exchange card 0: " << hand->Exchange() << "\n\nHere is the resulting hand:\n\n";
+    hand->DisplayHand();
+
+    cout << "\n\nAttempting to exchange card 0: " << hand->Exchange() << "\n\nHere is the resulting hand:\n\n";
     hand->DisplayHand();
 
     return 0;

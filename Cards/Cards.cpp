@@ -139,7 +139,8 @@ void Hand::AddCardToHand(Cards* card_) {
 // 1-(Minimum 3 cards in hand)
 // 2-(Inputs for choices of cards in hand are valid and unique)
 // 3-(Cards are 3 same type or 3 different type)
-int Hand::Exchange(int exchanges_done) {
+int Hand::Exchange() {
+    static int exchanges_done = 0;
     //condition #1
     if(cards_in_hand_->size() < 3) {
         cout << "Not enough cards to exchange" << endl;

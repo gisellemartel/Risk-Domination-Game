@@ -73,11 +73,11 @@ public:
     Hand(const Hand& hand);
     ~Hand();
 
-    static int exchanges_done = 0;
+
     size_t GetNumberOfCardsInHand() const;
 
     // Methods---------------------------------------------
-    int Exchange(int exchanges_done);
+    int Exchange();
     size_t InputCard();
     bool ValidateInput(size_t card_index);
     void AddCardToHand(Cards* card_);
