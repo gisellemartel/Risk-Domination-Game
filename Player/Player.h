@@ -26,16 +26,13 @@ class Continent;
 class Player {
 
 private:
-    int number_of_armies_;
+private:
     bool is_player_turn_;
     string* player_name_;
     vector<Country*>* countries_;
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
-
-    Country* country_source_;
-    Country* country_target_;
 
 public:
     Player(string player_name);
@@ -133,6 +130,9 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
+
+    //private helper method
+    Country* AttackPhase::GetCountryInVectorById(vector<Country*>* countries, int country_id) const;
 
 public:
 

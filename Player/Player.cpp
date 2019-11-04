@@ -333,6 +333,16 @@ Reinforcement::~Reinforcement(){
 
 
 // AttackPhase class implementation ------------------------------------------------------------------------------------
+
+Country* AttackPhase::GetCountryInVectorById(vector<Country*>* countries, int country_id) const {
+    for(Country* country : *countries) {
+        if(country->GetCountryID() == country_id) {
+            return country;
+        }
+    }
+    return nullptr;
+}
+
 AttackPhase::AttackPhase() {
     attacking_country_ = nullptr;
     defending_country_ = nullptr;
@@ -422,22 +432,15 @@ Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbourin
         cout << endl;
     }
 
-    //TODO: make function that takes vector of neighbouring countries, and returns map with country and associated owner
-    //then check to see if selected country is part of neighbouring oponent countries
-
     cout << "Please choose which country you would like to attack (enter by numerical id):\n";
-    int defender_id;
-    while(!(cin >> defender_id) || defender_id < 1) {
+    int defender_id = -1;
+    Country* defender = nullptr;
+    while(!(cin >> defender_id) || defender_id < 1 || !defender = GetCountryInVectorById(neighbouring_countries, defender_id)) {
         cin.clear();
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";
     }
-
-    //debug string
-    game_map_->DisplayAdjacencyMatrix();
-
-    //TODO: fix logical error here
-    return (*neighbouring_countries)[defender_id];
+    return defender;
 }
 
 //Prompt user for which country they would like to attack
@@ -643,49 +646,27 @@ void FortifyPhase::SelectTargetCountry() {
         cout << "Invalid entry entered! Please try again: ";
     }
 
-    //debug string
-    game_map_->DisplayAdjacencyMatrix();
     target_country_ = (*neighbouring_countries)[defender_id];
 }
 
 void FortifyPhase::MoveArmies() {
-    cout<< "There are " << source_country_->GetNumberOfArmies() << " armies in " << *source_country_->GetCountryName() << "." << endl;
-    cout<< "There are " << target_country_->GetNumberOfArmies() << " armies in " << *target_country_->GetCountryName() << "." << endl;
+    cout << "There are " << source_country_->GetNumberOfArmies() << " armies in " << *source_country_->GetCountryName() << "." << endl;
+    cout << "There are " << target_country_->GetNumberOfArmies() << " armies in " << *target_country_->GetCountryName() << "." << endl;
 
-    //
-//    //ARMIES
-//    while(true) {
-//        int armies_number;
-//        cout << "How many armies do you wish to move.(Enter a number):" << endl;
-//
-//        try{
-//            cin >> input;
-//            armies_number = stoi(input);
-//        }catch(invalid_argument& e){
-//            cout <<"Please enter a number." << endl;
-//            continue;
-//        }
-//
-//        if (armies_number > country_source_->GetNumberOfArmies()) {
-//            cout << "You do not have enough armies in this country." << endl;
-//        } else if (armies_number > country_source_->GetNumberOfArmies() - 1) {
-//            cout << "You must leave at least 1 army in the country." << endl;
-//        } else if (armies_number < 1) {
-//            cout << "You must move at least 1 army." << endl;
-//        } else {
-//            cout << "Fortifying " << *country_target_->GetCountryName() << " with " << armies_number << " armies."
-//                 << endl;
-//            country_target_->SetNumberOfArmies(country_target_->GetNumberOfArmies() + armies_number);
-//            country_source_->SetNumberOfArmies(country_source_->GetNumberOfArmies() - armies_number);
-//            for (auto countries_owned : *countries_) {
-//                cout << *countries_owned->GetCountryName() << " (" << countries_owned->GetNumberOfArmies()
-//                     << " armies)" << endl;
-//            }
-//            cout << *player_name_ << "'s turn end." << endl;
-//            delete country_source_;
-//            delete country_target_;
-//            delete map_loaded_;
-//            return;
-//        }
-//    }
+    int num_of_armies;
+    cout << "How many armies do you wish to move.(Enter a number):" << endl;
+
+    while (!(cin >> num_of_armies) || num_of_armies < 1 || num_of_armies > source_country_->GetNumberOfArmies()) {
+    cout << "Invalid number of armies selected! Please try again\n";
+    }
+
+    cout << "Fortifying " << *target_country_->GetCountryName() << " with " << num_of_armies << " armies." << endl;
+
+    source_country_->RemoveArmiesFromCountry(num_of_armies);
+    target_country_->SetNumberOfArmies(target_country_->GetNumberOfArmies() + num_of_armies);
+
+    cout << "\nHere is the result after fortification: " << endl;
+
+    cout << "There are " << source_country_->GetNumberOfArmies() << " armies in " << *source_country_->GetCountryName() << "." << endl;
+    cout << "There are " << target_country_->GetNumberOfArmies() << " armies in " << *target_country_->GetCountryName() << "." << endl;
 }
