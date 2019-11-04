@@ -15,7 +15,7 @@ Continent::Continent(string* continent_name, int army_value, int continent_id){
     army_value_ = army_value;
     continent_ID_ = continent_id;
     color_= new string("");
-    countries_in_continent_ = new vector<string*>;
+    countries_in_continent_ = new vector<Country*>;
 }
 
 
@@ -70,15 +70,21 @@ int Continent::GetContinentID() const{
     return continent_ID_;
 }
 
-void Continent::AddCountryToContinent(const string& country){
+vector<Country*>* Continent::GetCountriesInContinent() const{
+    return countries_in_continent_;
+}
+
+void Continent::AddCountryToContinent(const Country& country){
     //need to add condition to check if country is already in any other continent
-    for(string* country_in_continent  : *countries_in_continent_) {
-        if(*country_in_continent == country) {
+    for(int i = 0; i<countries_in_continent_->size();i++) {
+        country.GetCountryName();
+        countries_in_continent_->at(i)->GetCountryName()->compare(country.GetCountryName());
+        if(countries_in_continent_->at(i)->GetCountryName()->compare(country.GetCountryName()) == 0) {
             cout << "Country already in continent";
             return;
         }
     }
-    countries_in_continent_->push_back(new string(country));
+    countries_in_continent_->push_back(new Country(country));
 }
 
 void Continent::DisplayInfo() const{
@@ -311,6 +317,10 @@ Country* Map::GetCountryById(int id) const {
 
 vector<Country*>* Map::GetCountries() const {
     return countries_;
+}
+
+vector<Continent*>* Map::GetContinents() const {
+    return continents_;
 }
 
 void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index) {

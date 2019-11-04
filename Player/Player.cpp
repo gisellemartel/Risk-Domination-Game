@@ -299,26 +299,66 @@ void Player::Fortify() {
 }
 // Reinforce class implementation -----------------------------------------------------------------------------------------
 Reinforcement::Reinforcement() {
-    player_cards_ = nullptr;
+    turn_player_ = nullptr;
     num_of_swaps_ = 0;
-    divider = 3;
-    reinforcement_army = 0;
+    divider_ = 3;
+    reinforcement_army_ = 0;
 }
 
-Reinforcement::Reinforcement(Cards* player_cards, int num_of_swaps){
-    Cards* player_cards_ = player_cards;
+Reinforcement::Reinforcement(Player* turn_player, int num_of_swaps){
+    turn_player_ = turn_player;
     num_of_swaps_ = num_of_swaps;
-    divider = 3;
-    reinforcement_army = 0;
+    divider_ = 3;
+    reinforcement_army_ = 0;
 }
 
 Reinforcement::~Reinforcement(){
-    for(int i=0; i< player_cards_->size(); i++){
-        player_cards_->at(i) = nullptr;
-        delete player_cards_;
+    for(int i=0; i < turn_player_->size(); i++){
+        turn_player_->at(i) = nullptr;
+        delete turn_player_;
     }
-    delete[] player_cards;
+    delete[] turn_player_;
 }
+
+Reinforcement::Reinforcement(const Reinforcement& reinforce){
+    turn_player_ = reinforce.turn_player_;
+    num_of_swaps_ = reinforce.num_of_swaps_;
+    divider_ = reinforce.divider_;
+    reinforcement_army_ = reinforce.reinforcement_army_;
+}
+
+Reinforcement& Reinforcement::operator=(const Reinforcement& reinforce){
+    turn_player_ = reinforce.turn_player_;
+    num_of_swaps_ = reinforce.num_of_swaps_;
+    divider_ = reinforce.divider_;
+    reinforcement_army_ = reinforce.reinforcement_army_;
+    return *this;
+}
+
+int Reinforcement::TotalReinforceArmy(){
+    return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
+}
+
+int Reinforcement::PerCountryReinforceArmy(){
+    if (turn_player_->GetPlayersCountries()->size()>9)
+        return ((int)floor(turn_player_->GetPlayersCountries()->size() / divider_));
+    return 3;
+}
+
+int Reinforcement::PerContinentReinforceArmy(){
+    for(int i = 0; i<turn_player_->GetGameMap()->GetContinents()->size();i++){
+        for(int j = 0; i<turn_player_->GetGameMap()->GetContinents()->GetCountriesInContinent();i++){
+            if(turn_player_->GetGameMap()->GetContinents()->GetCountriesInContinent() != turn_player_->GetPlayerName())
+        }
+    }
+    return 0;
+}
+
+int Reinforcement::CardSwapReinforceArmy(){
+
+}
+
+
 
 // Attack class implementation -----------------------------------------------------------------------------------------
 AttackPhase::AttackPhase() {

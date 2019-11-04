@@ -26,7 +26,7 @@ private:
     string* color_;
     int continent_ID_;
     int army_value_;
-    vector<string*>* countries_in_continent_;
+    vector<Country*>* countries_in_continent_;
 
 public:
     //Constructors
@@ -45,9 +45,10 @@ public:
     string* GetContinentName() const;
     int GetContinentArmyValue() const;
     int GetContinentID() const;
+    vector<Country*>* GetCountriesInContinent() const;
 
     //Methods -------------------------------------------------------
-    void AddCountryToContinent(const string& country);
+    void AddCountryToContinent(const Country& country);
     void DisplayInfo() const;
 };
 
@@ -126,6 +127,7 @@ public:
     string* GetMapName() const;
     Country* GetCountryById(int id) const;
     vector<Country*>* GetCountries() const;
+    vector<Continent*>* GetContinents() const;
 
     //Setters --------------------------------------------------
     void SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index);

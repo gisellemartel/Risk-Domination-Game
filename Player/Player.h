@@ -74,14 +74,14 @@ public:
 class Reinforcement
 {
 private:
-    Cards* player_cards_;
+    Player* turn_player_;
     int num_of_swaps_;
-    int divider;
-    int reinforcement_army;
+    int divider_;
+    int reinforcement_army_;
 
 public:
     explicit Reinforcement();
-    Reinforcement(Cards* player_cards, int num_of_swaps);
+    Reinforcement(Player* turn_player, int num_of_swaps);
     Reinforcement(const Reinforcement& reinforce);
     ~Reinforcement();
 
