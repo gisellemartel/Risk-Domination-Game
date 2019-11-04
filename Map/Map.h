@@ -90,6 +90,7 @@ public:
 
     //Methods -------------------------------------------------------
     void AddArmyToCountry();
+    void RemoveArmiesFromCountry(int num_armies_to_remove);
     void DisplayInfo() const;
 
     bool BelongsToContinent(const Continent* continent);

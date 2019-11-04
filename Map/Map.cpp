@@ -205,6 +205,15 @@ void Country::AddArmyToCountry() {
     ++number_of_armies_;
 }
 
+void Country::RemoveArmiesFromCountry(int num_armies_to_remove) {
+
+    if(num_armies_to_remove > number_of_armies_ || num_armies_to_remove < 1) {
+        cout << "Invalid number of armies to remove. Aborting operation\n";
+        return;
+    }
+    number_of_armies_ -= num_armies_to_remove;
+}
+
 void Country::DisplayInfo() const{
     cout
             << "Country ID: " << GetCountryID() << endl

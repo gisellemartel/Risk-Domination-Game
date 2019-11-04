@@ -58,10 +58,10 @@ public:
     string* GetPlayerName() const;
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
-    int FindPositionOfCountry(Country* country) const;
-    int FindPositionOfCountryByName(string* country_name) const;
+    int Find(Country* country) const;
 
     void AddCountryToCollection(Country* country);
+    void RemoveCountryFromCollection(Country* country);
     void AddCardToCollection(Cards* card);
     void DisplayPlayerStats() const;
     void DisplayCountries() const;
@@ -109,13 +109,15 @@ public:
 
     AttackPhase& operator=(const AttackPhase& attack);
 
+    void SetAttackingCountry(Country* country);
+    void SetDefendingCountry(Country* country);
+
+    Country* GetAttackingCountry() const;
+    Country* GetDefendingCountry() const;
+
     bool PromptUserToAttack();
     Country* SelectCountryToAttackFrom();
     Country* SelectCountryToAttack();
-
-
-    //TODO move everything in attackhelper to Attack() in Player class
-    void AttackHelper();
     void PerformDiceRoll();
 };
 

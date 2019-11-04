@@ -155,29 +155,9 @@ Map* Player::GetGameMap() const {
     return game_map_;
 }
 
-//method to get country id
-int Player::FindPositionOfCountry(Country* country) const {
-    for (int i = 0; i < countries_->size(); i++) {
-
-        //to list all countries
-        //cout << *countries_->at(i)->GetCountryName() << endl;
-
-        if (*countries_->at(i)->GetCountryName() == *country->GetCountryName()) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int Player::FindPositionOfCountryByName(string* country_name) const {
-
-
-    for (int i = 0; i < countries_->size(); ++i) {
-
-        //to list all countries
-        //cout << *countries_->at(i)->GetCountryName() << endl;
-
-        if (*countries_->at(i)->GetCountryName() == *country_name) {
+int Player::Find(Country* country) const {
+    for(int i = 0; i < countries_->size(); ++i) {
+        if((*countries_)[i] == country) {
             return i;
         }
     }
@@ -190,6 +170,14 @@ void Player::AddCountryToCollection(Country *country) {
     }
     countries_->push_back(country);
     country->SetCountryOwner(this);
+}
+
+void Player::RemoveCountryFromCollection(Country* country) {
+    if(!countries_ || countries_->empty() || Find(country) == -1){
+        cout << *country->GetCountryName() << " not found among " << *player_name_ << "'s countries!\n";
+        return;
+    }
+    countries_->erase (countries_->begin() + Find(country));
 }
 
 void Player::AddCardToCollection(Cards* card) {
@@ -261,37 +249,34 @@ void Player::Attack() {
     cout << "In attack method" << endl;
 
     AttackPhase* attack_phase = new AttackPhase(this);
-    attack_phase->AttackHelper();
 
-    //TODO implementation of rules below
-    /**
-     *  The player may choose one of the countries he owns that contains 2 or more armies,
-     * and declare an attack on an adjacent country that is owned by another player
+    //ask player if they wish to carry-out an attack
+    if (attack_phase->PromptUserToAttack()) {
+        //prompt player to select a country they wish to attack with
+        attack_phase->SetAttackingCountry(attack_phase->SelectCountryToAttackFrom());
+        if (attack_phase->GetAttackingCountry()) {
+            cout << "You have chosen to attack with " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+            attack_phase->SetDefendingCountry(attack_phase->SelectCountryToAttack());
+            if (!attack_phase->GetDefendingCountry()) {
+                cout << "Cannot proceed attack, invalid country selected to attack!";
+                return;
+            }
 
-     A battle is then simulated by the attacker rolling at most 3 dice (which should not be more than the number
-     of armies contained in the attacking country), and the defender rolling at most 2 dice (which should not be more
-     than the number of armies contained in the attacking country)
+            cout << "You have chosen to attack " << *attack_phase->GetDefendingCountry()->GetCountryName() << endl;
+        } else {
+            cout << "Cannot proceed attack, invalid country selected to attack from!";
+            return;
+        }
+    } else {
+        cout << "You do not wish to attack, aborting";
+        return;
+    }
 
-    Outcome of attack is determined by comparing the defenders best dice roll with the attacker’s best dice roll
-    •	If the defender rolls >= to the attacker, then then the attacker loses an army
+    //roll the dice once countries are selected for Attack
+    attack_phase->PerformDiceRoll();
 
-    •	else the defender loses an army
-
-    •	if the defender rolled 2 dice, then his other dice roll is compared to the attacker’s 2nd best dice roll
-        and a second army is lost by the attacker or defender in the same way as above
-
-    •	the attackers can choose to continue attacking until either all his armies or all the defending armies have been eliminated.
-
-    •	If all the defender’s armies are eliminated the attacker captures the territory, and the attacking player
-        must then place a number of armies in the conquered country which is greater or equal than the number of
-        dice that was used in the attack that resulted in conquering the country
-
-    •	A player may do as many attacks as he wants during his turn
-
-    •	Once he declares that he is done attacking, or he cannot attack because none of his countries that have an
-        adjacent country controlled by another player is containing more than one army), the fortification phase begins
-
-     */
+    //recursively call function until player indicates they no longer want to play
+    Attack();
 }
 
 void Player::Fortify() {
@@ -379,45 +364,31 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     return *this;
 }
 
+void AttackPhase::SetAttackingCountry(Country *country) {
+    attacking_country_ = country;
+}
+
+void AttackPhase::SetDefendingCountry(Country *country) {
+    defending_country_ = country;
+}
+
+Country* AttackPhase::GetAttackingCountry() const {
+    return attacking_country_;
+}
+
+Country* AttackPhase::GetDefendingCountry() const {
+    return defending_country_;
+}
+
 bool AttackPhase::PromptUserToAttack() {
     string answer;
-    cout << "Do you Mr/Miss " << *attacker_->GetPlayerName() << " want to issue an attack ? (enter 'y' to attack and any other character otherwise)" << endl;
+    cout << "Does " << *attacker_->GetPlayerName() << " want attack an opponent's country ? (enter 'y' to attack and any other character otherwise)" << endl;
     while(!(cin >> answer)) {
         cout << "Your answer is not correct, please choose a valid answer" << endl;
         cin.clear();
         cin.ignore(132, '\n');
     }
     return answer == "y" ? true : false;
-}
-
-void AttackPhase::AttackHelper() {
-    //ask player if they wish to carry-out an attack
-    if (PromptUserToAttack()) {
-        //prompt player to select a country they wish to attack with
-        attacking_country_ = SelectCountryToAttackFrom();
-        if (attacking_country_) {
-            cout << "You have chosen to attack with " << *attacking_country_->GetCountryName() << endl;
-            defending_country_ = SelectCountryToAttack();
-            if (!defending_country_) {
-                cout << "Cannot proceed attack, invalid country selected to attack!";
-                return;
-            }
-
-            cout << "You have chosen to attack " << *defending_country_->GetCountryName() << endl;
-        } else {
-            cout << "Cannot proceed attack, invalid country selected to attack from!";
-            return;
-        }
-    } else {
-        cout << "You do not wish to attack, aborting";
-        return;
-    }
-
-
-    PerformDiceRoll();
-
-//    //to try to attack again
-//    AttackHelper();
 }
 
 Country* AttackPhase::PromptPlayerToSelectAttacker() {
@@ -517,52 +488,67 @@ void AttackPhase::PerformDiceRoll() {
     sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
     reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
 
+    int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
 
-    //compare the values in pairwise manner
-//    int compares = 0;
-//    if (num_of_attacker_dice < num_of_defender_dice) {
-//        compares = num_of_attacker_dice;
-//    } else {
-//        compares = num_of_defender_dice;
-//    }
-//
-//    for (int i = 0; i < compares; ++i) {
-//        if (attackerDiceArray[i] <= defenderDiceArray[i]) {
-//            cout << "Defender has won this turn ! Attacker Role : " << attackerDiceArray[i] << "; Defender Role: "
-//                 << defenderDiceArray[i] << endl;
-//            attacking_country_->SetNumberOfArmies(attacking_country_->GetNumberOfArmies() - 1);
-//        } else {
-//            cout << "Attacker has won this turn ! Attacker Role : " << attackerDiceArray[i] << "; Defender Role: "
-//                 << defenderDiceArray[i] << endl;
-//            defending_country_->SetNumberOfArmies(defending_country_->GetNumberOfArmies() - 1);
-//        }
-//
-//
-//        cout << "Number of armies left on base country  <<Attacker>>" << attacking_country_->GetNumberOfArmies() << endl;
-//        cout << "Number of armies left on target country <<Defender>> : " << defending_country_->GetNumberOfArmies() << endl;
-//
-//        //attacker won
-//        if (defending_country_->GetNumberOfArmies() < 1) {
-//            cout << "Attacker " << *attacker_->GetPlayerName() << " has won this round of attack! They now own : "
-//                 << *defending_country_->GetCountryName() << endl;
-//            attacker_->AddCountryToCollection(defending_country_);
-//            //move army from base to target
-//            while (true) {
-//                cout << "Choose number of army to move between 1 and " << attacking_country_->GetNumberOfArmies() - 1 << endl;
-//                int moveNo;
-//                cin >> moveNo;
-//                if (moveNo > 0 && moveNo < attacking_country_->GetNumberOfArmies()) {
-//                    attacking_country_->SetNumberOfArmies(attacking_country_->GetNumberOfArmies() - moveNo);
-//                    defending_country_->SetNumberOfArmies(moveNo);
-//                    break;
-//                } else {
-//                    cout << "The number you choose is not valid, try again" << endl;
-//                }
-//            }
-//            break;
-//        } else if (attacking_country_->GetNumberOfArmies() < 1) {
-//            cout << "Attacker has no more army in base country, ending attack" << endl;
-//            break;
-//        }
-//    }
+    for(int i = 0; i < num_of_iterations; ++i) {
+        //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
+        if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
+
+            attacking_country_->RemoveArmiesFromCountry(1);
+            //TODO: not sure what the intended behaviour is when the attacker runs out armies. Needs to be clarified
+            if(attacking_country_->GetNumberOfArmies() == 0) {
+                cout << "Attacking country " << *attacking_country_->GetCountryName() << " has run out of armies. Attack phase has ended\n";
+            }
+        //defender lose an army if attacker's dice has a greater value
+        } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
+
+            defending_country_->RemoveArmiesFromCountry(1);
+
+            if(defending_country_->GetNumberOfArmies() == 0) {
+                cout << "Defending country " << *defending_country_->GetCountryName() << " has run out of armies and has been defeated\n";
+
+                //defender has lost. Its country will now be transferred to the attacker
+
+                //store the id and name of country before we transfer ownership
+                string defender_country_name = *defending_country_->GetCountryName();
+                int defender_country_id = defending_country_->GetCountryID();
+                attacker_->AddCountryToCollection(defending_country_);
+                defender_->RemoveCountryFromCollection(defending_country_);
+
+                //prompt attacker if they would like to assign armies from their newly acquired country to their other countries
+                cout << *attacker_->GetPlayerName() << " would you like to move armies from " << *attacking_country_->GetCountryName() << " to " << defender_country_name << "? (enter 'y' if so and any other character otherwise\n";
+
+
+                string user_response;
+
+                while(!(cin >> user_response)) {
+                    cout << "\nInvalid input given! Please try again: ";
+                    cin.clear();
+                    cin.ignore(132, '\n');
+                }
+
+                if(user_response == "y") {
+                    cout << "How many armies would you like to assign to " << defender_country_name << " from " << *attacking_country_->GetCountryName() << "? (you can assign a max of " << attacking_country_->GetNumberOfArmies() << "): ";
+                    int num_armies_to_assign;
+
+                    while(!(cin >> num_armies_to_assign) || num_armies_to_assign < 1 || num_armies_to_assign > attacking_country_->GetNumberOfArmies()) {
+                        cout << "\nInvalid input given! Please try again: ";
+                        cin.clear();
+                        cin.ignore(132, '\n');
+                    }
+
+                    Country* newly_acquired_country = attacker_->GetCountryById(defender_country_id);
+
+                    if(newly_acquired_country) {
+                        newly_acquired_country->SetNumberOfArmies(num_armies_to_assign);
+                        attacking_country_->RemoveArmiesFromCountry(num_armies_to_assign);
+                    }
+
+                } else {
+                    return;
+                }
+
+            }
+        }
+    }
 }
