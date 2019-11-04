@@ -281,25 +281,22 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::LoadMapDebugTest() {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path) {
     exit_game_ = false;
-    game_map_ = new MapLoader("maploader/test-map-files/google.map");
-    if(game_map_->ParseMap()) {
+    loaded_map_ = new MapLoader(file_path);
+    if(loaded_map_->ParseMap()) {
         num_of_players_ = 3;
         CreatePlayers();
         CreateCardsDeck();
         AssignHandOfCardsToPlayers();
         AssignDiceToPlayers();
         game_start_->RandomlyDeterminePlayerOrder(players_);
-        game_start_->AssignCountriesToAllPlayers(players_, game_map_->GetParsedMap()->GetCountries());
+        game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
         game_start_->AssignArmiesToAllPlayers(players_);
     }
 
-    //test Attack phase on each player
-    cout << "Testing the Attack phase" << endl;
     for(Player* player : *players_) {
-        player->SetGameMap(game_map_->GetParsedMap());
-        player->Attack();
+        player->SetGameMap(loaded_map_->GetParsedMap());
     }
 }
 
@@ -329,7 +326,7 @@ MapLoader* GameEngine::SelectFile() {
 
 //constructors
 GameEngine::GameEngine() {
-    game_map_ = nullptr;
+    loaded_map_ = nullptr;
     cards_deck_ = nullptr;
     players_ = new vector<Player*>;
     //2 players by default
@@ -340,7 +337,7 @@ GameEngine::GameEngine() {
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
-    game_map_ = game_engine.game_map_;
+    loaded_map_ = game_engine.loaded_map_;
 
     cards_deck_ = game_engine.cards_deck_;
 
@@ -370,7 +367,7 @@ GameEngine::~GameEngine() {
         filepath = nullptr;
     }
 
-    game_map_ = nullptr;
+    loaded_map_ = nullptr;
     cards_deck_ = nullptr;
     players_ = nullptr;
     file_paths_ = nullptr;
@@ -379,14 +376,14 @@ GameEngine::~GameEngine() {
     delete players_;
     delete file_paths_;
     delete cards_deck_;
-    delete game_map_;
+    delete loaded_map_;
     delete game_start_;
 }
 
 
 //operator overloader
 GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
-    game_map_ = game_engine.game_map_;
+    loaded_map_ = game_engine.loaded_map_;
 
     cards_deck_ = game_engine.cards_deck_;
 
@@ -409,8 +406,8 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 
 
 //getters
-MapLoader* GameEngine::GetGameMap() const {
-    return game_map_;
+MapLoader* GameEngine::GetLoadedMap() const {
+    return loaded_map_;
 }
 
 Deck* GameEngine::GetCardsDeck() const {
@@ -473,9 +470,9 @@ bool GameEngine::SelectMap() {
                 }
 
                 //Load the map file
-                game_map_ = SelectFile();
+                loaded_map_ = SelectFile();
 
-                return game_map_ != nullptr;
+                return loaded_map_ != nullptr;
             }
         }
         catch (filesystem::filesystem_error& error) {
@@ -490,16 +487,16 @@ bool GameEngine::SelectMap() {
 }
 
 bool GameEngine::LoadSelectedMap() {
-    if(game_map_) {
-        while(!game_map_->ParseMap() && !exit_game_) {
+    if(loaded_map_) {
+        while(!loaded_map_->ParseMap() && !exit_game_) {
             cout << "Failed to parse map, please select another one!\n";
-            game_map_ = SelectFile();
+            loaded_map_ = SelectFile();
 
-            if(!game_map_) {
+            if(!loaded_map_) {
                 return false;
             }
         }
-        cout << "Success! Loaded map " << *game_map_->GetParsedMap()->GetMapName() << endl;
+        cout << "Success! Loaded map " << *loaded_map_->GetParsedMap()->GetMapName() << endl;
         return true;
     } else {
         return false;
@@ -521,7 +518,7 @@ void GameEngine::SelectNumOfPlayers() {
 
 void GameEngine::CreatePlayers() {
 
-    if(!game_map_) {
+    if(!loaded_map_) {
         cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
@@ -535,14 +532,14 @@ void GameEngine::CreatePlayers() {
     for(size_t i = 0; i < num_of_players_; ++i) {
         string player_name = "Player " + std::to_string(i + 1);
 
-        players_->push_back(new Player(player_name));
+        players_->push_back(new Player(player_name, loaded_map_->GetParsedMap()));
     }
 
     game_start_->SetNumberOfArmies(num_of_players_);
 }
 
 void GameEngine::AssignDiceToPlayers() {
-    if(!game_map_) {
+    if(!loaded_map_) {
         cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
@@ -561,7 +558,7 @@ void GameEngine::AssignDiceToPlayers() {
 }
 
 void GameEngine::AssignHandOfCardsToPlayers() {
-    if(!game_map_) {
+    if(!loaded_map_) {
         cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
@@ -578,14 +575,14 @@ void GameEngine::AssignHandOfCardsToPlayers() {
 }
 
 void GameEngine::CreateCardsDeck() {
-    if(!game_map_) {
+    if(!loaded_map_) {
         cout << "Error! Cannot create players for game until valid Map has been selected and loaded\n";
         return;
     }
 
     cout << "Creating deck of cards for new game...\n";
     cards_deck_ = new Deck();
-    int num_cards = game_map_->GetParsedMap()->GetNumCountries();
+    int num_cards = loaded_map_->GetParsedMap()->GetNumCountries();
     cards_deck_ ->CreateDeck(num_cards);
 }
 
@@ -596,12 +593,12 @@ void GameEngine::DisplayCurrentGame() {
         cout << endl;
     }
 
-    cout << "There are " << game_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
+    cout << "There are " << loaded_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
 
     cout << "Verifying that each country only has one single owner\n";
     cout << setw(20) << left <<  "Country" << setw(30) << right << "Owner"<< endl;
 
-    for(const Country* country : *game_map_->GetParsedMap()->GetCountries()) {
+    for(const Country* country : *loaded_map_->GetParsedMap()->GetCountries()) {
         string country_name = *country->GetCountryName();
         string owner_name = (country->GetCountryOwner()) ? *country->GetCountryOwner()->GetPlayerName() : "";
 

@@ -20,22 +20,24 @@ class Country;
 class Dice;
 class Cards;
 class Hand;
-class Continent;
 class Map;
-class Attack;
+class Continent;
 
 class Player {
+
 private:
+private:
+    bool is_player_turn_;
+    int number_of_armies_;
     string* player_name_;
     vector<Country*>* countries_;
     Hand* risk_cards_;
     Dice* dice_roll_;
-    bool is_player_turn_;
-    int  number_of_armies_;
     Map* game_map_;
 
 public:
-    explicit Player(string player_name);
+    Player(string player_name);
+    Player(string player_name, Map* game_map);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
@@ -56,8 +58,12 @@ public:
     Dice* GetPlayerDice() const;
     Map* GetGameMap() const;
     string* GetPlayerName() const;
+
+    Country* PromptPlayerToSelectCountry() const;
+
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
+
     int Find(Country* country) const;
 
     void AddCountryToCollection(Country* country);
@@ -94,7 +100,10 @@ public:
 
 };
 
+
+// AttackPhase --------------------------------------
 class AttackPhase {
+
 private:
     Player* attacker_;
     Player* defender_;
@@ -103,8 +112,8 @@ private:
     Country* defending_country_;
 
     //private helper methods
-    Country* PromptPlayerToSelectAttacker();
     Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
+    Country* GetCountryInVectorById(vector<Country*>* countries, int country_id) const;
 
 public:
 
@@ -115,18 +124,35 @@ public:
 
     AttackPhase& operator=(const AttackPhase& attack);
 
-    void SetAttackingCountry(Country* country);
-    void SetDefendingCountry(Country* country);
-
-    Country* GetAttackingCountry() const;
-    Country* GetDefendingCountry() const;
-
     bool PromptUserToAttack();
-    Country* SelectCountryToAttackFrom();
-    Country* SelectCountryToAttack();
+    void SelectCountryToAttackFrom();
+    void SelectCountryToAttack();
     void PerformDiceRoll();
 };
 
 
+class FortifyPhase {
+
+private:
+    Player* player_;
+    Map* game_map_;
+    Country* source_country_;
+    Country* target_country_;
+
+public:
+
+    explicit FortifyPhase();
+    FortifyPhase(Player* player);
+    FortifyPhase(const FortifyPhase& fortify);
+    ~FortifyPhase();
+
+    FortifyPhase& operator=(const FortifyPhase& fortify);
+
+    bool PromptUserToFortify();
+
+    void SelectTargetCountry();
+    void SelectSourceCountry();
+    void MoveArmies();
+};
 
 #endif //PLAYER_H

@@ -60,7 +60,7 @@ class GameEngine {
 private:
     vector<Player*>* players_;
     StartupPhase* game_start_;
-    MapLoader* game_map_;
+    MapLoader* loaded_map_;
     Deck* cards_deck_;
     int num_of_players_;
     bool exit_game_;
@@ -72,8 +72,8 @@ private:
     MapLoader* SelectFile();
 
 public:
-    // Function to perform unit tests
-    void LoadMapDebugTest();
+    // Function to test Player functions within game
+    void TestAutoLoadMapAndCreateGame(string file_path);
 
     //Constructors
     explicit GameEngine();
@@ -84,7 +84,7 @@ public:
     GameEngine& operator=(const GameEngine& game_engine);
 
     //Getters
-    MapLoader* GetGameMap() const;
+    MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
     vector<Player*>* GetPlayers() const;
     int GetNumPlayers() const;

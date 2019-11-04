@@ -19,42 +19,45 @@ int main()
     cout << "\nTesting Player Driver" << endl;
     string name = "Canada";
 
-    Player* new_player = new Player("New player");
+    Map* test_map = new Map("Test map");
 
-    //Player has Countries
-    new_player->AddCountryToCollection(new Country(1, new string("Canada"), 1));
-    new_player->AddCountryToCollection(new Country(2, new string("US"), 1));
-    new_player->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
-    cout << "\nPlayer " << *new_player->GetPlayerName() << " owns collection of following countries: " << endl;
-    for(Country* country : *new_player->GetPlayersCountries()) {
-        cout << *country->GetCountryName() << endl;
-    }
+    test_map->AddContinentToMap("North America", 5, 1);
+    test_map->AddContinentToMap("South America", 2, 2);
+    test_map->AddContinentToMap("Europe", 5, 3);
 
-    //Player has Cards
-    new_player->AddCardToCollection(new Cards("calvary"));
-    new_player->AddCardToCollection(new Cards("infantry"));
-    new_player->AddCardToCollection(new Cards("artillery"));
-    cout << "\nPlayer owns collection of following cards: " << endl;
+    cout << "----------------------------------------------------" << endl;
+    cout << "Displaying Continents of Map:\n" << endl;
+    test_map->DisplayContinents();
 
-    new_player->GetPlayersCards()->DisplayHand();
+    test_map->AddCountryToMap(1,"Canada", 1, 0, 0);
+    test_map->AddCountryToMap(2, "United States", 1, 0, 0);
+    test_map->AddCountryToMap(3, "Brazil", 2, 0, 0);
+    test_map->AddCountryToMap(4, "Mexico", 1, 0, 0);
+    test_map->AddCountryToMap(5, "Portugal", 3, 0, 0);
 
-    //Player has Dice Rolling mechanism
-    cout << "\nPlayer owns dice rolling mechanism and can roll 2 dice: " << endl;
-    new_player->SetPlayerDice(new Dice);
-    vector<int> dice_rolls = new_player->GetPlayerDice()->Roll(2);
-    cout << "Dice rolled:\n";
-    for (int & dice_roll : dice_rolls) {
-        cout << ' ' << dice_roll << endl;//print dice rolls
-    }
-    cout << "Total Rolls: " << new_player->GetPlayerDice()->GetTotalRolls() << endl;
+    cout << "----------------------------------------------------" << endl;
+    cout << "\nDisplaying Countries of Map:\n" << endl;
+    test_map->DisplayCountries();
 
-    //Methods
-    cout << "\nPlayer implements Attack, Fortify, and Reinforce methods:" << endl;
-//    new_player->Attack();
-//    new_player->Fortify();
-    new_player->Reinforce();
+    test_map->CreateAdjacencyMatrix();
+    test_map->SetTwoCountriesAsNeighbours(true, 0, 1);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 0, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 2);
+    test_map->SetTwoCountriesAsNeighbours(false, 1, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 2, 4);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 2);
+    test_map->SetTwoCountriesAsNeighbours(true, 3, 1);
+    test_map->SetTwoCountriesAsNeighbours(false, 3, 0);
+    test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
 
-    delete new_player;
-    //delete attack;
+    //Armies in each Country
+    test_map->GetCountryById(1)->SetNumberOfArmies(5);
+    test_map->GetCountryById(2)->SetNumberOfArmies(9);
+    test_map->GetCountryById(4)->SetNumberOfArmies(4);
+
+    test_map = nullptr;
+    delete test_map;
+
     return 0;
 }

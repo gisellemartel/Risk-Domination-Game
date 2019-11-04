@@ -18,26 +18,25 @@ int main() {
 
     GameEngine* game_engine = new GameEngine;
 
-    //DEBUG TEST CODE
-    game_engine->LoadMapDebugTest();
-//
+
+    // Testing Game Engine and game Startup  ---------------------------------------------------------------------------
+
 //    while(!game_engine->ExitGameSelected()) {
 //        if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
 //            cout << endl;
+//
+//            //Part 1-----------------------------
 //            game_engine->SelectNumOfPlayers();
-//
 //            game_engine->CreatePlayers();
-//
 //            game_engine->CreateCardsDeck();
 //            game_engine->AssignHandOfCardsToPlayers();
 //            game_engine->AssignDiceToPlayers();
 //
 //            cout << endl;
 //
-//            //game_engine->DisplayCurrentGame();
-//
+//            //Part 2----------------------------------------------------------------------------
 //            game_engine->GetGameStart()->RandomlyDeterminePlayerOrder(game_engine->GetPlayers());
-//            game_engine->GetGameStart()->AssignCountriesToAllPlayers(game_engine->GetPlayers(), game_engine->GetGameMap()->GetParsedMap()->GetCountries());
+//            game_engine->GetGameStart()->AssignCountriesToAllPlayers(game_engine->GetPlayers(), game_engine->GetLoadedMap()->GetParsedMap()->GetCountries());
 //            game_engine->GetGameStart()->AssignArmiesToAllPlayers(game_engine->GetPlayers());
 //
 //            game_engine->DisplayCurrentGame();
@@ -46,6 +45,35 @@ int main() {
 //            return 0;
 //        }
 //    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+    // Testing Player --------------------------------------------------------------------------------------------------
+
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map");
+
+    //Test Reinforce
+    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Reinforce phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+    for(Player* player : *game_engine->GetPlayers()) {
+        player->Reinforce();
+    }
+
+    //Test Attack
+    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Attack phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\"" << endl;
+    for(Player* player : *game_engine->GetPlayers()) {
+        player->Attack();
+    }
+
+    //Test Fortify
+    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Fortify phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\"" << endl;
+    for(Player* player : *game_engine->GetPlayers()) {
+        player->Fortify();
+    }
+
 
     game_engine = nullptr;
     delete game_engine;

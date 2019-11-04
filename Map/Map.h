@@ -140,11 +140,15 @@ public:
     void DisplayAdjacencyMatrix() const;
     void AddCountryToMap(int country_num, const string& continent_name, int continent_index, int x_coordinate, int y_coordinate);
     void AddContinentToMap(const string& continent_name, int army_value, int id);
-    void AddCountryEdges(vector<int> *edges);
     void DisplayGraphTraversal(Country* origin_country, Country* destination_country) const;
 
+
     bool AreCountriesNeighbors(Country* country_a, Country* country_b);
-    vector<Country*>* GetNeighbouringCountriesWithArmies(Country* country);
+
+    string GenerateListOfNeighboringCountries(Country* country) const;
+
+    vector<Country*>* GetNeighbouringCountriesWithArmies(Country* country) const;
+    vector<Country*>* GetNeighbouringCountries(Country* country) const;
 
     static bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     static bool IsCountryDuplicate(Country* country_a, Country* country_b);

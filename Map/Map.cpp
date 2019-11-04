@@ -504,18 +504,6 @@ void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_co
     }
 }
 
-void Map::AddCountryEdges(vector<int> *edges){
-
-    if(edges->size() <= 1){
-        cout << "no neighbors found for country index " << edges->at(0) <<endl;
-        return;
-    }
-
-    for(size_t i= 1; i< edges->size(); ++i){
-        SetTwoCountriesAsNeighbours(true, edges->at(0)-1, edges->at(i)-1);
-    }
-}
-
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
     int index_a = country_a->GetCountryID() - 1;
     int index_b = country_b->GetCountryID() - 1;
@@ -537,7 +525,7 @@ bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
     return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
 }
 
-vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) {
+vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) const {
     int country_index = country->GetCountryID() - 1;
     vector<Country*>* neighbouring_countries = new vector<Country*>;
     vector<int> neighbouring_countries_indices;
@@ -565,5 +553,55 @@ vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) {
     }
 
     return neighbouring_countries;
+}
+
+vector<Country*>* Map::GetNeighbouringCountries(Country* country) const {
+    int country_index = country->GetCountryID() - 1;
+    vector<Country*>* neighbouring_countries = new vector<Country*>;
+    vector<int> neighbouring_countries_indices;
+
+    //need access to the map object
+    if(country_index < 0 || country_index > num_countries_) {
+        cout << "Country " << *country->GetCountryName() << " has no neighbours!\n";
+    } else {
+        //iterate over adjacency matrix to obtain the list of neighbours
+        for(int row = 0; row < num_countries_; ++row) {
+            //find the current country's neighbour list
+            if(row == country_index) {
+                for(int col = 0; col < num_countries_; ++col) {
+                    //find the countries that are neighbours
+                    if(adjacency_matrix_[row][col] && col != country_index) {
+                        int id_of_neighbour = col + 1;
+                        Country* neighbouring_country = GetCountryById(id_of_neighbour);
+                        neighbouring_countries->push_back(neighbouring_country);
+                    }
+                }
+            }
+        }
+    }
+
+    return neighbouring_countries;
+}
+
+string Map::GenerateListOfNeighboringCountries(Country *country) const {
+    vector<Country*>* neighbours = GetNeighbouringCountries(country);
+    if(neighbours->empty()) {
+        return "";
+    }
+
+    string neighbour_list = "";
+
+    for(int neighbour = 0; neighbour < neighbours->size(); ++neighbour) {
+        string name;
+        if(neighbour == neighbours->size() - 1) {
+            name = *(*neighbours)[neighbour]->GetCountryName();
+        } else {
+            name = *(*neighbours)[neighbour]->GetCountryName() + ", ";
+        }
+
+        neighbour_list.append(name);
+    }
+
+    return neighbour_list;
 }
 //--------------------------------------------------------------------------------------------
