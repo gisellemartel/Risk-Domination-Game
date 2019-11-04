@@ -297,9 +297,12 @@ void Player::Fortify() {
      */
 
 }
-
+// Reinforce class implementation -----------------------------------------------------------------------------------------
 Reinforcement::Reinforcement() {
-
+    player_cards_ = nullptr;
+    num_of_swaps_ = 0;
+    divider = 3;
+    reinforcement_army = 0;
 }
 
 Reinforcement::Reinforcement(Cards* player_cards, int num_of_swaps){
@@ -310,7 +313,11 @@ Reinforcement::Reinforcement(Cards* player_cards, int num_of_swaps){
 }
 
 Reinforcement::~Reinforcement(){
-
+    for(int i=0; i< player_cards_->size(); i++){
+        player_cards_->at(i) = nullptr;
+        delete player_cards_;
+    }
+    delete[] player_cards;
 }
 
 // Attack class implementation -----------------------------------------------------------------------------------------

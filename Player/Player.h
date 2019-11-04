@@ -80,11 +80,17 @@ private:
     int reinforcement_army;
 
 public:
-    Reinforcement();
+    explicit Reinforcement();
     Reinforcement(Cards* player_cards, int num_of_swaps);
+    Reinforcement(const Reinforcement& reinforce);
     ~Reinforcement();
 
+    Reinforcement& operator = (const Reinforcement& reinforce);
+
     int TotalReinforceArmy();
+    int PerCountryReinforceArmy();
+    int PerContinentReinforceArmy();
+    int CardSwapReinforceArmy();
 
 };
 
@@ -120,5 +126,7 @@ public:
     Country* SelectCountryToAttack();
     void PerformDiceRoll();
 };
+
+
 
 #endif //PLAYER_H
