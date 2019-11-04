@@ -558,4 +558,32 @@ vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) {
 
     return neighbouring_countries;
 }
+
+vector<Country*>* Map::GetNeighbouringCountries(Country* country) {
+    int country_index = country->GetCountryID() - 1;
+    vector<Country*>* neighbouring_countries = new vector<Country*>;
+    vector<int> neighbouring_countries_indices;
+
+    //need access to the map object
+    if(country_index < 0 || country_index > num_countries_) {
+        cout << "Country " << *country->GetCountryName() << " has no neighbours!\n";
+    } else {
+        //iterate over adjacency matrix to obtain the list of neighbours
+        for(int row = 0; row < num_countries_; ++row) {
+            //find the current country's neighbour list
+            if(row == country_index) {
+                for(int col = 0; col < num_countries_; ++col) {
+                    //find the countries that are neighbours
+                    if(adjacency_matrix_[row][col] && col != country_index) {
+                        int id_of_neighbour = col + 1;
+                        Country* neighbouring_country = GetCountryById(id_of_neighbour);
+                        neighbouring_countries->push_back(neighbouring_country);
+                    }
+                }
+            }
+        }
+    }
+
+    return neighbouring_countries;
+}
 //--------------------------------------------------------------------------------------------

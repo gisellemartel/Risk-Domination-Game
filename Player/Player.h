@@ -60,6 +60,8 @@ public:
     Map* GetGameMap() const;
     string* GetPlayerName() const;
 
+    Country* PromptPlayerToSelectCountry() const;
+
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
 
@@ -105,7 +107,6 @@ private:
     Country* defending_country_;
 
     //private helper methods
-    Country* PromptPlayerToSelectAttacker();
     Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
 
 public:
@@ -117,15 +118,9 @@ public:
 
     AttackPhase& operator=(const AttackPhase& attack);
 
-    void SetAttackingCountry(Country* country);
-    void SetDefendingCountry(Country* country);
-
-    Country* GetAttackingCountry() const;
-    Country* GetDefendingCountry() const;
-
     bool PromptUserToAttack();
-    Country* SelectCountryToAttackFrom();
-    Country* SelectCountryToAttack();
+    void SelectCountryToAttackFrom();
+    void SelectCountryToAttack();
     void PerformDiceRoll();
 };
 
@@ -133,11 +128,10 @@ public:
 class FortifyPhase {
 
 private:
-    Player* attacker_;
-    Player* defender_;
+    Player* player_;
     Map* game_map_;
-    Country* attacking_country_;
-    Country* defending_country_;
+    Country* source_country_;
+    Country* target_country_;
 
 public:
 
@@ -148,8 +142,11 @@ public:
 
     FortifyPhase& operator=(const FortifyPhase& fortify);
 
+    bool PromptUserToFortify();
+
+    void SelectTargetCountry();
+    void SelectSourceCountry();
 
     void FortifyHelper();
-
 };
 #endif //PLAYER_H
