@@ -53,7 +53,7 @@ int main() {
 
     // Testing Player --------------------------------------------------------------------------------------------------
 
-    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map");
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/generaltest.map");
 
     //Test game loop
     GameLoop* gameloop = new GameLoop(game_engine->GetPlayers());

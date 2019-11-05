@@ -258,7 +258,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
                     //debug string
                     cout << "\nAssigning " << user_selection << " armies to " << name_country << "...\n";
 
-                    current_country->SetNumberOfArmies(user_selection);
+                    current_country->SetNumberOfArmies(user_selection + current_country->GetNumberOfArmies());
                     current_country->DisplayInfo();
 
                     //update number of armies for current player after assignment
