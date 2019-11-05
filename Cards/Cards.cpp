@@ -221,7 +221,7 @@ bool Hand::ValidateInput(size_t card_index) {
 }
 
 int Hand::AcquireArmy(int exchanges_done) {
-    return (exchanges_done*5 + 5);
+    return (exchanges_done * 5 + 5);
 }
 
 bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3) {

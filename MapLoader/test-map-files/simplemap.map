@@ -1,0 +1,18 @@
+
+
+[continents]
+NorthAmerica 1
+China 2
+
+
+[countries]
+1 Canada 3 89 99
+2 US 3 69 99
+3 Mexico 3 20 22
+
+
+[borders]
+1 2
+2 1
+3 2
+

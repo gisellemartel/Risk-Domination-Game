@@ -73,7 +73,7 @@ private:
 
 public:
     // Function to test Player functions within game
-    void TestAutoLoadMapAndCreateGame(string file_path);
+    void TestAutoLoadMapAndCreateGame(string file_path, int num_players);
 
     //Constructors
     explicit GameEngine();

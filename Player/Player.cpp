@@ -426,7 +426,7 @@ int Reinforcement::CardSwapReinforceArmy(){
         army_from_cards += turn_player_->GetPlayersCards()->Exchange();
     }
 
-    if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() <3) {
+    if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() < 3) {
         return army_from_cards;
     } else {
         army_from_cards += turn_player_->GetPlayersCards()->Exchange();
@@ -566,6 +566,16 @@ bool AttackPhase::SelectCountryToAttack() {
         return false;
     }
 
+    for(int i = 0; i < neighbouring_countries->size(); ++i) {
+        if(attacker_->DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+            neighbouring_countries->erase(neighbouring_countries->begin() + i);
+        }
+    }
+
+    if(neighbouring_countries->empty()) {
+        cout << "No opposing neighbours found!\n";
+        return false;
+    }
     //prompt player to select country to attack from list of neighbours
     while(!defending_country_) {
         defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);

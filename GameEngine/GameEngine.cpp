@@ -281,11 +281,11 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::TestAutoLoadMapAndCreateGame(string file_path) {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_players) {
     exit_game_ = false;
     loaded_map_ = new MapLoader(file_path);
     if(loaded_map_->ParseMap()) {
-        num_of_players_ = 3;
+        num_of_players_ = num_players;
         CreatePlayers();
         CreateCardsDeck();
         AssignHandOfCardsToPlayers();
