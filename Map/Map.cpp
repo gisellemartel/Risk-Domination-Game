@@ -441,81 +441,37 @@ void Map::DisplayAdjacencyMatrix() const {
     cout << endl;
 }
 
-void Map::DisplayGraphTraversal(Country* origin_country, Country* destination_country) const {
-    int index_a = origin_country->GetCountryID() - 1;
-    int index_b = destination_country->GetCountryID() - 1;
+void Map::DisplayGraphTraversal(Country* origin_country) const {
 
-    if(index_a < 0 || index_a > num_countries_ || index_b < 0 || index_a > num_countries_) {
-        cout << "Invalid country given. Please try again" << endl;
-        return;
+    int neighbors = 0;
+    for(int i=0; i <countries_->size(); i++){
+        if(AreCountriesNeighbors(origin_country, countries_->at(i)))
+            neighbors++;
     }
+    neighbors--; // exclude itself
 
-    if(index_a == index_b) {
-        cout << "Origin country and destination country are the same. No need to traverse\n\n";
-        return;
-    }
+    vector<bool> visited(neighbors, false);
+    vector<Country*> queue;
+    queue.push_back(origin_country);
 
-    cout << "Traversing from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl << endl;
+    Country* visited_country;
 
-    if (adjacency_matrix_[index_a][index_b]) {
-        cout << *origin_country->GetCountryName() << " and " << *destination_country->GetCountryName() << " are neighbours\n";
-        cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << ". Traversal complete\n";
-        return;
-    }
+    while(!queue.empty()){
+        visited_country = queue[0];
 
-    if(index_a < index_b) {
-        size_t current_country = index_a;
+        cout << visited_country->GetCountryName() << " ";
+        queue.erase(queue.begin());
 
-        for (size_t i = 0; i < num_countries_; ++i) {
-
-            if (i == current_country) {
-                continue;
-            }
-
-            //if the country at index i is a neighbour to origin country, then traverse to it
-            if (adjacency_matrix_[current_country][i]) {
-                cout << "Leaving " << *(*countries_)[current_country]->GetCountryName()
-                     << " and traversing to neighbour " << *(*countries_)[i]->GetCountryName() << endl;
-
-                if (adjacency_matrix_[current_country][index_b]) {
-                    cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to "
-                         << *destination_country->GetCountryName() << ". Traversal complete\n";
-                    return;
-                }
-                current_country = i;
+        for(int i = 0; i < neighbors; i++){
+            if (adjacency_matrix_[visited_country->GetCountryID()][i] == 1 && (!visited[i])){
+                queue.push_back(countries_->at(i));
+                visited[i] = true;
             }
         }
-
-        //if we have reached this point we have failed to find a path
-        cout << "Failed to find a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl;
-    } else if (index_a > index_b) {
-        int current_country = index_a;
-
-        for(int i = num_countries_ - 1; i >= 0; --i) {
-
-            if(i == current_country ) {
-                continue;
-            }
-
-            //if the country at index i is a neighbour to origin country, then traverse to it
-            if(adjacency_matrix_[current_country][i]) {
-                cout << "Leaving " << *(*countries_)[current_country]->GetCountryName() << " and traversing to neighbour " << *(*countries_)[i]->GetCountryName() << endl;
-
-                if (adjacency_matrix_[current_country][index_b]) {
-                    cout << "Success, we have found a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << ". Traversal complete\n";
-                    return;
-                }
-                current_country = i;
-            }
-
-        }
-
-        //if we have reached this point we have failed to find a path
-        cout << "Failed to find a path from " << *origin_country->GetCountryName() << " to " << *destination_country->GetCountryName() << endl;
     }
 }
 
-bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b){
+bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b) const {
     int index_a = country_a->GetCountryID() - 1;
     int index_b = country_b->GetCountryID() - 1;
     if(index_a < 0 || index_a > countries_->size() || index_b < 0 || index_a > countries_->size()) {
