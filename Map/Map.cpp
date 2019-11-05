@@ -566,10 +566,14 @@ string Map::GenerateListOfNeighboringCountries(Country *country) const {
 
     for(int neighbour = 0; neighbour < neighbours->size(); ++neighbour) {
         string name;
+        int num_armies = (*neighbours)[neighbour]->GetNumberOfArmies();
+        string armies = " | #armies: ";
+        armies.append(std::to_string(num_armies));
+
         if(neighbour == neighbours->size() - 1) {
-            name = *(*neighbours)[neighbour]->GetCountryName();
+            name = *(*neighbours)[neighbour]->GetCountryName() + armies;
         } else {
-            name = *(*neighbours)[neighbour]->GetCountryName() + ", ";
+            name = *(*neighbours)[neighbour]->GetCountryName() + armies + ", " ;
         }
 
         neighbour_list.append(name);

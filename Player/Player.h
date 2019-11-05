@@ -149,9 +149,9 @@ public:
     FortifyPhase& operator=(const FortifyPhase& fortify);
 
     bool PromptUserToFortify();
+    bool SelectTargetCountry();
+    bool SelectSourceCountry();
 
-    void SelectTargetCountry();
-    void SelectSourceCountry();
     void MoveArmies();
 };
 

@@ -303,9 +303,7 @@ void Player::Fortify() {
 
     FortifyPhase* fortify_phase = new FortifyPhase(this);
 
-    if (fortify_phase->PromptUserToFortify()) {
-        fortify_phase->SelectSourceCountry();
-        fortify_phase->SelectTargetCountry();
+    if (fortify_phase->PromptUserToFortify() && fortify_phase->SelectSourceCountry() && fortify_phase->SelectTargetCountry()) {
         fortify_phase->MoveArmies();
     }
 
@@ -501,6 +499,35 @@ bool AttackPhase::PromptUserToAttack() {
 
 //Select which country Player would like to be the attacker
 bool AttackPhase::SelectCountryToAttackFrom() {
+
+    //check here to see if there is not a single country that can attack
+    bool country_that_can_be_attacked_exists = false;
+    for(Country* country : *attacker_->GetPlayersCountries()) {
+
+        if(country->GetNumberOfArmies() > 1) {
+            //Get all the neighbouring countries that have armies
+            vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(country);
+
+            if(!neighbouring_countries->empty()) {
+                //if there is a neighbour that has an army, then verify the country belongs to an opponent
+                for(int i = 0; i < neighbouring_countries->size(); ++i) {
+                    if(attacker_->DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+                        neighbouring_countries->erase(neighbouring_countries->begin() + i);
+                    }
+                }
+            }
+
+            //if there is a country remaining in the vector, it means there exists at least one the attacker can attack
+            if(!neighbouring_countries->empty()) {
+                country_that_can_be_attacked_exists = true;
+            }
+        }
+    }
+
+    if(!country_that_can_be_attacked_exists) {
+        cout << "No opposing neighbour exists that you can attack right now\n";
+        return false;
+    }
 
     cout << "The Countries that you own are " << endl;
     attacker_->DisplayCountries();
@@ -759,7 +786,7 @@ bool FortifyPhase::PromptUserToFortify() {
     return answer == "y";
 }
 
-void FortifyPhase::SelectSourceCountry() {
+bool FortifyPhase::SelectSourceCountry() {
     player_->DisplayCountries();
     cout << "Please choose your source country \n";
 
@@ -774,31 +801,33 @@ void FortifyPhase::SelectSourceCountry() {
 
     if(count == player_->GetPlayersCountries()->size()) {
         cout << "No countries with enough armies to assign to another country!\n";
-        return;
+        return false;
     }
 
     Country* selected_country = player_->PromptPlayerToSelectCountry();
 
-    while(!selected_country || selected_country->GetNumberOfArmies() < 1) {
+    while(!selected_country || (selected_country && selected_country->GetNumberOfArmies() < 1) ) {
         cout << "You do not have enough armies in selected country. Please Try Again." << endl;
         selected_country = player_->PromptPlayerToSelectCountry();
     }
 
     source_country_ = selected_country;
+    return source_country_ != nullptr;
 }
 
-void FortifyPhase::SelectTargetCountry() {
+bool FortifyPhase::SelectTargetCountry() {
     cout << "Please select which target country you wish to fortify:\n";
 
     if(!source_country_) {
         cout << "No source country seleted!\n";
+        return false;
     }
 
     vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(source_country_);
 
     if(!neighbours || neighbours->empty()) {
         cout << *source_country_->GetCountryName() << " has no neighbours!\n";
-        return;
+        return false;
     }
 
     vector<Country*> neighbouring_countries;
@@ -811,7 +840,7 @@ void FortifyPhase::SelectTargetCountry() {
 
     if(neighbouring_countries.empty()) {
         cout << *source_country_->GetCountryName() << " has no neighbours to assign armies to!\n";
-        return;
+        return false;
     }
 
     //prompt player to select country to attack from list of neighbours
@@ -832,6 +861,8 @@ void FortifyPhase::SelectTargetCountry() {
         cin.clear();
         cin.ignore(132, '\n');
     }
+
+    return true;
 }
 
 void FortifyPhase::MoveArmies() {
