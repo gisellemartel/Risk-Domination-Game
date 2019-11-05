@@ -442,33 +442,16 @@ void Map::DisplayAdjacencyMatrix() const {
 }
 
 void Map::DisplayGraphTraversal(Country* origin_country) const {
-
-    int neighbors = 0;
-    for(int i=0; i <countries_->size(); i++){
-        if(AreCountriesNeighbors(origin_country, countries_->at(i)))
-            neighbors++;
-    }
-    neighbors--; // exclude itself
-
-    vector<bool> visited(neighbors, false);
-    vector<Country*> queue;
-    queue.push_back(origin_country);
-
-    Country* visited_country;
-
-    while(!queue.empty()){
-        visited_country = queue[0];
-
-        cout << visited_country->GetCountryName() << " ";
-        queue.erase(queue.begin());
-
-        for(int i = 0; i < neighbors; i++){
-            if (adjacency_matrix_[visited_country->GetCountryID()][i] == 1 && (!visited[i])){
-                queue.push_back(countries_->at(i));
-                visited[i] = true;
-            }
+    static vector<bool> visited(countries_->size(), false);
+    if(visited[origin_country->GetCountryID()-1] == false){
+        visited[origin_country->GetCountryID()-1] = true;
+        cout<< *origin_country->GetCountryName() <<endl;
+        for(int i=0; i<countries_->size();i++){
+            if(((i+1) != origin_country->GetCountryID()) && AreCountriesNeighbors(origin_country, countries_->at(i)))
+                DisplayGraphTraversal(countries_->at(i));
         }
     }
+
 }
 
 bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b) const {
