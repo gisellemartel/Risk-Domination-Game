@@ -26,7 +26,6 @@ class Continent;
 class Player {
 
 private:
-private:
     bool is_player_turn_;
     int number_of_armies_;
     string* player_name_;
@@ -60,6 +59,7 @@ public:
     string* GetPlayerName() const;
 
     Country* PromptPlayerToSelectCountry() const;
+    Country* GetCountryInVectorById(vector<Country*>* countries, int country_id);
 
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
@@ -113,7 +113,6 @@ private:
 
     //private helper methods
     Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
-    Country* GetCountryInVectorById(vector<Country*>* countries, int country_id) const;
 
 public:
 
@@ -125,8 +124,9 @@ public:
     AttackPhase& operator=(const AttackPhase& attack);
 
     bool PromptUserToAttack();
+    bool SelectCountryToAttack();
+
     void SelectCountryToAttackFrom();
-    void SelectCountryToAttack();
     void PerformDiceRoll();
 };
 

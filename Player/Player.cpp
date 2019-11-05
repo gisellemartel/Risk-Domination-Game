@@ -274,8 +274,14 @@ void Player::Attack() {
     //ask player if they wish to carry-out an attack
     while (attack_phase->PromptUserToAttack()) {
         attack_phase->SelectCountryToAttackFrom();
-        attack_phase->SelectCountryToAttack();
-        attack_phase->PerformDiceRoll();
+        bool can_attack = attack_phase->SelectCountryToAttack();
+
+        if(can_attack){
+            attack_phase->PerformDiceRoll();
+        } else {
+            cout << *player_name_ << " cannot attack since no neighbouring countries have armies!\n";
+            return;
+        }
     }
 
     cout << *player_name_ << "no longer wishes to attack, going to next phase";
@@ -306,6 +312,17 @@ void Player::Fortify() {
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
+
+
+Country* Player::GetCountryInVectorById(vector<Country*>* countries, int country_id) {
+    for(Country* country : *countries) {
+        if(country->GetCountryID() == country_id) {
+            return country;
+        }
+    }
+    return nullptr;
+}
+
 
 Country* Player::PromptPlayerToSelectCountry() const {
     int country_id;
@@ -393,15 +410,6 @@ int Reinforcement::CardSwapReinforceArmy(){
 }
 
 // AttackPhase class implementation ------------------------------------------------------------------------------------
-
-Country* AttackPhase::GetCountryInVectorById(vector<Country*>* countries, int country_id) const {
-    for(Country* country : *countries) {
-        if(country->GetCountryID() == country_id) {
-            return country;
-        }
-    }
-    return nullptr;
-}
 
 AttackPhase::AttackPhase() {
     attacking_country_ = nullptr;
@@ -495,7 +503,7 @@ Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbourin
     cout << "Please choose which country you would like to attack (enter by numerical id):\n";
     int defender_id = -1;
     Country* defender = nullptr;
-    while(!(cin >> defender_id) || defender_id < 1 || !(defender = GetCountryInVectorById(neighbouring_countries, defender_id))) {
+    while(!(cin >> defender_id) || defender_id < 1 || !(defender = attacker_->GetCountryInVectorById(neighbouring_countries, defender_id))) {
         cin.clear();
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";
@@ -504,18 +512,21 @@ Country* AttackPhase::PromptPlayerToSelectDefender(vector<Country*>* neighbourin
 }
 
 //Prompt user for which country they would like to attack
-void AttackPhase::SelectCountryToAttack() {
+bool AttackPhase::SelectCountryToAttack() {
     vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(attacking_country_);
 
     if(neighbouring_countries->empty()) {
-        cout << endl << *attacking_country_->GetCountryName() << " has no neighbours with armies!\n";
+        cout << endl << *attacking_country_->GetCountryName() << " has no neighbours with armies! Moving on to next turn!\n";
         defending_country_ = nullptr;
+        return false;
     }
 
     //prompt player to select country to attack from list of neighbours
     while(!defending_country_) {
         defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);
     }
+
+    return true;
 }
 
 void AttackPhase::PerformDiceRoll() {
@@ -528,12 +539,16 @@ void AttackPhase::PerformDiceRoll() {
     int attacker_num_dice;
     while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
         cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
     }
 
     cout << "\nIt is " << *defender_->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << " dice: ";
     int defender_num_dice;
     while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
         cout << "You have entered an invalid number of dice to roll. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
     }
 
     vector<int> attacker_dice_rolls = attacker_->GetPlayerDice()->Roll(attacker_num_dice);
@@ -625,7 +640,7 @@ FortifyPhase::FortifyPhase() {
 
 FortifyPhase::FortifyPhase(Player* player) {
     player_= player;
-    game_map_ = nullptr;
+    game_map_ = player->GetGameMap();
     source_country_ = nullptr;
     target_country_ = nullptr;
 }
@@ -669,6 +684,7 @@ bool FortifyPhase::PromptUserToFortify() {
 }
 
 void FortifyPhase::SelectSourceCountry() {
+    player_->DisplayCountries();
     cout << "Please choose your source country \n";
     Country* selected_country = player_->PromptPlayerToSelectCountry();
 
@@ -682,6 +698,7 @@ void FortifyPhase::SelectSourceCountry() {
 }
 
 void FortifyPhase::SelectTargetCountry() {
+    player_->DisplayCountries();
     cout << "Please your target country you wish to fortify:\n";
 
     vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(source_country_);
@@ -700,14 +717,13 @@ void FortifyPhase::SelectTargetCountry() {
     }
 
     cout << "Please choose which country you would like to fortify (enter by numerical id):\n";
-    int defender_id;
-    while(!(cin >> defender_id) || defender_id < 1 || defender_id >= neighbouring_countries->size() || !(*neighbouring_countries)[defender_id]) {
+    int fortify_id;
+
+    while(!(cin >> fortify_id) || fortify_id < 1 || !(target_country_ = player_->GetCountryInVectorById(neighbouring_countries, fortify_id) )) {
+        cout << "Invalid entry entered! Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
-        cout << "Invalid entry entered! Please try again: ";
     }
-
-    target_country_ = (*neighbouring_countries)[defender_id];
 }
 
 void FortifyPhase::MoveArmies() {
@@ -718,7 +734,9 @@ void FortifyPhase::MoveArmies() {
     cout << "How many armies do you wish to move.(Enter a number):" << endl;
 
     while (!(cin >> num_of_armies) || num_of_armies < 1 || num_of_armies > source_country_->GetNumberOfArmies()) {
-    cout << "Invalid number of armies selected! Please try again\n";
+        cout << "Invalid number of armies selected! Please try again\n";
+        cin.clear();
+        cin.ignore(132, '\n');
     }
 
     cout << "Fortifying " << *target_country_->GetCountryName() << " with " << num_of_armies << " armies." << endl;
