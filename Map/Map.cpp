@@ -74,15 +74,15 @@ vector<Country*>* Continent::GetCountriesInContinent() const{
     return countries_in_continent_;
 }
 
-void Continent::AddCountryToContinent(const Country& country){
+void Continent::AddCountryToContinent(Country* country){
     //need to add condition to check if country is already in any other continent
-    for(auto & i : *countries_in_continent_) {
-        if(*i == (country)) {
+    for(Country* country_in_continent :  *countries_in_continent_) {
+        if(*country_in_continent == *country) {
             cout << "Country already in continent";
             return;
         }
     }
-    countries_in_continent_->push_back(new Country(country));
+    countries_in_continent_->push_back(country);
 }
 
 void Continent::DisplayInfo() const{
@@ -313,6 +313,14 @@ Country* Map::GetCountryById(int id) const {
     return (*countries_)[id - 1];
 }
 
+Continent* Map::GetContinentById(int id) const {
+    if(id < 1 || id > continents_->size()) {
+        cout << "Invalid Id given. Continents start from 1" << endl;
+        return nullptr;
+    }
+    return (*continents_)[id - 1];
+}
+
 vector<Country*>* Map::GetCountries() const {
     return countries_;
 }
@@ -345,6 +353,9 @@ void Map::AddCountryToMap(int country_num, const string& continent_name, int con
 
     countries_->push_back(country_to_add);
     ++num_countries_;
+
+    Continent* continent = GetContinentById(continent_index);
+    continent->AddCountryToContinent(country_to_add);
 }
 
 
@@ -589,7 +600,7 @@ string Map::GenerateListOfNeighboringCountries(Country *country) const {
         return "";
     }
 
-    string neighbour_list = neighbour_list;
+    string neighbour_list;
 
     for(int neighbour = 0; neighbour < neighbours->size(); ++neighbour) {
         string name;

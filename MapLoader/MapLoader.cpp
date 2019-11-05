@@ -325,6 +325,7 @@ bool MapLoader::ParseMap() {
             cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
             return false;
         }
+
         return true;
 
     } else {

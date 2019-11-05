@@ -49,7 +49,7 @@ public:
     vector<Country*>* GetCountriesInContinent() const;
 
     //Methods -------------------------------------------------------
-    void AddCountryToContinent(const Country& country);
+    void AddCountryToContinent(Country* country);
     void DisplayInfo() const;
 };
 
@@ -127,6 +127,7 @@ public:
     int GetNumContinents() const;
     string* GetMapName() const;
     Country* GetCountryById(int id) const;
+    Continent* GetContinentById(int id) const;
     vector<Country*>* GetCountries() const;
     vector<Continent*>* GetContinents() const;
 
