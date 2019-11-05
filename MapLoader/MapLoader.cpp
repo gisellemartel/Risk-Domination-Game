@@ -123,7 +123,7 @@ bool MapLoader::ParseMap() {
                        //debug string
                       //cout << continent_name << " " << army_value << endl;
 
-                       parsed_map_->AddContinentToMap(continent_name, army_value, current_id);
+                       parsed_map_->AddContinentToMap(continent_name, army_value, current_id + 1);
                        ++current_id;
                    }
                }

@@ -82,6 +82,7 @@ public:
     void SetCountryName(string* in_country_name);
     void SetNumberOfArmies(int in_number_of_armies);
     void SetCountryOwner(Player* player);
+    void SetContinent(Continent* continent);
 
     //Getters --------------------------------------------------
     string* GetCountryName() const;

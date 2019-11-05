@@ -76,12 +76,18 @@ vector<Country*>* Continent::GetCountriesInContinent() const{
 
 void Continent::AddCountryToContinent(Country* country){
     //need to add condition to check if country is already in any other continent
-    for(Country* country_in_continent :  *countries_in_continent_) {
-        if(*country_in_continent == *country) {
-            cout << "Country already in continent";
-            return;
+    if(!countries_in_continent_) {
+        countries_in_continent_ = new vector<Country*>;
+    }
+    if(!countries_in_continent_->empty()) {
+        for(Country* country_in_continent :  *countries_in_continent_) {
+            if(*country_in_continent == *country) {
+                cout << "Country already in continent";
+                return;
+            }
         }
     }
+
     countries_in_continent_->push_back(country);
 }
 
@@ -171,6 +177,10 @@ void Country::SetNumberOfArmies(int in_number_of_armies) {
 
 void Country::SetCountryOwner(Player* player) {
     country_owner_ = player;
+}
+
+void Country::SetContinent(Continent *continent) {
+    continent_ = continent;
 }
 
 //Getters --------------------------------------------------
@@ -310,7 +320,13 @@ Country* Map::GetCountryById(int id) const {
         cout << "Invalid Id given. Countries start from 1" << endl;
         return nullptr;
     }
-    return (*countries_)[id - 1];
+
+    for(int i = 0; i < countries_->size(); ++i) {
+        if((*countries_)[i]->GetCountryID() == id)  {
+            return (*countries_)[i];
+        }
+    }
+    return nullptr;
 }
 
 Continent* Map::GetContinentById(int id) const {
@@ -318,7 +334,12 @@ Continent* Map::GetContinentById(int id) const {
         cout << "Invalid Id given. Continents start from 1" << endl;
         return nullptr;
     }
-    return (*continents_)[id - 1];
+    for(int i = 0; i < continents_->size(); ++i) {
+        if((*continents_)[i]->GetContinentID() == id)  {
+            return (*continents_)[i];
+        }
+    }
+    return nullptr;
 }
 
 vector<Country*>* Map::GetCountries() const {
@@ -352,9 +373,11 @@ void Map::AddCountryToMap(int country_num, const string& continent_name, int con
     }
 
     countries_->push_back(country_to_add);
+
     ++num_countries_;
 
     Continent* continent = GetContinentById(continent_index);
+    country_to_add->SetContinent(continent);
     continent->AddCountryToContinent(country_to_add);
 }
 

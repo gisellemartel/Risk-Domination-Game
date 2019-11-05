@@ -288,7 +288,7 @@ void Player::Attack() {
         }
     }
 
-    cout << *player_name_ << "no longer wishes to attack, going to next phase";
+    cout << *player_name_ << " no longer wishes to attack, going to next phase";
 
     attack_phase = nullptr;
     delete attack_phase;
@@ -335,6 +335,7 @@ Country* Player::PromptPlayerToSelectCountry() const {
         cin.ignore(132, '\n');
         cout << "Invalid entry entered! Please try again: ";
     }
+
 
     return GetCountryById(country_id);
 }
@@ -778,22 +779,24 @@ void FortifyPhase::SelectSourceCountry() {
 
     Country* selected_country = player_->PromptPlayerToSelectCountry();
 
-    if(selected_country) {
-        while(!selected_country || selected_country->GetNumberOfArmies() < 1) {
-            cout << "You do not have enough armies in country " << *selected_country->GetCountryName() << ". Please Try Again." << endl;
-            selected_country = player_->PromptPlayerToSelectCountry();
-        }
-
+    while(!selected_country || selected_country->GetNumberOfArmies() < 1) {
+        cout << "You do not have enough armies in selected country. Please Try Again." << endl;
+        selected_country = player_->PromptPlayerToSelectCountry();
     }
+
+    source_country_ = selected_country;
 }
 
 void FortifyPhase::SelectTargetCountry() {
-    player_->DisplayCountries();
-    cout << "Please your target country you wish to fortify:\n";
+    cout << "Please select which target country you wish to fortify:\n";
+
+    if(!source_country_) {
+        cout << "No source country seleted!\n";
+    }
 
     vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(source_country_);
 
-    if(neighbours->empty()) {
+    if(!neighbours || neighbours->empty()) {
         cout << *source_country_->GetCountryName() << " has no neighbours!\n";
         return;
     }
