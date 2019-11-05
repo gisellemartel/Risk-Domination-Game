@@ -63,5 +63,6 @@ int main()
     cout << "Testing that graph is connected:\n\n";
     test_map->DisplayGraphTraversal(test_map->GetCountryById(1));
 
+    test_map = nullptr;
     delete test_map;
 }
