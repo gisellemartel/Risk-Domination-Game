@@ -125,8 +125,8 @@ public:
 
     bool PromptUserToAttack();
     bool SelectCountryToAttack();
+    bool SelectCountryToAttackFrom();
 
-    void SelectCountryToAttackFrom();
     void PerformDiceRoll();
 };
 
