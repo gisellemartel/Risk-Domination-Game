@@ -376,9 +376,7 @@ Reinforcement& Reinforcement::operator=(const Reinforcement& reinforce){
 
 int Reinforcement::TotalReinforceArmy(){
 
-//    return PerContinentReinforceArmy();
-    return CardSwapReinforceArmy();
-//    return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
+  return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
 }
 
 int Reinforcement::PerCountryReinforceArmy(){
@@ -402,10 +400,10 @@ int Reinforcement::PerContinentReinforceArmy(){
 int Reinforcement::CardSwapReinforceArmy(){
     int army_from_cards = 0;
     while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5)
-        //army_from_cards =+ turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
+        army_from_cards =+ turn_player_->GetPlayersCards()->Exchange();
     if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() <3)
         return army_from_cards;
-   // army_from_cards =+ turn_player_->GetPlayersCards()->Exchange(num_of_swaps_);
+    army_from_cards =+ turn_player_->GetPlayersCards()->Exchange();
     return army_from_cards;
 }
 

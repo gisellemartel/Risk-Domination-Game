@@ -658,8 +658,8 @@ void GameLoop::StartLoop(){
 
         if(!all_players_->at(turn)->GetPlayersCountries()->empty()){
             all_players_->at(turn)->Reinforce();
-//            all_players_->at(turn)->Attack();
-//            all_players_->at(turn)->Fortify();
+            all_players_->at(turn)->Attack();
+            all_players_->at(turn)->Fortify();
         }
 
         turn += 1;
