@@ -141,10 +141,10 @@ public:
     void DisplayAdjacencyMatrix() const;
     void AddCountryToMap(int country_num, const string& continent_name, int continent_index, int x_coordinate, int y_coordinate);
     void AddContinentToMap(const string& continent_name, int army_value, int id);
-    void DisplayGraphTraversal(Country* origin_country, Country* destination_country) const;
+    void DisplayGraphTraversal(Country* origin_country) const;
 
 
-    bool AreCountriesNeighbors(Country* country_a, Country* country_b);
+    bool AreCountriesNeighbors(Country* country_a, Country* country_b) const;
 
     string GenerateListOfNeighboringCountries(Country* country) const;
 

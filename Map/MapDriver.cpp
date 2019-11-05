@@ -36,15 +36,10 @@ int main()
 
     test_map->CreateAdjacencyMatrix();
     test_map->SetTwoCountriesAsNeighbours(true, 0, 1);
-    test_map->SetTwoCountriesAsNeighbours(false, 0, 2);
-    test_map->SetTwoCountriesAsNeighbours(false, 0, 4);
-    test_map->SetTwoCountriesAsNeighbours(false, 1, 2);
-    test_map->SetTwoCountriesAsNeighbours(false, 1, 4);
-    test_map->SetTwoCountriesAsNeighbours(false, 2, 4);
-    test_map->SetTwoCountriesAsNeighbours(false, 3, 2);
-    test_map->SetTwoCountriesAsNeighbours(true, 3, 1);
-    test_map->SetTwoCountriesAsNeighbours(false, 3, 0);
-    test_map->SetTwoCountriesAsNeighbours( false, 3, 4);
+    test_map->SetTwoCountriesAsNeighbours(true, 1, 2);
+    test_map->SetTwoCountriesAsNeighbours(true, 1, 3);
+    test_map->SetTwoCountriesAsNeighbours(true, 1, 4);
+
 
     cout << "----------------------------------------------------" << endl;
     cout << "\nDisplaying all country nodes and edges:\n" << endl;
@@ -66,7 +61,7 @@ int main()
 
     cout << "\n----------------------------------------------------" << endl;
     cout << "Testing that graph is connected:\n\n";
-    test_map->DisplayGraphTraversal(test_map->GetCountryById(1), test_map->GetCountryById(4));
+    test_map->DisplayGraphTraversal(test_map->GetCountryById(1));
 
     delete test_map;
 }
