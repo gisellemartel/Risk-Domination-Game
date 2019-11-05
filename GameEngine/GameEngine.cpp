@@ -624,7 +624,7 @@ void GameEngine::DisplayCurrentGame() {
 
 GameLoop::GameLoop(){
     all_players_ = nullptr;
-    int num_of_swaps_ = 0;
+    num_of_swaps_ = 0;
 }
 
 GameLoop::GameLoop(vector<Player*>* all_players){
@@ -637,7 +637,7 @@ GameLoop::GameLoop(const GameLoop& game_loop){
 }
 
 GameLoop::~GameLoop(){
-    for(int i=0; i<all_players_->size();i++){
+    for(int i = 0; i < all_players_->size(); ++i){
         all_players_->at(i) = nullptr;
         delete all_players_->at(i);
     }
@@ -653,28 +653,45 @@ GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
 
 void GameLoop::StartLoop(){
     int turn = 0;
-    cout<<"Game Start"<<endl;
-    while(WinCondition(all_players_->at(turn))){
 
-        if(!all_players_->at(turn)->GetPlayersCountries()->empty()){
-            all_players_->at(turn)->Reinforce();
-            all_players_->at(turn)->Attack();
-            all_players_->at(turn)->Fortify();
+    cout << "############################################################################# GAME START #############################################################################" << endl;
+
+    while(!WinCondition(all_players_->at(turn))){
+        Player* current_player = all_players_->at(turn);
+
+        cout << endl << "*********************** Currently " << *current_player->GetPlayerName() << "'s turn ***********************\n\n";
+
+        if(current_player && !current_player->GetPlayersCountries()->empty()){
+            current_player->Reinforce();
+            current_player->Attack();
+            current_player->Fortify();
         }
 
         turn += 1;
-        turn = turn % all_players_->size();
 
+        if(!all_players_->empty()) {
+            turn = turn % all_players_->size();
+        }
     }
 }
 
 bool GameLoop::WinCondition(Player* cur_player){
 
-    for(int i=0; i<cur_player->GetGameMap()->GetCountries()->size();i++){
-        if(cur_player->DoesPlayerOwnCountry(cur_player->GetGameMap()->GetCountries()->at(i)->GetCountryID()))
-            return false;
+    Map* game_map_ = cur_player->GetGameMap();
+    vector<Country*>* all_countries;
+
+    if(game_map_) {
+        all_countries = game_map_->GetCountries();
     }
-    cout<<"Game Over"<<endl;
-    cout<<"Winner: "<<cur_player->GetPlayerName();
+
+    for(Country* country : *all_countries){
+        int id = country->GetCountryID();
+        if(cur_player->DoesPlayerOwnCountry(id)) {
+            return false;
+        }
+    }
+    cout << "Game Over" << endl;
+    cout << "Winner: " << cur_player->GetPlayerName();
+
     return true;
 }

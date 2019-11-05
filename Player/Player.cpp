@@ -514,7 +514,7 @@ bool AttackPhase::SelectCountryToAttack() {
     vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(attacking_country_);
 
     if(neighbouring_countries->empty()) {
-        cout << endl << *attacking_country_->GetCountryName() << " has no neighbours with armies! Moving on to next turn!\n";
+        cout << endl << *attacking_country_->GetCountryName() << " has no neighbours with armies!\n";
         defending_country_ = nullptr;
         return false;
     }

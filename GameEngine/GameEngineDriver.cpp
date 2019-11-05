@@ -16,11 +16,12 @@ int main() {
 
     cout << "Game Engine Driver" << endl;
 
+
     GameEngine* game_engine = new GameEngine;
 
 
     // Testing Game Engine and game Startup  ---------------------------------------------------------------------------
-
+//
 //    while(!game_engine->ExitGameSelected()) {
 //        if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
 //            cout << endl;
@@ -50,63 +51,39 @@ int main() {
 
 
 
-
-
     // Testing Player --------------------------------------------------------------------------------------------------
 
     game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map");
 
-    //Test Reinforce
-    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Reinforce phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
-    for(Player* player : *game_engine->GetPlayers()) {
-        player->Reinforce();
-    }
+    //Test game loop
+    GameLoop* gameloop = new GameLoop(game_engine->GetPlayers());
+    gameloop->StartLoop();
 
-    cout << endl << endl;
-
-    //Test Attack
-    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Attack phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
-    for(Player* player : *game_engine->GetPlayers()) {
-        player->Attack();
-    }
-
-    cout << endl << endl;
-
-    //Test Fortify
-    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Fortify phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
-    for(Player* player : *game_engine->GetPlayers()) {
-        player->Fortify();
-    }
+//    //Test Reinforce
+//    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Reinforce phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//    for(Player* player : *game_engine->GetPlayers()) {
+//        player->Reinforce();
+//    }
+//
+//    cout << endl << endl;
+//
+//    //Test Attack
+//    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Attack phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//    for(Player* player : *game_engine->GetPlayers()) {
+//        player->Attack();
+//    }
+//
+//    cout << endl << endl;
+//
+//    //Test Fortify
+//    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Fortify phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//    for(Player* player : *game_engine->GetPlayers()) {
+//        player->Fortify();
+//    }
 
 
     game_engine = nullptr;
     delete game_engine;
 
-    vector<Player*>* playerlist = new vector<Player*>;
-    Player* player1 = new Player("player1");
-    Player* player2 = new Player("player2");
-    Player* player3 = new Player("player3");
-    playerlist->push_back(player1);
-    playerlist->push_back(player2);
-    playerlist->push_back(player3);
-
-    //Player has Countries
-    player1->AddCountryToCollection(new Country(1, new string("Canada"), 1));
-    player1->AddCountryToCollection(new Country(2, new string("US"), 1));
-    player1->AddCountryToCollection(new Country(3, new string("Mexico"), 1));
-    cout << "\nPlayer " << *player1->GetPlayerName() << " owns collection of following countries: " << endl;
-    for(Country* country : *player1->GetPlayersCountries()) {
-        cout << *country->GetCountryName() << endl;
-    }
-
-    //Player has Cards
-    player1->AddCardToCollection(new Cards("calvary"));
-    player1->AddCardToCollection(new Cards("infantry"));
-    player1->AddCardToCollection(new Cards("artillery"));
-    cout << "\nPlayer owns collection of following cards: " << endl;
-
-    player1->GetPlayersCards()->DisplayHand();
-    GameLoop* gameloop = new GameLoop(playerlist);
-    gameloop->StartLoop();
     return 0;
 }
