@@ -400,10 +400,10 @@ int Reinforcement::PerContinentReinforceArmy(){
 int Reinforcement::CardSwapReinforceArmy(){
     int army_from_cards = 0;
     while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5)
-        army_from_cards =+ turn_player_->GetPlayersCards()->Exchange();
+        army_from_cards += turn_player_->GetPlayersCards()->Exchange();
     if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() <3)
         return army_from_cards;
-    army_from_cards =+ turn_player_->GetPlayersCards()->Exchange();
+    army_from_cards += turn_player_->GetPlayersCards()->Exchange();
     return army_from_cards;
 }
 
@@ -524,7 +524,9 @@ bool AttackPhase::SelectCountryToAttack() {
         defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);
     }
 
-    return true;
+    defender_ = defending_country_->GetCountryOwner();
+
+    return !!defender_;
 }
 
 void AttackPhase::PerformDiceRoll() {
@@ -551,8 +553,15 @@ void AttackPhase::PerformDiceRoll() {
 
     vector<int> attacker_dice_rolls = attacker_->GetPlayerDice()->Roll(attacker_num_dice);
     cout << "Attacker dice rolled:\n";
+    for(int i : attacker_dice_rolls) {
+        cout << i << endl;
+    }
     vector<int> defender_dice_rolls = defender_->GetPlayerDice()->Roll(defender_num_dice);
     cout << "Defender dice rolled:\n";
+    for(int i : defender_dice_rolls) {
+        cout << i << endl;
+    }
+    cout << endl;
 
     //sort the rolls from highest value to lowest value
     sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
@@ -561,6 +570,9 @@ void AttackPhase::PerformDiceRoll() {
     reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
 
     int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
+
+
+    cout << "Carrying out attacks...." << endl;
 
     for(int i = 0; i < num_of_iterations; ++i) {
         //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
