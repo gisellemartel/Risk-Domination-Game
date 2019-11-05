@@ -330,7 +330,7 @@ Country* Map::GetCountryById(int id) const {
 }
 
 Continent* Map::GetContinentById(int id) const {
-    if(id < 1 || id > continents_->size()) {
+    if(id < 1 || id > continents_->size() + 1) {
         cout << "Invalid Id given. Continents start from 1" << endl;
         return nullptr;
     }
