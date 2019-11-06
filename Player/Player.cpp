@@ -277,14 +277,14 @@ void Player::Attack() {
         bool can_attack = attack_phase->SelectCountryToAttackFrom();
 
         if(can_attack) {
-            can_attack = attack_phase->SelectCountryToAttack();
-        }
+            can_attack &= attack_phase->SelectCountryToAttack();
 
-        if(can_attack){
+            while(!can_attack){
+                cout << *player_name_ << " cannot attack since no neighbouring countries have armies!\n";
+                can_attack = attack_phase->SelectCountryToAttackFrom();
+                can_attack &= attack_phase->SelectCountryToAttack();
+            }
             attack_phase->PerformDiceRoll();
-        } else {
-            cout << *player_name_ << " cannot attack since no neighbouring countries have armies!\n";
-            return;
         }
     }
 
@@ -535,28 +535,16 @@ bool AttackPhase::SelectCountryToAttackFrom() {
 
     cout << "Please choose which country you would like to attack from (enter by numerical id):\n";
 
-    int counter = 0;
-    for(Country* country : *attacker_->GetPlayersCountries()) {
-        if(country->GetNumberOfArmies() < 2) {
-            ++counter;
-        }
-    }
-
-    bool country_exists_with_enough_armies = counter != attacker_->GetPlayersCountries()->size();
-
     //ask the player to select the country the wish to attack with
     attacking_country_ = attacker_->PromptPlayerToSelectCountry();
 
-    if(attacking_country_ && country_exists_with_enough_armies) {
+    if(attacking_country_) {
         //keep looping until select the country with 2 or more armies
         while(attacking_country_->GetNumberOfArmies() < 2) {
             cout << "You do not have enough armies in country " << *attacking_country_->GetCountryName() << ". Please Try Again." << endl;
             attacking_country_ = attacker_->PromptPlayerToSelectCountry();
         }
         return true;
-    } else if (!country_exists_with_enough_armies && attacking_country_) {
-        cout << "None of your countries have a enough armies to attack!\n";
-        return false;
     } else {
         return false;
     }
@@ -604,8 +592,9 @@ bool AttackPhase::SelectCountryToAttack() {
         cout << "No opposing neighbours found!\n";
         return false;
     }
+
     //prompt player to select country to attack from list of neighbours
-    while(!defending_country_) {
+    while(!defending_country_ ) {
         defending_country_ = PromptPlayerToSelectDefender(neighbouring_countries);
     }
 
