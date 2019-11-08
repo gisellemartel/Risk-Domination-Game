@@ -11,7 +11,7 @@ add_executable(GameEngine
         Cards/Cards.cpp
         MapLoader/MapLoader.cpp
         Map/Map.cpp
-        )
+        GameObservers/GameObservers.cpp)
 add_executable(Map
         Player/Player.cpp
         Dice/Dice.cpp
@@ -37,7 +37,7 @@ add_executable(Player
         Dice/Dice.cpp
         Cards/Cards.cpp
         Player/PlayerDriver.cpp
-        Player/Player
+        Player/Player.cpp
         )
 add_executable(Cards
         Cards/CardsDriver.cpp
