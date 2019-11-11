@@ -1,12 +1,11 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
 #include <vector>
 #include <iostream>
-#include <cmath>
 #include <utility>
 #include <string>
 #include <map>
@@ -16,6 +15,8 @@
 using namespace std;
 
 #include "Player.h"
+
+// Player class implementation ----------------------------------------------------------------------------
 
 Player::Player(string player_name) {
     player_name_ = new string(player_name);
@@ -95,6 +96,78 @@ bool Player::operator==(const Player& player) {
             && game_map_ == player.game_map_;
 }
 
+int Player::Find(Country* country) const {
+    for(int i = 0; i < countries_->size(); ++i) {
+        if((*countries_)[i] == country) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool Player::DoesPlayerOwnCountry(int id) const {
+    for(const Country* country : *countries_) {
+        int current_id = (country->GetCountryID());
+        if (id == current_id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Player::IsCurrentlyPlayersTurn() const {
+    return is_player_turn_;
+}
+
+vector<Country*>* Player::GetPlayersCountries() const {
+    return countries_;
+}
+
+Country* Player::GetCountryById(int id) const {
+    for(Country* country : *countries_) {
+        int current_id = (country->GetCountryID());
+        if (id == current_id) {
+            return country;
+        }
+    }
+    return nullptr;
+}
+
+Country* Player::GetCountryInVectorById(vector<Country*>* countries, int country_id) {
+    for(Country* country : *countries) {
+        if(country->GetCountryID() == country_id) {
+            return country;
+        }
+    }
+    return nullptr;
+}
+
+Country* Player::PromptPlayerToSelectCountry() const {
+    int country_id;
+    while(!(cin >> country_id) || country_id < 1 || !DoesPlayerOwnCountry(country_id) ) {
+        cin.clear();
+        cin.ignore(132, '\n');
+        cout << "Invalid entry entered! Please try again: ";
+    }
+    return GetCountryById(country_id);
+}
+
+Dice* Player::GetPlayerDice() const {
+    return dice_roll_;
+}
+
+Hand* Player::GetPlayersCards() const {
+    return risk_cards_;
+}
+
+Map* Player::GetGameMap() const {
+    return game_map_;
+}
+
+string* Player::GetPlayerName() const {
+    return player_name_;
+}
+
 void Player::SetPlayersTurn(bool is_turn) {
     is_player_turn_ = is_turn;
 }
@@ -117,59 +190,6 @@ void Player::SetNumberOfArmies(int number_of_armies) {
 
 void Player::SetGameMap(Map* map) {
     game_map_ = map;
-}
-
-Country* Player::GetCountryById(int id) const {
-    for(Country* country : *countries_) {
-        int current_id = (country->GetCountryID());
-        if (id == current_id) {
-            return country;
-        }
-    }
-    return nullptr;
-}
-
-bool Player::DoesPlayerOwnCountry(int id) const {
-    for(const Country* country : *countries_) {
-        int current_id = (country->GetCountryID());
-        if (id == current_id) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Player::IsCurrentlyPlayersTurn() const {
-    return is_player_turn_;
-}
-
-Dice* Player::GetPlayerDice() const {
-    return dice_roll_;
-}
-
-string* Player::GetPlayerName() const {
-    return player_name_;
-}
-
-vector<Country*>* Player::GetPlayersCountries() const {
-    return countries_;
-}
-
-Hand* Player::GetPlayersCards() const {
-    return risk_cards_;
-}
-
-Map* Player::GetGameMap() const {
-    return game_map_;
-}
-
-int Player::Find(Country* country) const {
-    for(int i = 0; i < countries_->size(); ++i) {
-        if((*countries_)[i] == country) {
-            return i;
-        }
-    }
-    return -1;
 }
 
 void Player::AddCountryToCollection(Country *country) {
@@ -197,13 +217,7 @@ void Player::AddCardToCollection(Cards* card) {
 
 void Player::DisplayPlayerStats() const {
     cout << "\n===================================================\n" << *player_name_ << endl;
-
     cout << "Number of countries owned: " << countries_->size();
-//    debug string:
-//    cout << endl;
-//    for(const Country* country : *countries_) {
-//        cout << *country->GetCountryName() << endl;
-//    }
     cout << endl;
 
     cout << "Number cards in hand: " << risk_cards_->GetNumberOfCardsInHand();
@@ -234,7 +248,7 @@ void Player::DisplayCountries() const {
 void Player::Reinforce() {
     cout << "In reinforce method" << endl;
 
-    Reinforcement* reinforce = new Reinforcement(this, 0);
+    ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
     int bonus_army = reinforce->TotalReinforceArmy();
     int looping_counter = 0;
     int reinforce_value = 0;
@@ -263,7 +277,6 @@ void Player::Reinforce() {
         looping_counter = looping_counter % countries_->size();
     }
 }
-
 
 void Player::Attack() {
 
@@ -315,61 +328,43 @@ void Player::Fortify() {
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
-
-Country* Player::GetCountryInVectorById(vector<Country*>* countries, int country_id) {
-    for(Country* country : *countries) {
-        if(country->GetCountryID() == country_id) {
-            return country;
-        }
-    }
-    return nullptr;
-}
-
-
-Country* Player::PromptPlayerToSelectCountry() const {
-    int country_id;
-    while(!(cin >> country_id) || country_id < 1 || !DoesPlayerOwnCountry(country_id) ) {
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Invalid entry entered! Please try again: ";
-    }
-
-
-    return GetCountryById(country_id);
+void Player::SetPlayerStrategy(ConcreteStrategies *player_strategy) {
+    player_strategy_ = player_strategy;
 }
 
 
 
-// Reinforcement phase class implementation ----------------------------------------------------------------------------
 
-Reinforcement::Reinforcement() {
+// ReinforcePhase class implementation ----------------------------------------------------------------------------
+
+ReinforcePhase::ReinforcePhase() {
     turn_player_ = nullptr;
     num_of_swaps_ = 0;
     divider_ = 3;
     reinforcement_army_ = 0;
 }
 
-Reinforcement::Reinforcement(Player* turn_player, int num_of_swaps){
+ReinforcePhase::ReinforcePhase(Player* turn_player, int num_of_swaps){
     turn_player_ = turn_player;
     num_of_swaps_ = num_of_swaps;
     divider_ = 3;
     reinforcement_army_ = 0;
 }
 
-Reinforcement::~Reinforcement(){
+ReinforcePhase::~ReinforcePhase(){
     turn_player_ = nullptr;
     delete turn_player_;
 
 }
 
-Reinforcement::Reinforcement(const Reinforcement& reinforce){
+ReinforcePhase::ReinforcePhase(const ReinforcePhase& reinforce){
     turn_player_ = reinforce.turn_player_;
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
 }
 
-Reinforcement& Reinforcement::operator=(const Reinforcement& reinforce){
+ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
     turn_player_ = reinforce.turn_player_;
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
@@ -377,12 +372,12 @@ Reinforcement& Reinforcement::operator=(const Reinforcement& reinforce){
     return *this;
 }
 
-int Reinforcement::TotalReinforceArmy(){
+int ReinforcePhase::TotalReinforceArmy(){
 
   return PerCountryReinforceArmy() + PerContinentReinforceArmy() + CardSwapReinforceArmy();
 }
 
-int Reinforcement::PerCountryReinforceArmy(){
+int ReinforcePhase::PerCountryReinforceArmy(){
     if (turn_player_->GetPlayersCountries()->size() > 9) {
         int num_countries = turn_player_->GetPlayersCountries()->size();
         int rounded_down = num_countries / divider_;
@@ -392,7 +387,7 @@ int Reinforcement::PerCountryReinforceArmy(){
     }
 }
 
-int Reinforcement::PerContinentReinforceArmy(){
+int ReinforcePhase::PerContinentReinforceArmy(){
     int armies_from_continent_bonus = 0;
 
     vector<Continent*>* continents = turn_player_->GetGameMap()->GetContinents();
@@ -418,7 +413,7 @@ int Reinforcement::PerContinentReinforceArmy(){
     return armies_from_continent_bonus;
 }
 
-int Reinforcement::CardSwapReinforceArmy(){
+int ReinforcePhase::CardSwapReinforceArmy(){
     int army_from_cards = 0;
 
     while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5) {
@@ -432,6 +427,8 @@ int Reinforcement::CardSwapReinforceArmy(){
         return army_from_cards;
     }
 }
+
+
 
 // AttackPhase class implementation ------------------------------------------------------------------------------------
 
@@ -495,7 +492,6 @@ bool AttackPhase::PromptUserToAttack() {
     }
     return answer == "y";
 }
-
 
 //Select which country Player would like to be the attacker
 bool AttackPhase::SelectCountryToAttackFrom() {

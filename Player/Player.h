@@ -1,5 +1,5 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -10,6 +10,7 @@
 #include "../Map/Map.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
 
 #include <iostream>
 #include <vector>
@@ -22,6 +23,7 @@ class Cards;
 class Hand;
 class Map;
 class Continent;
+class ConcreteStrategies;
 
 class Player {
 
@@ -33,6 +35,8 @@ private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
+
+    ConcreteStrategies* player_strategy_;
 
 public:
     explicit Player(string player_name);
@@ -50,6 +54,8 @@ public:
     void SetPlayerHand(Hand* hand);
     void SetNumberOfArmies(int number_of_armies);
     void SetGameMap(Map* map);
+
+    void SetPlayerStrategy(ConcreteStrategies* player_strategy);
 
     vector<Country*>* GetPlayersCountries() const;
     Country* GetCountryById(int id) const;
@@ -77,7 +83,8 @@ public:
     void Fortify();
 };
 
-class Reinforcement
+// ReinforcePhase --------------------------------------
+class ReinforcePhase
 {
 private:
     Player* turn_player_;
@@ -86,18 +93,17 @@ private:
     int reinforcement_army_;
 
 public:
-    explicit Reinforcement();
-    Reinforcement(Player* turn_player, int num_of_swaps);
-    Reinforcement(const Reinforcement& reinforce);
-    ~Reinforcement();
+    explicit ReinforcePhase();
+    ReinforcePhase(Player* turn_player, int num_of_swaps);
+    ReinforcePhase(const ReinforcePhase& reinforce);
+    ~ReinforcePhase();
 
-    Reinforcement& operator = (const Reinforcement& reinforce);
+    ReinforcePhase& operator = (const ReinforcePhase& reinforce);
 
     int TotalReinforceArmy();
     int PerCountryReinforceArmy();
     int PerContinentReinforceArmy();
     int CardSwapReinforceArmy();
-
 };
 
 
