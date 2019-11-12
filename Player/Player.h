@@ -10,7 +10,7 @@
 #include "../Map/Map.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
-#include "../PlayerStrategies/PlayerStrategies.h"
+#include "PlayerStrategies.h"
 
 #include <iostream>
 #include <vector>
@@ -24,6 +24,9 @@ class Hand;
 class Map;
 class Continent;
 class ConcreteStrategies;
+class HumanPlayerStrategies;
+class AggressiveComputerPlayerStrategy;
+class BenevolantComputerPlayerStrategy;
 
 class Player {
 

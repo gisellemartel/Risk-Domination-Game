@@ -76,7 +76,7 @@ int main()
 
 
 
-    delete all map loader objects
+//    delete all map loader objects
     testmap1 = testmap2 = testmap3 = testmap4 = testmap5 = testmap6 = testmap7 = testmap8 = testmap9 = testmap10 = testmap11 = testmap12 = testmap13 = testmap14 = testmap15 = testmap16 = nullptr;
     delete testmap1;
     delete testmap2;

@@ -25,6 +25,7 @@ Player::Player(string player_name) {
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
     game_map_ = nullptr;
+    player_strategy_ = nullptr;
 }
 
 Player::Player(string player_name, Map *game_map) {
@@ -34,6 +35,7 @@ Player::Player(string player_name, Map *game_map) {
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
+    player_strategy_ = nullptr;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -44,6 +46,7 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
     game_map_ = nullptr;
+    player_strategy_ = nullptr;
 }
 
 Player::Player(const Player &player) {
@@ -57,18 +60,26 @@ Player::Player(const Player &player) {
     risk_cards_ = player.risk_cards_;
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
+    player_strategy_ = player.player_strategy_;
 }
 
 Player::~Player() {
 
     for(Country* country : *countries_) {
+        country = nullptr;
         delete country;
     }
+    risk_cards_ = nullptr;
+    countries_ = nullptr;
+    dice_roll_ = nullptr;
+    game_map_ = nullptr;
+    player_strategy_ = nullptr;
 
     delete risk_cards_;
     delete countries_;
     delete dice_roll_;
     delete game_map_;
+    delete player_strategy_;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -84,6 +95,7 @@ Player& Player::operator=(const Player &player) {
     countries_ = player.countries_;
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
+    player_strategy_ = player.player_strategy_;
     return *this;
 }
 
@@ -93,7 +105,8 @@ bool Player::operator==(const Player& player) {
             && countries_ == player.countries_
             && risk_cards_ == player.risk_cards_
             && dice_roll_ == player.dice_roll_
-            && game_map_ == player.game_map_;
+            && game_map_ == player.game_map_
+            && player_strategy_ == player.player_strategy_;
 }
 
 int Player::Find(Country* country) const {
@@ -246,36 +259,25 @@ void Player::DisplayCountries() const {
 }
 
 void Player::Reinforce() {
-    cout << "In reinforce method" << endl;
-
     ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
-    int bonus_army = reinforce->TotalReinforceArmy();
-    int looping_counter = 0;
-    int reinforce_value = 0;
+    int num_bonus_army = reinforce->TotalReinforceArmy();
+    map<int, int> country_army_map;
+    player_strategy_->ReinforceStrategy(country_army_map, num_bonus_army);
 
-    while(bonus_army > 0){
-        cout<<"Currently on Country "<<endl;
-        countries_->at(looping_counter)->DisplayInfo();
-        while(true){
+    for(auto& entry : country_army_map) {
+        Country* current_country = GetCountryById(entry.first);
 
-            cout << "Armies to assign: " << bonus_army << "\nArmies to add to current country: ";
-            cin >> reinforce_value;
-            while (cin.fail() || reinforce_value > bonus_army || reinforce_value < 0) {
-                cout << "Invalid input. Pick a valid number: ";
-                cin.clear();
-                cin.ignore(256, '\n');
-                cin >> reinforce_value;
-            }
-            break;
+        if(!current_country) {
+            continue;
         }
 
-        cout << reinforce_value << " armies added to current country" << endl;
+        int num_armies_to_add = entry.second;
+        int current_num_armies = current_country->GetNumberOfArmies();
 
-        countries_->at(looping_counter)->SetNumberOfArmies(countries_->at(looping_counter)->GetNumberOfArmies() + reinforce_value);
-        bonus_army -= reinforce_value;
-        looping_counter +=1;
-        looping_counter = looping_counter % countries_->size();
+        current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
     }
+
+   //countries_->at(looping_counter)->SetNumberOfArmies(countries_->at(looping_counter)->GetNumberOfArmies() + reinforce_value);
 }
 
 void Player::Attack() {
@@ -286,6 +288,7 @@ void Player::Attack() {
     AttackPhase* attack_phase = new AttackPhase(this);
 
     //ask player if they wish to carry-out an attack
+    //USE STRATEGY HERE (MAY NEED TO REDESIGN ATTACK)
     while (attack_phase->PromptUserToAttack()) {
         bool can_attack = attack_phase->SelectCountryToAttackFrom();
 
@@ -841,6 +844,7 @@ bool FortifyPhase::SelectTargetCountry() {
     int fortify_id;
 
 
+    //USE FORTIFY STRATEGY HERE
     while(!(cin >> fortify_id) || fortify_id < 1 || !(target_country_ = player_->GetCountryInVectorById(&neighbouring_countries, fortify_id) )) {
         cout << "Invalid entry entered! Please try again: ";
         cin.clear();
@@ -854,6 +858,8 @@ void FortifyPhase::MoveArmies() {
     cout << "There are " << source_country_->GetNumberOfArmies() << " armies in " << *source_country_->GetCountryName() << "." << endl;
     cout << "There are " << target_country_->GetNumberOfArmies() << " armies in " << *target_country_->GetCountryName() << "." << endl;
 
+
+    //USE FORTIFY STRATEGY HERE
     int num_of_armies;
     cout << "How many armies do you wish to move.(Enter a number):" << endl;
 
@@ -862,6 +868,7 @@ void FortifyPhase::MoveArmies() {
         cin.clear();
         cin.ignore(132, '\n');
     }
+    //
 
     cout << "Fortifying " << *target_country_->GetCountryName() << " with " << num_of_armies << " armies." << endl;
 

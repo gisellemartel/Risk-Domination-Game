@@ -39,7 +39,6 @@ add_executable(Player
         Cards/Cards.cpp
         Player/PlayerDriver.cpp
         Player/Player.cpp
-        PlayerStrategies/PlayerStrategies.cpp
         )
 add_executable(Cards
         Cards/CardsDriver.cpp
