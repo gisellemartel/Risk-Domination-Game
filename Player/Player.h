@@ -25,6 +25,7 @@ class Map;
 class Continent;
 class ConcreteStrategies;
 class AttackPhase;
+class FortifyPhase;
 
 class Player {
 
@@ -38,6 +39,7 @@ private:
     Dice* dice_roll_;
     Map* game_map_;
     AttackPhase* attack_phase_;
+    FortifyPhase* fortify_phase_;
 
     ConcreteStrategies* player_strategy_;
 
@@ -63,6 +65,7 @@ public:
 
     vector<Country*>* GetPlayersCountries() const;
     AttackPhase* GetAttackPhase() const;
+    FortifyPhase* GetFortifyPhase() const;
     Country* GetCountryById(int id) const;
     Hand* GetPlayersCards() const;
     Dice* GetPlayerDice() const;
@@ -124,9 +127,6 @@ private:
     Country* defending_country_;
     vector<Country*>* opponent_neighbours_;
 
-    //private helper methods
-    Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
-
 public:
 
     explicit AttackPhase();
@@ -141,18 +141,12 @@ public:
     vector<Country*>* GetOpponentNeighbours() const;
 
     void SetAttackingCountry(Country* attacking_country);
-    void SetDefender(Player* defender);
     void SetDefendingCountry(Country* defending_country);
+    void SetDefender(Player* defender);
 
     bool DoesOpposingCountryExistWithArmies();
 
-
-    bool PromptUserToAttack();
-    bool SelectCountryToAttack();
-    bool SelectCountryToAttackFrom();
-
     void FindOpponentNeighboursToAttackingCountry();
-    void PerformDiceRoll();
 };
 
 
@@ -163,6 +157,7 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
+    vector<Country*>* neighbours_to_fortify_;
 
 public:
 
@@ -173,11 +168,12 @@ public:
 
     FortifyPhase& operator=(const FortifyPhase& fortify);
 
-    bool PromptUserToFortify();
-    bool SelectTargetCountry();
-    bool SelectSourceCountry();
+    Country* GetSourceCountry() const;
+    Country* GetTargetCountry() const;
+    vector<Country*>* GetNeighboursToFortify() const;
 
-    void MoveArmies();
+    void SetSourceCountry(Country* source);
+    void SetTargetCountry(Country* target);
 };
 
 #endif //PLAYER_H

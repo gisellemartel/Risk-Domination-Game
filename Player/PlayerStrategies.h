@@ -30,7 +30,10 @@ public:
     virtual void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  = 0;
     virtual void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) = 0;
 
-    virtual void FortifyStrategy() = 0;
+    virtual bool PromptPlayerToFortify(Player* player) = 0;
+    virtual bool SelectSourceCountry(Player* player) = 0;
+    virtual bool SelectTargetCountry(Player* player) = 0;
+    virtual void FortifyStrategy(Player* player, int& num_of_armies) = 0;
 
 };
 
@@ -49,7 +52,10 @@ public:
     void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) override;
     void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
-    void FortifyStrategy() override;
+    bool PromptPlayerToFortify(Player* player) override;
+    bool SelectSourceCountry(Player* player) override;
+    bool SelectTargetCountry(Player* player) override;
+    void FortifyStrategy(Player* player, int& num_of_armies) override;
 };
 
 class AggressiveComputerPlayerStrategy : public ConcreteStrategies {
@@ -66,7 +72,10 @@ public:
     void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) override;
     void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
-    void FortifyStrategy() override;
+    bool PromptPlayerToFortify(Player* player) override;
+    bool SelectSourceCountry(Player* player) override;
+    bool SelectTargetCountry(Player* player) override;
+    void FortifyStrategy(Player* player, int& num_of_armies) override;
 };
 
 class BenevolantComputerPlayerStrategy : public ConcreteStrategies {
@@ -83,7 +92,11 @@ public:
     void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) override;
     void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
-    void FortifyStrategy() override;
+
+    bool PromptPlayerToFortify(Player* player) override;
+    bool SelectSourceCountry(Player* player) override;
+    bool SelectTargetCountry(Player* player) override;
+    void FortifyStrategy(Player* player, int& num_of_armies) override;
 };
 
 

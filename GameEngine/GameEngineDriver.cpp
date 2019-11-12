@@ -50,7 +50,7 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
 
 
-
+    // test arguments: ( map to load, # human player, # aggressive  plaeyer, # benevolant player)
     game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 0, 1, 1);
 
     //Test game loop
@@ -79,7 +79,8 @@ int main() {
 //        player->Fortify();
 //    }
 
-
+    gameloop = nullptr;
+    delete gameloop;
     game_engine = nullptr;
     delete game_engine;
 

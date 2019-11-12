@@ -183,8 +183,71 @@ void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacki
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
-void HumanPlayerStrategy::FortifyStrategy() {
 
+bool HumanPlayerStrategy::PromptPlayerToFortify(Player *player) {
+    string answer;
+    cout << "Does " << *player->GetPlayerName() << " wish to fortify a country? (Enter y, any other char otherwise):" << endl;
+    while(!(cin >> answer)) {
+        cout << "Your answer is not correct, please choose a valid answer" << endl;
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+    return answer == "y";
+}
+
+bool HumanPlayerStrategy::SelectSourceCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    Country* selected_country = player->PromptPlayerToSelectCountry();
+
+    while(!selected_country || (selected_country && selected_country->GetNumberOfArmies() < 1) ) {
+        cout << "You do not have enough armies in selected country. Please Try Again." << endl;
+        selected_country = player->PromptPlayerToSelectCountry();
+    }
+
+    fortify_phase->SetSourceCountry(selected_country);
+    return fortify_phase->GetSourceCountry() != nullptr;
+}
+
+bool HumanPlayerStrategy::SelectTargetCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    cout << "Please choose which country you would like to fortify (enter by numerical id):\n";
+    int fortify_id;
+
+
+    //USE FORTIFY STRATEGY HERE
+    Country* target = nullptr;
+    while(!(cin >> fortify_id) || fortify_id < 1 || !(target = player->GetCountryInVectorById(fortify_phase->GetNeighboursToFortify(), fortify_id))) {
+        cout << "Invalid entry entered! Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    fortify_phase->SetTargetCountry(target);
+
+    return fortify_phase->GetTargetCountry() != nullptr;
+}
+
+void HumanPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return;
+    }
+
+    cout << "How many armies do you wish to move.(Enter a number):" << endl;
+
+    while (!(cin >> num_of_armies) || num_of_armies < 1 || num_of_armies > fortify_phase->GetSourceCountry()->GetNumberOfArmies()) {
+        cout << "Invalid number of armies selected! Please try again\n";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
 }
 
 
@@ -323,8 +386,82 @@ void AggressiveComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Cou
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
-void AggressiveComputerPlayerStrategy::FortifyStrategy() {
 
+bool AggressiveComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
+    cout << "Aggressive player always wants to fortify" << endl;
+    return true;
+}
+
+bool AggressiveComputerPlayerStrategy::SelectSourceCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    fortify_phase->SetSourceCountry(nullptr);
+
+    int max_num_armies = 0;
+    int country_id = 1;
+
+    for(Country* country : *player->GetPlayersCountries()) {
+        if(country->GetNumberOfArmies() > max_num_armies) {
+            country_id = country->GetCountryID();
+            max_num_armies = country->GetNumberOfArmies();
+        }
+    }
+    Country* strongest_country = player->GetCountryById(country_id);
+
+    vector<Country*>* neighbours_of_stongest_country = player->GetGameMap()->GetNeighbouringCountries(strongest_country);
+
+    if(neighbours_of_stongest_country->empty()) {
+        return false;
+    }
+
+    //there needs to be at least one neighbour to the strongest country that has armies and belongs to current player
+    for(Country* country : *neighbours_of_stongest_country) {
+        if(player->DoesPlayerOwnCountry(country->GetCountryID()) && country->GetNumberOfArmies() > 0) {
+            fortify_phase->SetSourceCountry(country);
+        }
+    }
+
+    return fortify_phase->GetSourceCountry() != nullptr;
+}
+
+bool AggressiveComputerPlayerStrategy::SelectTargetCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    if(fortify_phase->GetNeighboursToFortify()->empty()) {
+        return false;
+    }
+
+    fortify_phase->SetTargetCountry(nullptr);
+
+
+    //fortify the strongest army
+    int max_num_armies = 0;
+    int country_id = 1;
+
+    for(Country* neighbour : *fortify_phase->GetNeighboursToFortify()) {
+        if(neighbour->GetNumberOfArmies() > max_num_armies) {
+            max_num_armies = neighbour->GetNumberOfArmies();
+            country_id = neighbour->GetCountryID();
+        }
+    }
+
+    fortify_phase->SetTargetCountry(player->GetCountryById(country_id));
+
+    return fortify_phase->GetTargetCountry() != nullptr;
+}
+
+void AggressiveComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return;
+    }
+    num_of_armies = fortify_phase->GetSourceCountry()->GetNumberOfArmies();
 }
 
 
@@ -381,6 +518,74 @@ void BenevolantComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Cou
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
-void BenevolantComputerPlayerStrategy::FortifyStrategy() {
 
+bool BenevolantComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
+    cout << "Benevolant player always wants to fortify" << endl;
+    return true;
+}
+
+bool BenevolantComputerPlayerStrategy::SelectSourceCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    fortify_phase->SetSourceCountry(nullptr);
+
+    //find the strongest country which will be used to fortify the weaker countries
+    int max_num_armies = 0;
+    int country_id = 1;
+
+    for(Country* country : *player->GetPlayersCountries()) {
+        if(country->GetNumberOfArmies() > max_num_armies) {
+            country_id = country->GetCountryID();
+            max_num_armies = country->GetNumberOfArmies();
+        }
+    }
+
+    if(max_num_armies < 1) {
+        cout << "You have no countries with enough armies to fortify others" << endl;
+        return false;
+    }
+
+    fortify_phase->SetSourceCountry(player->GetCountryById(country_id));
+
+    return fortify_phase->GetSourceCountry() != nullptr;
+}
+
+bool BenevolantComputerPlayerStrategy::SelectTargetCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    if(fortify_phase->GetNeighboursToFortify()->empty()) {
+        return false;
+    }
+
+
+    fortify_phase->SetTargetCountry(nullptr);
+
+
+    int min_num_armies = fortify_phase->GetSourceCountry()->GetNumberOfArmies();
+    int weakest_country_id = 1;
+
+    for(Country* country : *fortify_phase->GetNeighboursToFortify()) {
+        if(country->GetNumberOfArmies() < min_num_armies) {
+            min_num_armies = country->GetNumberOfArmies();
+            weakest_country_id = country->GetCountryID();
+        }
+    }
+
+    fortify_phase->SetTargetCountry(player->GetCountryById(weakest_country_id));
+
+    return fortify_phase->GetTargetCountry() != nullptr;
+}
+
+void BenevolantComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return;
+    }
+    num_of_armies = fortify_phase->GetSourceCountry()->GetNumberOfArmies();
 }
