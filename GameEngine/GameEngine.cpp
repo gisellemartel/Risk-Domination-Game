@@ -20,49 +20,22 @@ using namespace std;
 
 // STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
-//static helper methods --------------------------------------------------------
-int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
-    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
-    std::random_device rd;
-    std::default_random_engine generator( rd() );
-    return distribution(generator);
-}
 
 // generic function which randomized order of passed vector.
 // used to randomize both order of players, order in which countries are assigned
 template<class V>
 vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
-    int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+    int random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
     vector<int> random_order;
     //randomize the order for the indices in the players vector
-    while(!HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
-        random = GenerateRandomNumInRange(0, vector_to_randomize.size());
-        if(!HasValue(random_order, random)) {
+    while(!Utility::HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
+        random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
+        if(!Utility::HasValue(random_order, random)) {
             random_order.push_back(random);
         }
     }
     return random_order;
 }
-
-//returns true if finds passed value within passed vector
-bool StartupPhase::HasValue(const vector<int>& values, const int value) {
-    for(int i : values) {
-        if(i == value) {
-            return true;
-        }
-    }
-    return false;
-}
-
-//returns true if all values in passed vector are 0
-bool StartupPhase::ContainsAllZeros(const vector<int> &vector_to_check) {
-    bool result = std::all_of(vector_to_check.begin(), vector_to_check.end(), [](int i) {
-        return i == 0;
-    });
-
-    return result;
-}
-
 
 // class constructors
 StartupPhase::StartupPhase() {
@@ -213,7 +186,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
     }
 
     //assign countries to each player in round robin fashion
-    while(!ContainsAllZeros(num_armies)) {
+    while(!Utility::ContainsAllZeros(num_armies)) {
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_turn_) {
