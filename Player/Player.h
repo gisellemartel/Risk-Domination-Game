@@ -24,7 +24,7 @@ class Hand;
 class Map;
 class Continent;
 class ConcreteStrategies;
-
+class AttackPhase;
 
 class Player {
 
@@ -36,6 +36,7 @@ private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
+    AttackPhase* attack_phase_;
 
     ConcreteStrategies* player_strategy_;
 
@@ -59,6 +60,7 @@ public:
     void SetPlayerStrategy(ConcreteStrategies* player_strategy);
 
     vector<Country*>* GetPlayersCountries() const;
+    AttackPhase* GetAttackPhase() const;
     Country* GetCountryById(int id) const;
     Hand* GetPlayersCards() const;
     Dice* GetPlayerDice() const;
@@ -129,6 +131,12 @@ public:
     ~AttackPhase();
 
     AttackPhase& operator=(const AttackPhase& attack);
+
+    Country* GetAttackingCountry() const;
+    Country* GetDefendingCountry() const;
+
+    void SetAttackingCountry(Country* attacking_country);
+    void SetDefendingCountry(Country* defending_country);
 
     bool PromptUserToAttack();
     bool SelectCountryToAttack();

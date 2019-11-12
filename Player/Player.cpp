@@ -26,6 +26,7 @@ Player::Player(string player_name) {
     dice_roll_ = nullptr;
     game_map_ = nullptr;
     player_strategy_ = nullptr;
+    attack_phase_ = nullptr;
 }
 
 Player::Player(string player_name, Map *game_map) {
@@ -36,6 +37,7 @@ Player::Player(string player_name, Map *game_map) {
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
     player_strategy_ = nullptr;
+    attack_phase_ = nullptr;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -47,6 +49,7 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     dice_roll_ = nullptr;
     game_map_ = nullptr;
     player_strategy_ = nullptr;
+    attack_phase_ = nullptr;
 }
 
 Player::Player(const Player &player) {
@@ -61,6 +64,7 @@ Player::Player(const Player &player) {
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
     player_strategy_ = player.player_strategy_;
+    attack_phase_ = player.attack_phase_;
 }
 
 Player::~Player() {
@@ -74,12 +78,14 @@ Player::~Player() {
     dice_roll_ = nullptr;
     game_map_ = nullptr;
     player_strategy_ = nullptr;
+    attack_phase_ = nullptr;
 
     delete risk_cards_;
     delete countries_;
     delete dice_roll_;
     delete game_map_;
     delete player_strategy_;
+    delete attack_phase_;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -96,6 +102,7 @@ Player& Player::operator=(const Player &player) {
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
     player_strategy_ = player.player_strategy_;
+    attack_phase_ = player.attack_phase_;
     return *this;
 }
 
@@ -106,7 +113,8 @@ bool Player::operator==(const Player& player) {
             && risk_cards_ == player.risk_cards_
             && dice_roll_ == player.dice_roll_
             && game_map_ == player.game_map_
-            && player_strategy_ == player.player_strategy_;
+            && player_strategy_ == player.player_strategy_
+            && attack_phase_ == player.attack_phase_;
 }
 
 int Player::Find(Country* country) const {
@@ -165,6 +173,10 @@ Country* Player::PromptPlayerToSelectCountry() const {
     return GetCountryById(country_id);
 }
 
+AttackPhase* Player::GetAttackPhase() const {
+    return attack_phase_;
+}
+
 Dice* Player::GetPlayerDice() const {
     return dice_roll_;
 }
@@ -199,6 +211,10 @@ void Player::SetPlayerHand(Hand* hand) {
 
 void Player::SetNumberOfArmies(int number_of_armies) {
     number_of_armies_ = number_of_armies;
+}
+
+void Player::SetPlayerStrategy(ConcreteStrategies *player_strategy) {
+    player_strategy_ = player_strategy;
 }
 
 void Player::SetGameMap(Map* map) {
@@ -260,9 +276,13 @@ void Player::DisplayCountries() const {
 
 void Player::Reinforce() {
     if(!player_strategy_) {
-        cout << "Player strategy undefined!" << endl;
+        cout << "Player strategy undefined! Cannot Reinforce!" << endl;
         return;
     }
+
+
+    cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+    cout << "Beginning Reinforce phase for " << *player_name_ << endl << endl;
 
     ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
     int num_bonus_army = reinforce->TotalReinforceArmy();
@@ -290,41 +310,104 @@ void Player::Reinforce() {
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
         cout << "Result: " << *current_country->GetCountryName() << " | #armies: " << current_country->GetNumberOfArmies() << endl << endl;
     }
+
+    cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 void Player::Attack() {
+    if(!player_strategy_) {
+        cout << "Player strategy undefined! Cannot Attack!" << endl;
+        return;
+    }
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Attack phase for " << *player_name_ << endl << endl;
 
-    AttackPhase* attack_phase = new AttackPhase(this);
+    attack_phase_ = new AttackPhase(this);
 
-    //ask player if they wish to carry-out an attack
-    //USE STRATEGY HERE (MAY NEED TO REDESIGN ATTACK)
-    while (attack_phase->PromptUserToAttack()) {
-        bool can_attack = attack_phase->SelectCountryToAttackFrom();
+    while (player_strategy_->PromptPlayerToAttack(this)) {
+
+        //TODO: refactor into function inside attackphase -----------------------------------------------------------------
+        //check here to see if there is not a single country that can attack
+        bool country_that_can_be_attacked_exists = false;
+        for(Country* country : *countries_) {
+
+            if(country->GetNumberOfArmies() > 1) {
+                //Get all the neighbouring countries that have armies
+                vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(country);
+
+                if(!neighbouring_countries->empty()) {
+                    //if there is a neighbour that has an army, then verify the country belongs to an opponent
+                    for(int i = 0; i < neighbouring_countries->size(); ++i) {
+                        if(DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+                            neighbouring_countries->erase(neighbouring_countries->begin() + i);
+                        }
+                    }
+                }
+
+                //if there is a country remaining in the vector, it means there exists at least one the attacker can attack
+                if(!neighbouring_countries->empty()) {
+                    country_that_can_be_attacked_exists = true;
+                }
+            }
+        }
+
+        if(!country_that_can_be_attacked_exists) {
+            cout << "No opposing neighbour exists that you can attack right now\n";
+            return;
+        }
+
+        //TODO: END HERE refactor into function inside attackphase -----------------------------------------------------------------
+
+        cout << "The Countries that you own are " << endl;
+        DisplayCountries();
+
+        bool can_attack = player_strategy_->SelectCountryToAttackFrom(this);
+
+        //TODO: REFACTOR into function inside AttackPhase ----------------------------------------------------------------
+        vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(attack_phase_->GetAttackingCountry());
+        attack_phase_->SetDefendingCountry(nullptr);
+
+        if(neighbouring_countries->empty()) {
+            cout << endl << *attack_phase_->GetAttackingCountry()->GetCountryName() << " has no neighbours with armies!\n";
+            attack_phase_->SetDefendingCountry(nullptr);
+            can_attack &= false;
+        }
+
+        for(int i = 0; i < neighbouring_countries->size(); ++i) {
+            if(DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+                neighbouring_countries->erase(neighbouring_countries->begin() + i);
+            }
+        }
+
+        if(neighbouring_countries->empty()) {
+            cout << "No opposing neighbours found!\n";
+            can_attack &= false;
+        }
+        //TODO: END HERE refactor into function inside attackphase -----------------------------------------------------------------
 
         if(can_attack) {
-            can_attack &= attack_phase->SelectCountryToAttack();
+            can_attack &= player_strategy_->SelectCountryToAttack(this);
 
             while(!can_attack){
                 cout << *player_name_ << " cannot attack since no neighbouring countries have armies!\n";
-                can_attack = attack_phase->SelectCountryToAttackFrom();
-                can_attack &= attack_phase->SelectCountryToAttack();
+                can_attack = player_strategy_->SelectCountryToAttackFrom(this);
+                can_attack &= player_strategy_->SelectCountryToAttack(this);
             }
-            attack_phase->PerformDiceRoll();
+
+            attack_phase_->PerformDiceRoll();
         }
     }
 
     cout << *player_name_ << " no longer wishes to attack, going to next phase";
-
-    attack_phase = nullptr;
-    delete attack_phase;
-
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 void Player::Fortify() {
+    if(!player_strategy_) {
+        cout << "Player strategy undefined! Cannot Fortify!" << endl;
+        return;
+    }
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Fortify phase for " << *player_name_ << endl << endl;
@@ -342,11 +425,6 @@ void Player::Fortify() {
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
-
-void Player::SetPlayerStrategy(ConcreteStrategies *player_strategy) {
-    player_strategy_ = player_strategy;
-}
-
 
 
 
@@ -495,6 +573,22 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     attacker_ = attack.attacker_;
     game_map_ = attack.game_map_;
     return *this;
+}
+
+Country* AttackPhase::GetAttackingCountry() const {
+    return attacking_country_;
+}
+
+Country* AttackPhase::GetDefendingCountry() const {
+    return defending_country_;
+}
+
+void AttackPhase::SetAttackingCountry(Country *attacking_country) {
+    attacking_country_ = attacking_country;
+}
+
+void AttackPhase::SetDefendingCountry(Country* defending_country) {
+    defending_country_ = defending_country;
 }
 
 bool AttackPhase::PromptUserToAttack() {

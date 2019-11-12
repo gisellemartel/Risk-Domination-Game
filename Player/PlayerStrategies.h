@@ -8,9 +8,11 @@
 #define PLAYER_STRATEGIES_H
 
 #include "../Map/Map.h"
+#include "Player.h"
 #include <map>
 
 class Country;
+class Player;
 
 //interface for different player strategies
 class ConcreteStrategies {
@@ -19,7 +21,12 @@ public:
     virtual ~ConcreteStrategies() = default;
 
     virtual void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) = 0;
-    virtual void AttackStrategy() = 0;
+
+    virtual bool PromptPlayerToAttack(Player* player) = 0;
+    virtual bool SelectCountryToAttack(Player* player) = 0;
+    virtual bool SelectCountryToAttackFrom(Player* player) = 0;
+    virtual void RollDiceToAttack(Player* player) = 0;
+
     virtual void FortifyStrategy() = 0;
 };
 
@@ -31,7 +38,12 @@ public:
     ~HumanPlayerStrategy() {};
 
     void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
-    void AttackStrategy() override;
+
+    bool PromptPlayerToAttack(Player* player) override;
+    bool SelectCountryToAttack(Player* player) override;
+    bool SelectCountryToAttackFrom(Player* player) override;
+    void RollDiceToAttack(Player* player) override;
+
     void FortifyStrategy() override;
 };
 
@@ -41,9 +53,14 @@ public:
     AggressiveComputerPlayerStrategy() {};
     ~AggressiveComputerPlayerStrategy() {};
 
-    virtual void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army);
-    virtual void AttackStrategy();
-    virtual void FortifyStrategy();
+    void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
+
+    bool PromptPlayerToAttack(Player* player) override;
+    bool SelectCountryToAttack(Player* player) override;
+    bool SelectCountryToAttackFrom(Player* player) override;
+    void RollDiceToAttack(Player* player) override;
+
+    void FortifyStrategy() override;
 };
 
 class BenevolantComputerPlayerStrategy : public ConcreteStrategies {
@@ -52,9 +69,14 @@ public:
     BenevolantComputerPlayerStrategy() {};
     ~BenevolantComputerPlayerStrategy() {};
 
-    virtual void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army);
-    virtual void AttackStrategy();
-    virtual void FortifyStrategy();
+    void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
+
+    bool PromptPlayerToAttack(Player* player) override;
+    bool SelectCountryToAttack(Player* player) override;
+    bool SelectCountryToAttackFrom(Player* player) override;
+    void RollDiceToAttack(Player* player) override;
+
+    void FortifyStrategy() override;
 };
 
 
