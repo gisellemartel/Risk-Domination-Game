@@ -30,6 +30,7 @@ class Player {
 
 private:
     bool is_player_turn_;
+    bool is_human_;
     int number_of_armies_;
     string* player_name_;
     vector<Country*>* countries_;
@@ -56,8 +57,9 @@ public:
     void SetPlayerHand(Hand* hand);
     void SetNumberOfArmies(int number_of_armies);
     void SetGameMap(Map* map);
-
     void SetPlayerStrategy(ConcreteStrategies* player_strategy);
+
+    void SetAsHuman();
 
     vector<Country*>* GetPlayersCountries() const;
     AttackPhase* GetAttackPhase() const;
@@ -72,6 +74,7 @@ public:
 
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
+    bool IsHuman() const;
 
     int Find(Country* country) const;
 
@@ -119,6 +122,7 @@ private:
     Map* game_map_;
     Country* attacking_country_;
     Country* defending_country_;
+    vector<Country*>* opponent_neighbours_;
 
     //private helper methods
     Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
@@ -134,14 +138,18 @@ public:
 
     Country* GetAttackingCountry() const;
     Country* GetDefendingCountry() const;
+    vector<Country*>* GetOpponentNeighbours() const;
 
     void SetAttackingCountry(Country* attacking_country);
+    void SetDefender(Player* defender);
     void SetDefendingCountry(Country* defending_country);
+
 
     bool PromptUserToAttack();
     bool SelectCountryToAttack();
     bool SelectCountryToAttackFrom();
 
+    void FindOpponentNeighboursToAttackingCountry();
     void PerformDiceRoll();
 };
 

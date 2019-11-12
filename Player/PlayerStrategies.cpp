@@ -4,12 +4,13 @@
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 #include <iostream>
+#include <string>
+#include <random>
+#include <filesystem>
 
 using namespace std;
 
 #include "PlayerStrategies.h"
-
-
 
 
 // HUMAN PLAYER STRATEGIES #############################################################################################
@@ -68,7 +69,41 @@ bool HumanPlayerStrategy::PromptPlayerToAttack(Player* player) {
 }
 
 bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
 
+    Country* defending_country = attack_phase->GetDefendingCountry();
+    //prompt player to select country to attack from list of neighbours
+    while(!defending_country) {
+       // defending_country = PromptPlayerToSelectDefender(attack_phase->GetOpponentNeighbours());
+
+        //Display neighboring countries
+        cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+        cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << endl;
+        for (const Country *country : *attack_phase->GetOpponentNeighbours()) {
+            cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << player->GetGameMap()->GenerateListOfNeighboringCountries(attack_phase->GetAttackingCountry()) << endl;
+            cout << endl;
+        }
+
+        cout << "Please choose which country you would like to attack (enter by numerical id):\n";
+        int defender_id = -1;
+        Country* defender = nullptr;
+
+        while(!(cin >> defender_id) || defender_id < 1 || !(defending_country = player->GetCountryInVectorById(attack_phase->GetOpponentNeighbours(), defender_id)) || player->Find(defender) != -1) {
+            cin.clear();
+            cin.ignore(132, '\n');
+            cout << "Invalid entry entered! Please try again: ";
+        }
+    }
+
+    if(defending_country) {
+        attack_phase->SetDefendingCountry(defending_country);
+        attack_phase->SetDefender(defending_country->GetCountryOwner());
+    }
+
+    return defending_country != nullptr;
 }
 
 bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
@@ -98,8 +133,69 @@ bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
     }
 }
 
-void HumanPlayerStrategy::RollDiceToAttack(Player* player) {
+void HumanPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
 
+    //prompt each player to enter the num of dice they wish to roll
+    cout << "\nIt is " << *player->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << ") dice: ";
+
+    while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
+        cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    Player* defender = attack_phase->GetDefendingCountry()->GetCountryOwner();
+
+
+    cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
+
+    //if the player is human then they select their own number of dice otherwise it is randomly generated
+    if(defender->IsHuman()) {
+        while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
+            cout << "You have entered an invalid number of dice to roll. Please try again: ";
+            cin.clear();
+            cin.ignore(132, '\n');
+        }
+    } else {
+        defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
+    }
+}
+
+void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
+    //prompt attacker if they would like to assign armies from their newly acquired country to their other countries
+    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise\n";
+
+    string user_response;
+    while(!(cin >> user_response)) {
+        cout << "\nInvalid input given! Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    if(user_response == "y") {
+        cout << "How many armies would you like to assign to " << *defending_country->GetCountryName() << " from " << *attacking_country->GetCountryName() << "? (you can assign a max of " << attacking_country->GetNumberOfArmies() << "): ";
+        int num_armies_to_assign;
+
+        while(!(cin >> num_armies_to_assign) || num_armies_to_assign < 1 || num_armies_to_assign > attacking_country->GetNumberOfArmies()) {
+            cout << "\nInvalid input given! Please try again: ";
+            cin.clear();
+            cin.ignore(132, '\n');
+        }
+
+        Country* newly_acquired_country = player->GetCountryById(defending_country->GetCountryID());
+
+        if(newly_acquired_country) {
+            newly_acquired_country->SetNumberOfArmies(num_armies_to_assign);
+            attacking_country->RemoveArmiesFromCountry(num_armies_to_assign);
+        }
+
+    } else {
+        return;
+    }
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
@@ -140,7 +236,37 @@ bool AggressiveComputerPlayerStrategy::PromptPlayerToAttack(Player* player) {
 }
 
 bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
 
+    Country* defending_country = nullptr;
+
+    //Display neighboring countries
+    cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << endl;
+    for (const Country *country : *attack_phase->GetOpponentNeighbours()) {
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << player->GetGameMap()->GenerateListOfNeighboringCountries(attack_phase->GetAttackingCountry()) << endl;
+        cout << endl;
+    }
+
+    //iterate over all opponents until one is found with at least 2 armies
+    for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
+        if(opponent->GetNumberOfArmies() > 2) {
+            defending_country = opponent;
+            cout << *player->GetPlayerName() << "chooses to attack " << *opponent->GetCountryName() << "\n";
+            break;
+        }
+    }
+
+
+    if(defending_country) {
+        attack_phase->SetDefendingCountry(defending_country);
+        attack_phase->SetDefender(defending_country->GetCountryOwner());
+    }
+
+    return defending_country != nullptr;
 }
 
 bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
@@ -185,7 +311,47 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
    return player->GetAttackPhase()->GetAttackingCountry() != nullptr;
 }
 
-void AggressiveComputerPlayerStrategy::RollDiceToAttack(Player* player) {
+void AggressiveComputerPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
+
+    //prompt each player to enter the num of dice they wish to roll
+    cout << "\nIt is " << *player->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << ") dice: ";
+
+
+    attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
+
+    Player* defender = attack_phase->GetDefendingCountry()->GetCountryOwner();
+
+
+    cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
+
+    //if the player is human then they select their own number of dice otherwise it is randomly generated
+    if(defender->IsHuman()) {
+        while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
+            cout << "You have entered an invalid number of dice to roll. Please try again: ";
+            cin.clear();
+            cin.ignore(132, '\n');
+        }
+    } else {
+        defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
+    }
+}
+
+void AggressiveComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
+
+    cout << *player->GetPlayerName() << " is moving armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << endl;
+
+    //Aggressive player will move all armies to their strongest country
+    int num_armies_to_assign = attacking_country->GetNumberOfArmies();
+    Country* newly_acquired_country = player->GetCountryById(defending_country->GetCountryID());
+
+    if(newly_acquired_country) {
+        newly_acquired_country->SetNumberOfArmies(num_armies_to_assign);
+        attacking_country->RemoveArmiesFromCountry(num_armies_to_assign);
+    }
 
 }
 
@@ -239,7 +405,11 @@ bool BenevolantComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
     return false;
 }
 
-void BenevolantComputerPlayerStrategy::RollDiceToAttack(Player* player) {
+void BenevolantComputerPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+    cout << "benevolant players never attack! Aborting" << endl;
+}
+
+void BenevolantComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
     cout << "benevolant players never attack! Aborting" << endl;
 }
 

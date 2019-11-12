@@ -582,6 +582,7 @@ void GameEngine::CreatePlayers() {
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
         Player* player = new Player(player_name, loaded_map_->GetParsedMap());
         player->SetPlayerStrategy(strategy);
+        player->SetAsHuman();
         players_->push_back(player);
     }
 

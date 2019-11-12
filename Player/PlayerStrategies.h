@@ -9,10 +9,12 @@
 
 #include "../Map/Map.h"
 #include "Player.h"
+#include "../Utility/Utility.h"
 #include <map>
 
 class Country;
 class Player;
+class Utility;
 
 //interface for different player strategies
 class ConcreteStrategies {
@@ -25,9 +27,11 @@ public:
     virtual bool PromptPlayerToAttack(Player* player) = 0;
     virtual bool SelectCountryToAttack(Player* player) = 0;
     virtual bool SelectCountryToAttackFrom(Player* player) = 0;
-    virtual void RollDiceToAttack(Player* player) = 0;
+    virtual void RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) = 0;
+    virtual void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) = 0;
 
     virtual void FortifyStrategy() = 0;
+
 };
 
 
@@ -42,7 +46,8 @@ public:
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
-    void RollDiceToAttack(Player* player) override;
+    void RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) override;
+    void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
     void FortifyStrategy() override;
 };
@@ -58,7 +63,8 @@ public:
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
-    void RollDiceToAttack(Player* player) override;
+    void RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) override;
+    void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
     void FortifyStrategy() override;
 };
@@ -74,7 +80,8 @@ public:
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
-    void RollDiceToAttack(Player* player) override;
+    void RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) override;
+    void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
 
     void FortifyStrategy() override;
 };
