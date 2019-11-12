@@ -51,7 +51,7 @@ int main() {
 
 
     // test arguments: ( map to load, # human player, # aggressive  plaeyer, # benevolant player)
-    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 0, 1, 1);
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 1, 1, 1);
 
     //Test game loop
     GameLoop* gameloop = new GameLoop(game_engine->GetPlayers());

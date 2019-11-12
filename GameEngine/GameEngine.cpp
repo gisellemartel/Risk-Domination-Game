@@ -247,6 +247,77 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         current_turn_ = (int)((current_turn_ + 1) % players->size());
     }
     cout << endl;
+}
+
+void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
+
+    if(players->empty()) {
+        return;
+    }
+
+    cout << "* * * * * * * Assigning " << number_of_armies_ << " armies to each player in round-robin fashion... * * * * * * *\n";
+
+    //create vector to track number of armies left to assign for each player
+    vector<int> num_armies;
+    for(int i = 0; i < players->size(); ++i) {
+        num_armies.push_back(number_of_armies_);
+    }
+
+    //assign countries to each player in round robin fashion
+    while(!Utility::ContainsAllZeros(num_armies)) {
+        for (auto &it : *player_order_) {
+            //find the player whose is currently to be assigned countries
+            if (it.second == current_turn_) {
+                //debug string
+                cout << "\nCurrent turn is " << (current_turn_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
+
+                vector<Country*>& players_countries = *it.first->GetPlayersCountries();
+
+                if(players_countries.empty()) {
+                    cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n\n";
+                    break;
+                } else if (num_armies[it.second] == 0) {
+                    cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n\n";
+                    break;
+                }
+
+                it.first->SetPlayersTurn(true);
+
+                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                while(!it.first->DoesPlayerOwnCountry(country_id)) {
+                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                }
+
+                Country* current_country = it.first->GetCountryById(country_id);
+
+                if(current_country) {
+                    string name_country = *current_country->GetCountryName();
+                    cout << "Auto selected " << name_country << " to assign armies to" << endl;
+
+                    cout << "Auto selecting number of armign to assign to " << name_country  << " (you currently have " << num_armies[it.second] << " armies remaining to assign)..." << endl;
+
+                    int num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
+                    while(num_armies_to_assign < 1 || num_armies_to_assign > num_armies[it.second]) {
+                        num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
+                    }
+
+                    //debug string
+                    cout << "Assigning " << country_id << " armies to " << name_country << "...\n";
+
+                    current_country->SetNumberOfArmies(num_armies_to_assign + current_country->GetNumberOfArmies());
+
+                    //update number of armies for current player after assignment
+                    num_armies[it.second] = num_armies[it.second] - num_armies_to_assign;
+
+                    it.first->SetPlayersTurn(false);
+                }
+            }
+        }
+
+        //get the current players turn
+        current_turn_ = (int)((current_turn_ + 1) % players->size());
+    }
+    cout << endl;
 
 }
 
@@ -269,7 +340,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         AssignDiceToPlayers();
         game_start_->RandomlyDeterminePlayerOrder(players_);
         game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
-        game_start_->AssignArmiesToAllPlayers(players_);
+        game_start_->AutoAssignArmiesToAllPlayers(players_);
     }
 
     for(Player* player : *players_) {
@@ -701,7 +772,7 @@ void GameLoop::StartLoop(){
     while(!WinCondition(all_players_->at(turn))){
         Player* current_player = all_players_->at(turn);
 
-        cout << endl << "*********************** Currently " << *current_player->GetPlayerName() << "'s turn ***********************\n\n";
+        cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(current_player && !current_player->GetPlayersCountries()->empty()){
             current_player->Reinforce();

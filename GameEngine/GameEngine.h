@@ -50,6 +50,7 @@ public:
     //Methods
     void RandomlyDeterminePlayerOrder(vector<Player*>* players);
     void AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign);
+    void AutoAssignArmiesToAllPlayers(vector<Player*>* players);
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 

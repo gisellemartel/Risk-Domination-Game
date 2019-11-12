@@ -107,6 +107,9 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
 }
 
 bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
+    cout << "The Countries that you own are " << endl;
+    player->DisplayCountries();
+
     player->GetAttackPhase()->SetAttackingCountry(nullptr);
 
     cout << "Please choose which country you would like to attack from (enter by numerical id):\n";
@@ -200,6 +203,9 @@ bool HumanPlayerStrategy::SelectSourceCountry(Player *player) {
     if(!fortify_phase) {
         return false;
     }
+
+    player->DisplayCountries();
+    cout << "Please choose your source country \n";
 
     Country* selected_country = player->PromptPlayerToSelectCountry();
 
@@ -302,7 +308,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
     for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
         if(opponent->GetNumberOfArmies() > 2) {
             defending_country = opponent;
-            cout << *player->GetPlayerName() << "chooses to attack " << *opponent->GetCountryName() << "\n";
+            cout << *player->GetPlayerName() << " chooses to attack " << *opponent->GetCountryName() << "\n";
             break;
         }
     }
@@ -422,6 +428,10 @@ bool AggressiveComputerPlayerStrategy::SelectSourceCountry(Player *player) {
         if(player->DoesPlayerOwnCountry(country->GetCountryID()) && country->GetNumberOfArmies() > 0) {
             fortify_phase->SetSourceCountry(country);
         }
+    }
+
+    if(!fortify_phase->GetSourceCountry()) {
+        cout << "Only one country has armies right now. Aggressive player prefers to keep all their armies in strongest country" << endl;
     }
 
     return fortify_phase->GetSourceCountry() != nullptr;
@@ -587,5 +597,5 @@ void BenevolantComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
     if(!fortify_phase) {
         return;
     }
-    num_of_armies = fortify_phase->GetSourceCountry()->GetNumberOfArmies();
+    num_of_armies = Utility::GenerateRandomNumInRange(1, fortify_phase->GetSourceCountry()->GetNumberOfArmies());
 }
