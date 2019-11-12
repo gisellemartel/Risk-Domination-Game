@@ -72,7 +72,8 @@ void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
         }
     }
 
-    country_num_army_to_add_pairs.insert({country_id_with_most_armies, max_num_armies});
+    country_num_army_to_add_pairs.insert({country_id_with_most_armies, num_bonus_army});
+    num_bonus_army = 0;
 }
 
 void AggressiveComputerPlayerStrategy::AttackStrategy() {
@@ -102,7 +103,7 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
         if(counter == num_bonus_army) {
             break;
         }
-        country_num_army_to_add_pairs.insert({entry.second, entry.first});
+        country_num_army_to_add_pairs.insert({entry.second, 1});
         ++counter;
     }
 }
