@@ -262,7 +262,13 @@ void Player::Reinforce() {
     ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
     int num_bonus_army = reinforce->TotalReinforceArmy();
     map<int, int> country_army_map;
-    player_strategy_->ReinforceStrategy(country_army_map, num_bonus_army);
+
+    if(!player_strategy_) {
+        cout << "Player strategy undefined!" << endl;
+        return;
+    }
+    //TODO: uncomment
+   // player_strategy_->ReinforceStrategy(countries_, country_army_map, num_bonus_army);
 
     for(auto& entry : country_army_map) {
         Country* current_country = GetCountryById(entry.first);
@@ -276,8 +282,6 @@ void Player::Reinforce() {
 
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
     }
-
-   //countries_->at(looping_counter)->SetNumberOfArmies(countries_->at(looping_counter)->GetNumberOfArmies() + reinforce_value);
 }
 
 void Player::Attack() {

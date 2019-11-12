@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "Player.h"
-#include "PlayerStrategies.h"
 
 class Country;
 

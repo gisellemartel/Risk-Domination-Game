@@ -14,6 +14,7 @@
 using namespace std;
 
 #include "../Map/Map.h"
+#include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Player/Player.h"
@@ -63,6 +64,9 @@ private:
     MapLoader* loaded_map_;
     Deck* cards_deck_;
     int num_of_players_;
+    int num_of_human_players_;
+    int num_aggressive_players_;
+    int num_benevolant_players_;
     bool exit_game_;
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
@@ -94,7 +98,9 @@ public:
     //Methods
     bool SelectMap();
     bool LoadSelectedMap();
-    void SelectNumOfPlayers();
+    void SelectNumOfHumanPlayers();
+    void SelectNumOfAggressivePlayers();
+    void SelectNumOfBenevolantPlayers();
     void CreatePlayers();
     void AssignDiceToPlayers();
     void AssignHandOfCardsToPlayers();

@@ -24,9 +24,7 @@ class Hand;
 class Map;
 class Continent;
 class ConcreteStrategies;
-class HumanPlayerStrategies;
-class AggressiveComputerPlayerStrategy;
-class BenevolantComputerPlayerStrategy;
+
 
 class Player {
 

@@ -14,6 +14,7 @@
 
 using namespace std;
 
+#include "../Player/PlayerStrategies.h"
 #include "GameEngine.h"
 
 
@@ -503,18 +504,59 @@ bool GameEngine::LoadSelectedMap() {
     }
 }
 
-void GameEngine::SelectNumOfPlayers() {
+void GameEngine::SelectNumOfHumanPlayers() {
     int num_players = -1;
 
-    cout << "Please enter the number of players joining the game (between 2 and 6 players per game): ";
+    cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
     while(!(cin >> num_players) || num_players < 2 || num_players > 6) {
         cout << "Invalid number of players entered. Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
     }
 
-    num_of_players_ = num_players;
+    num_of_human_players_ = num_players;
+    num_of_players_ += num_of_human_players_;
 }
+
+void GameEngine::SelectNumOfAggressivePlayers() {
+
+    if(num_of_players_ == 6) {
+        return;
+    }
+
+    int num_players = 0;
+    int num_players_remaining = 6 - num_of_players_;
+
+    cout << "Please enter the number of aggressive computer players joining the game. You have " << num_players_remaining << " left to assign" ;
+    while(!(cin >> num_players) || num_players < 1 || num_players > num_players_remaining) {
+        cout << "Invalid number of players entered. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    num_aggressive_players_ = num_players_remaining;
+    num_of_players_ += num_players_remaining;
+}
+
+void GameEngine::SelectNumOfBenevolantPlayers() {
+    if(num_of_players_ == 6) {
+        return;
+    }
+
+    int num_players = 0;
+    int num_players_remaining = 6 - num_of_players_;
+
+    cout << "Please enter the number of benevolant computer players joining the game. You have " << num_players_remaining << " left to assign" ;
+    while(!(cin >> num_players) || num_players < 1 || num_players > num_players_remaining) {
+        cout << "Invalid number of players entered. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    num_benevolant_players_ = num_players_remaining;
+    num_of_players_ += num_players_remaining;
+}
+
 
 void GameEngine::CreatePlayers() {
 
@@ -529,10 +571,16 @@ void GameEngine::CreatePlayers() {
     }
 
     cout << "Creating " << num_of_players_ << " players for new game...\n";
-    for(size_t i = 0; i < num_of_players_; ++i) {
+    for(size_t i = 0; i < num_of_human_players_; ++i) {
         string player_name = "Player " + std::to_string(i + 1);
 
-        players_->push_back(new Player(player_name, loaded_map_->GetParsedMap()));
+        //TODO: uncomment
+        //Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        ConcreteStrategies* strategy = new HumanPlayerStrategy();
+//        player->SetPlayerStrategy(strategy);
+//        strategy->SetPlayer(player);
+
+        //players_->push_back(player);
     }
 
     game_start_->SetNumberOfArmies(num_of_players_);
