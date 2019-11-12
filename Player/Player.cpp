@@ -14,6 +14,7 @@
 
 using namespace std;
 
+#include "../Utility/Utility.h"
 #include "Player.h"
 
 // Player class implementation ----------------------------------------------------------------------------
@@ -339,37 +340,9 @@ void Player::Attack() {
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
 
-        //TODO: refactor into function inside attackphase -----------------------------------------------------------------
-        //check here to see if there is not a single country that can attack
-        bool country_that_can_be_attacked_exists = false;
-        for(Country* country : *countries_) {
-
-            if(country->GetNumberOfArmies() > 1) {
-                //Get all the neighbouring countries that have armies
-                vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(country);
-
-                if(!neighbouring_countries->empty()) {
-                    //if there is a neighbour that has an army, then verify the country belongs to an opponent
-                    for(int i = 0; i < neighbouring_countries->size(); ++i) {
-                        if(DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
-                            neighbouring_countries->erase(neighbouring_countries->begin() + i);
-                        }
-                    }
-                }
-
-                //if there is a country remaining in the vector, it means there exists at least one the attacker can attack
-                if(!neighbouring_countries->empty()) {
-                    country_that_can_be_attacked_exists = true;
-                }
-            }
-        }
-
-        if(!country_that_can_be_attacked_exists) {
-            cout << "No opposing neighbour exists that you can attack right now\n";
+        if(!attack_phase_->DoesOpposingCountryExistWithArmies()) {
             return;
         }
-
-        //TODO: END HERE refactor into function inside attackphase -----------------------------------------------------------------
 
         cout << "The Countries that you own are " << endl;
         DisplayCountries();
@@ -399,7 +372,20 @@ void Player::Attack() {
             const int MAX_NUM_OF_DICE_ATTACKER = (attacking_country->GetNumberOfArmies() - 1) < 3 ? attacking_country ->GetNumberOfArmies() : 3;
             const int MAX_NUM_OF_DICE_DEFENDER = (defending_country->GetNumberOfArmies()) < 2 ? defending_country ->GetNumberOfArmies() : 2;
 
-            player_strategy_->RollDiceToAttack(this, MAX_NUM_OF_DICE_ATTACKER, MAX_NUM_OF_DICE_DEFENDER, attacker_num_dice, defender_num_dice);
+            player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
+
+            cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
+
+            //if the player is human then they select their own number of dice otherwise it is randomly generated
+            if(defender->IsHuman()) {
+                while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
+                    cout << "You have entered an invalid number of dice to roll. Please try again: ";
+                    cin.clear();
+                    cin.ignore(132, '\n');
+                }
+            } else {
+                defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
+            }
 
 
             vector<int> attacker_dice_rolls = dice_roll_->Roll(attacker_num_dice);
@@ -422,12 +408,11 @@ void Player::Attack() {
 
             int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
 
-                cout << "Carrying out attacks...." << endl;
+            cout << "Carrying out attacks...." << endl;
 
             for(int i = 0; i < num_of_iterations; ++i) {
                 //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
                 if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
-                    Country* attacking_country = attack_phase_->GetAttackingCountry();
                     cout << "Attacker has lost this roll. Loosing an army\n";
                     attacking_country->RemoveArmiesFromCountry(1);
                     if(attacking_country->GetNumberOfArmies() == 0) {
@@ -438,16 +423,12 @@ void Player::Attack() {
                 } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
                     cout << "Defender has lost this roll. Loosing an army\n";
 
-                    Country* defending_country = attack_phase_->GetAttackingCountry();
-                    Country* attacking_country = attack_phase_->GetAttackingCountry();
-
                     defending_country->RemoveArmiesFromCountry(1);
 
                     if(defending_country->GetNumberOfArmies() == 0) {
                         cout << "Defending country " << *defending_country->GetCountryName() << " has run out of armies and has been defeated\n";
 
                         //defender has lost. Its country will now be transferred to the attacker
-
                         //store the id and name of country before we transfer ownership
                         string defender_country_name = *defending_country->GetCountryName();
                         int defender_country_id = defending_country->GetCountryID();
@@ -708,6 +689,39 @@ void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
 
     if(opponent_neighbours_->empty()) {
         cout << "No opposing neighbours found!\n";
+    }
+}
+
+bool AttackPhase::DoesOpposingCountryExistWithArmies() {
+    //check here to see if there is not a single country that can attack
+    bool country_that_can_be_attacked_exists = false;
+    for(Country* country : *attacker_->GetPlayersCountries()) {
+
+        if(country->GetNumberOfArmies() > 1) {
+            //Get all the neighbouring countries that have armies
+            vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountriesWithArmies(country);
+
+            if(!neighbouring_countries->empty()) {
+                //if there is a neighbour that has an army, then verify the country belongs to an opponent
+                for(int i = 0; i < neighbouring_countries->size(); ++i) {
+                    if(attacker_->DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+                        neighbouring_countries->erase(neighbouring_countries->begin() + i);
+                    }
+                }
+            }
+
+            //if there is a country remaining in the vector, it means there exists at least one the attacker can attack
+            if(!neighbouring_countries->empty()) {
+                country_that_can_be_attacked_exists = true;
+            }
+        }
+    }
+
+    if(!country_that_can_be_attacked_exists) {
+        cout << "No opposing neighbour exists that you can attack right now\n";
+        return false;
+    } else {
+        return true;
     }
 }
 

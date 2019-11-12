@@ -133,7 +133,7 @@ bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
     }
 }
 
-void HumanPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) {
     AttackPhase* attack_phase = player->GetAttackPhase();
     if(!attack_phase) {
         return;
@@ -146,22 +146,6 @@ void HumanPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_
         cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
-    }
-
-    Player* defender = attack_phase->GetDefendingCountry()->GetCountryOwner();
-
-
-    cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
-
-    //if the player is human then they select their own number of dice otherwise it is randomly generated
-    if(defender->IsHuman()) {
-        while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
-            cout << "You have entered an invalid number of dice to roll. Please try again: ";
-            cin.clear();
-            cin.ignore(132, '\n');
-        }
-    } else {
-        defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
     }
 }
 
@@ -311,7 +295,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
    return player->GetAttackPhase()->GetAttackingCountry() != nullptr;
 }
 
-void AggressiveComputerPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
     AttackPhase* attack_phase = player->GetAttackPhase();
     if(!attack_phase) {
         return;
@@ -320,24 +304,7 @@ void AggressiveComputerPlayerStrategy::RollDiceToAttack(Player* player, const in
     //prompt each player to enter the num of dice they wish to roll
     cout << "\nIt is " << *player->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << ") dice: ";
 
-
     attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
-
-    Player* defender = attack_phase->GetDefendingCountry()->GetCountryOwner();
-
-
-    cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
-
-    //if the player is human then they select their own number of dice otherwise it is randomly generated
-    if(defender->IsHuman()) {
-        while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
-            cout << "You have entered an invalid number of dice to roll. Please try again: ";
-            cin.clear();
-            cin.ignore(132, '\n');
-        }
-    } else {
-        defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
-    }
 }
 
 void AggressiveComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
@@ -405,7 +372,7 @@ bool BenevolantComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
     return false;
 }
 
-void BenevolantComputerPlayerStrategy::RollDiceToAttack(Player* player, const int MAX_NUM_OF_DICE_ATTACKER, const int MAX_NUM_OF_DICE_DEFENDER, int& attacker_num_dice, int& defender_num_dice) {
+void BenevolantComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
     cout << "benevolant players never attack! Aborting" << endl;
 }
 

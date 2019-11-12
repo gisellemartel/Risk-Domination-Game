@@ -16,6 +16,7 @@ add_executable(GameEngine
         Utility/Utility.cpp
         )
 add_executable(Map
+        Utility/Utility.cpp
         Player/Player.cpp
         Dice/Dice.cpp
         Cards/Cards.cpp

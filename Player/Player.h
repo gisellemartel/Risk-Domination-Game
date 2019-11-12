@@ -144,6 +144,8 @@ public:
     void SetDefender(Player* defender);
     void SetDefendingCountry(Country* defending_country);
 
+    bool DoesOpposingCountryExistWithArmies();
+
 
     bool PromptUserToAttack();
     bool SelectCountryToAttack();
