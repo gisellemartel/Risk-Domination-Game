@@ -7,22 +7,6 @@
 #include "PlayerStrategies.h"
 
 
-//ConcreteStrategies::ConcreteStrategies(const ConcreteStrategies &strategy) {
-//    player_ = strategy.player_;
-//}
-//
-//ConcreteStrategies& ConcreteStrategies::operator=(const ConcreteStrategies &concrete_strategies) {
-//    player_ = concrete_strategies.player_;
-//    return *this;
-//}
-//
-//
-
-//HumanPlayerStrategy::~HumanPlayerStrategy() {
-//    player_ = nullptr;
-//    delete player_;
-//}
-
 void HumanPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
 
     int country_index = 0;
@@ -74,69 +58,59 @@ void HumanPlayerStrategy::FortifyStrategy() {
 
 
 
-//AggressiveComputerPlayerStrategy::~AggressiveComputerPlayerStrategy() {
-//    player_ = nullptr;
-//    delete player_;
-//}
-//
-//void AggressiveComputerPlayerStrategy::ReinforceStrategy(map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
-//
-//    int max_num_armies = 0;
-//    int country_id_with_most_armies = 1;
-//
-//    for(Country* country : *player_->GetPlayersCountries()) {
-//        int num_armies = country->GetNumberOfArmies();
-//
-//        if(num_armies > max_num_armies) {
-//            max_num_armies = num_armies;
-//            country_id_with_most_armies = country->GetCountryID();
-//        }
-//    }
-//
-//    country_num_army_to_add_pairs.insert({country_id_with_most_armies, max_num_armies});
-//}
-//
-//void AggressiveComputerPlayerStrategy::AttackStrategy() {
-//
-//}
-//
-//void AggressiveComputerPlayerStrategy::FortifyStrategy() {
-//
-//}
-//
-//
-//
-//BenevolantComputerPlayerStrategy::~BenevolantComputerPlayerStrategy() {
-//    player_ = nullptr;
-//    delete player_;
-//}
-//
-//void BenevolantComputerPlayerStrategy::ReinforceStrategy(map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
-//
-//    //use a sorted map to arrange the countries from weakest to strongest
-//    multimap<int, int> country_num_army_pairs;
-//
-//    //populate the map in order of weakest to strongest
-//    for(Country* country : *player_->GetPlayersCountries()) {
-//        int num_armies = country->GetNumberOfArmies();
-//        country_num_army_pairs.insert({num_armies, country->GetCountryID()});
-//    }
-//
-//    //give 1 army to each of the weakest countries (number of weakest countries == num_bonus_army)
-//    int counter = 0;
-//    for(auto& entry : country_num_army_pairs) {
-//        if(counter == num_bonus_army) {
-//            break;
-//        }
-//        country_num_army_to_add_pairs.insert({entry.second, entry.first});
-//        ++counter;
-//    }
-//}
-//
-//void BenevolantComputerPlayerStrategy::AttackStrategy() {
-//
-//}
-//
-//void BenevolantComputerPlayerStrategy::FortifyStrategy() {
-//
-//}
+void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+
+    int max_num_armies = 0;
+    int country_id_with_most_armies = 1;
+
+    for(Country* country : countries) {
+        int num_armies = country->GetNumberOfArmies();
+
+        if(num_armies > max_num_armies) {
+            max_num_armies = num_armies;
+            country_id_with_most_armies = country->GetCountryID();
+        }
+    }
+
+    country_num_army_to_add_pairs.insert({country_id_with_most_armies, max_num_armies});
+}
+
+void AggressiveComputerPlayerStrategy::AttackStrategy() {
+
+}
+
+void AggressiveComputerPlayerStrategy::FortifyStrategy() {
+
+}
+
+
+
+void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+
+    //use a sorted map to arrange the countries from weakest to strongest
+    multimap<int, int> country_num_army_pairs;
+
+    //populate the map in order of weakest to strongest
+    for(Country* country : countries) {
+        int num_armies = country->GetNumberOfArmies();
+        country_num_army_pairs.insert({num_armies, country->GetCountryID()});
+    }
+
+    //give 1 army to each of the weakest countries (number of weakest countries == num_bonus_army)
+    int counter = 0;
+    for(auto& entry : country_num_army_pairs) {
+        if(counter == num_bonus_army) {
+            break;
+        }
+        country_num_army_to_add_pairs.insert({entry.second, entry.first});
+        ++counter;
+    }
+}
+
+void BenevolantComputerPlayerStrategy::AttackStrategy() {
+
+}
+
+void BenevolantComputerPlayerStrategy::FortifyStrategy() {
+
+}

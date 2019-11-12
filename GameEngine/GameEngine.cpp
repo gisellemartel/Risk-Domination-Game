@@ -282,11 +282,14 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_players) {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players) {
     exit_game_ = false;
     loaded_map_ = new MapLoader(file_path);
     if(loaded_map_->ParseMap()) {
-        num_of_players_ = num_players;
+        num_of_players_ = num_human_players + num_aggressive_players + num_benevolant_players;
+        num_of_human_players_ = num_human_players;
+        num_aggressive_players_ = num_aggressive_players;
+        num_benevolant_players_ = num_benevolant_players;
         CreatePlayers();
         CreateCardsDeck();
         AssignHandOfCardsToPlayers();
@@ -570,17 +573,34 @@ void GameEngine::CreatePlayers() {
         num_of_players_ = 2;
     }
 
+    int player_counter = 1;
+
     cout << "Creating " << num_of_players_ << " players for new game...\n";
     for(size_t i = 0; i < num_of_human_players_; ++i) {
-        string player_name = "Player " + std::to_string(i + 1);
+        string player_name = "Human Player " + std::to_string(player_counter++);
 
-        //TODO: uncomment
-        //Player* player = new Player(player_name, loaded_map_->GetParsedMap());
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
-//        player->SetPlayerStrategy(strategy);
-//        strategy->SetPlayer(player);
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        players_->push_back(player);
+    }
 
-        //players_->push_back(player);
+    for(size_t i = 0; i < num_aggressive_players_; ++i) {
+        string player_name = "Aggressive Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        players_->push_back(player);
+    }
+
+    for(size_t i = 0; i < num_benevolant_players_; ++i) {
+        string player_name = "Benevolant Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        players_->push_back(player);
     }
 
     game_start_->SetNumberOfArmies(num_of_players_);

@@ -267,8 +267,8 @@ void Player::Reinforce() {
         cout << "Player strategy undefined!" << endl;
         return;
     }
-    //TODO: uncomment
-   // player_strategy_->ReinforceStrategy(countries_, country_army_map, num_bonus_army);
+
+    player_strategy_->ReinforceStrategy(*countries_, country_army_map, num_bonus_army);
 
     for(auto& entry : country_army_map) {
         Country* current_country = GetCountryById(entry.first);
