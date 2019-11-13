@@ -10,6 +10,7 @@
 #include "../Map/Map.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
+#include "../GameObservers/GameObservers.h"
 
 #include <iostream>
 #include <vector>
@@ -23,7 +24,7 @@ class Hand;
 class Map;
 class Continent;
 
-class Player {
+class Player: public Subject {
 
 private:
     bool is_player_turn_;
@@ -33,6 +34,10 @@ private:
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
+    vector<Country*>* countries_reinforced_;//add to constructor
+    vector<int>* number_of_armies_reinforced_;//add to constructor
+    bool has_attacked_ = false;//add to constructor
+    int game_phase_;
 
 public:
     explicit Player(string player_name);
@@ -75,6 +80,11 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
+
+    vector<Country*>* GetCountriesReinforced();
+    vector<int>* GetNumberOfArmiesReinforced();
+    bool GetHasAttacked();
+    int GetGamePhase();
 };
 
 class Reinforcement
@@ -128,6 +138,9 @@ public:
     bool SelectCountryToAttackFrom();
 
     void PerformDiceRoll();
+
+    Country* GetAttackingCountry();
+    Country* GetDefendingCountry();
 };
 
 
@@ -138,6 +151,7 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
+    int fortification_armies_;//----------------------------------------------------------------------added
 
 public:
 
@@ -153,6 +167,10 @@ public:
     bool SelectSourceCountry();
 
     void MoveArmies();
+
+    Country* GetSourceCountry();
+    Country* GetTargetCountry();
+    int GetFortificationArmiesMoved();
 };
 
 #endif //PLAYER_H

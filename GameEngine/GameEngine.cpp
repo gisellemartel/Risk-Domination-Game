@@ -658,7 +658,7 @@ void GameLoop::StartLoop(){
 
     while(!WinCondition(all_players_->at(turn))){
         Player* current_player = all_players_->at(turn);
-
+        PhaseObserver* phase_observer = new PhaseObserver(current_player);
         cout << endl << "*********************** Currently " << *current_player->GetPlayerName() << "'s turn ***********************\n\n";
 
         if(current_player && !current_player->GetPlayersCountries()->empty()){

@@ -233,7 +233,8 @@ void Player::DisplayCountries() const {
 
 void Player::Reinforce() {
     cout << "In reinforce method" << endl;
-
+    game_phase_ = 1;
+    Notify();
     Reinforcement* reinforce = new Reinforcement(this, 0);
     int bonus_army = reinforce->TotalReinforceArmy();
     int looping_counter = 0;
@@ -259,17 +260,37 @@ void Player::Reinforce() {
 
         countries_->at(looping_counter)->SetNumberOfArmies(countries_->at(looping_counter)->GetNumberOfArmies() + reinforce_value);
         bonus_army -= reinforce_value;
+        if(reinforce_value > 0) {
+            countries_reinforced_->push_back(countries_->at(looping_counter));
+            number_of_armies_reinforced_->push_back(reinforce_value);
+        }
         looping_counter +=1;
         looping_counter = looping_counter % countries_->size();
     }
 }
 
+vector<Country*>* Player::GetCountriesReinforced() {
+    return countries_reinforced_;
+}
+
+vector<int>* Player::GetNumberOfArmiesReinforced() {
+    return number_of_armies_reinforced_;
+}
+
+bool Player::GetHasAttacked() {
+    return has_attacked_;
+}
+
+int Player::GetGamePhase(){
+    return game_phase_;
+}
 
 void Player::Attack() {
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Attack phase for " << *player_name_ << endl << endl;
-
+    game_phase_ = 2;
+    Notify();
     AttackPhase* attack_phase = new AttackPhase(this);
 
     //ask player if they wish to carry-out an attack
@@ -285,6 +306,7 @@ void Player::Attack() {
                 can_attack &= attack_phase->SelectCountryToAttack();
             }
             attack_phase->PerformDiceRoll();
+            has_attacked_ = true;
         }
     }
 
@@ -292,7 +314,7 @@ void Player::Attack() {
 
     attack_phase = nullptr;
     delete attack_phase;
-
+    has_attacked_ = false;
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
@@ -300,7 +322,8 @@ void Player::Fortify() {
 
     cout << "\n\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Fortify phase for " << *player_name_ << endl << endl;
-
+    game_phase_ = 3;
+    Notify();
     FortifyPhase* fortify_phase = new FortifyPhase(this);
 
     if (fortify_phase->PromptUserToFortify() && fortify_phase->SelectSourceCountry() && fortify_phase->SelectTargetCountry()) {
@@ -719,7 +742,12 @@ void AttackPhase::PerformDiceRoll() {
     defender_->DisplayCountries();
 }
 
-
+Country* AttackPhase::GetAttackingCountry(){
+    return attacking_country_;
+}
+Country* AttackPhase::GetDefendingCountry(){
+    return defending_country_;
+}
 
 // FortifyPhase class implementation -----------------------------------------------------------------------------------
 
@@ -728,6 +756,7 @@ FortifyPhase::FortifyPhase() {
     game_map_ = nullptr;
     source_country_ = nullptr;
     target_country_ = nullptr;
+    fortification_armies_ = 0;
 }
 
 FortifyPhase::FortifyPhase(Player* player) {
@@ -735,6 +764,7 @@ FortifyPhase::FortifyPhase(Player* player) {
     game_map_ = player->GetGameMap();
     source_country_ = nullptr;
     target_country_ = nullptr;
+    fortification_armies_ = 0;
 }
 
 FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
@@ -742,6 +772,7 @@ FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
     game_map_ = fortify.game_map_;
     source_country_ = fortify.source_country_;
     target_country_ = fortify.target_country_;
+    fortification_armies_ = fortify.fortification_armies_;
 }
 
 FortifyPhase::~FortifyPhase() {
@@ -761,6 +792,7 @@ FortifyPhase& FortifyPhase::operator=(const FortifyPhase &fortify) {
     game_map_ = fortify.game_map_;
     source_country_ = fortify.source_country_;
     target_country_ = fortify.target_country_;
+    fortification_armies_ = fortify.fortification_armies_;
     return *this;
 }
 
@@ -866,6 +898,7 @@ void FortifyPhase::MoveArmies() {
         cin.clear();
         cin.ignore(132, '\n');
     }
+    fortification_armies_ = num_of_armies;//added----------------------------------------------------------------------------------
 
     cout << "Fortifying " << *target_country_->GetCountryName() << " with " << num_of_armies << " armies." << endl;
 
@@ -876,4 +909,14 @@ void FortifyPhase::MoveArmies() {
 
     cout << "There are " << source_country_->GetNumberOfArmies() << " armies in " << *source_country_->GetCountryName() << "." << endl;
     cout << "There are " << target_country_->GetNumberOfArmies() << " armies in " << *target_country_->GetCountryName() << "." << endl;
+}
+
+Country* FortifyPhase::GetSourceCountry() {
+    return source_country_;
+}
+Country* FortifyPhase::GetTargetCountry(){
+    return target_country_;
+}
+int FortifyPhase::GetFortificationArmiesMoved() {//added----------------------------------------------------------------------------------
+    return fortification_armies_;
 }
