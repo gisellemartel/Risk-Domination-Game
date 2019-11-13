@@ -41,5 +41,6 @@ public:
     void Update();
 private:
     Player* player_subject_;
+    int turn_;
 };
 #endif //GAMEOBSERVERS_H

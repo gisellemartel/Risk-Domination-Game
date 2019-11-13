@@ -37,7 +37,7 @@ private:
     vector<Country*>* countries_reinforced_;//add to constructor
     vector<int>* number_of_armies_reinforced_;//add to constructor
     bool has_attacked_ = false;//add to constructor
-    int game_phase_;
+    int game_phase_;//add to constructor
 
 public:
     explicit Player(string player_name);

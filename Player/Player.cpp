@@ -235,6 +235,7 @@ void Player::Reinforce() {
     cout << "In reinforce method" << endl;
     game_phase_ = 1;
     Notify();
+
     Reinforcement* reinforce = new Reinforcement(this, 0);
     int bonus_army = reinforce->TotalReinforceArmy();
     int looping_counter = 0;
@@ -267,6 +268,7 @@ void Player::Reinforce() {
         looping_counter +=1;
         looping_counter = looping_counter % countries_->size();
     }
+    Notify();
 }
 
 vector<Country*>* Player::GetCountriesReinforced() {
@@ -291,6 +293,7 @@ void Player::Attack() {
     cout << "Beginning Attack phase for " << *player_name_ << endl << endl;
     game_phase_ = 2;
     Notify();
+
     AttackPhase* attack_phase = new AttackPhase(this);
 
     //ask player if they wish to carry-out an attack
@@ -310,7 +313,7 @@ void Player::Attack() {
         }
     }
 
-    cout << *player_name_ << " no longer wishes to attack, going to next phase";
+    Notify();
 
     attack_phase = nullptr;
     delete attack_phase;
@@ -324,12 +327,14 @@ void Player::Fortify() {
     cout << "Beginning Fortify phase for " << *player_name_ << endl << endl;
     game_phase_ = 3;
     Notify();
+
     FortifyPhase* fortify_phase = new FortifyPhase(this);
 
     if (fortify_phase->PromptUserToFortify() && fortify_phase->SelectSourceCountry() && fortify_phase->SelectTargetCountry()) {
         fortify_phase->MoveArmies();
     }
 
+    Notify();
     cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
 
     fortify_phase = nullptr;
