@@ -55,7 +55,7 @@ public:
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
-class GameEngine {
+class GameEngine{
 
 private:
     vector<Player*>* players_;
@@ -107,7 +107,7 @@ public:
     void DisplayCurrentGame();
 };
 
-class GameLoop : public Observable{
+class GameLoop : public Subject{
 private:
     vector<Player*>* all_players_;
     int num_of_swaps_;
@@ -120,12 +120,13 @@ public:
 
     GameLoop& operator=(const GameLoop& game_loop);
 
+    vector<Player*>* GetPlayers() const;
     int GetNumberOfSwaps() const;
 
     void StartLoop();
     bool WinCondition(Player* cur_player);
-    void Attach();
-    void Detach();
+//    void Attach();
+//    void Detach();
 };
 
 #endif

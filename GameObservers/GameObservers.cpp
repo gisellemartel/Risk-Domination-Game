@@ -6,14 +6,17 @@
 #include <iostream>
 #include "GameObservers.h"
 #include "../Player/Player.h"
+#include "../GameEngine/GameEngine.h"
 
 using namespace std;
-
+//------------------------------------Observer-----------------------------
 Observer::Observer() {
 };
 Observer::~Observer() {
 };
 
+
+//------------------------------------Subject-----------------------------
 Subject::Subject(){
     observers_ = new vector<Observer*>;
 }
@@ -36,8 +39,18 @@ void Subject::Notify(){
         (*i)->Update();
 }
 
-GameStatisticObserver::GameStatisticObserver(Player players){
-    Players_ = new vector<Player*>;
+
+//------------------------------------GameStatisticObserver-----------------------------
+GameStatisticObserver::GameStatisticObserver(GameLoop* liveGame){
+
+    GameSubject_ = liveGame;
+    Players_ = liveGame->GetPlayers();
+    GameSubject_->Attach(this);
+
+}
+
+GameStatisticObserver::~GameStatisticObserver(){
+    GameSubject_->Detach(this);
 }
 
 void GameStatisticObserver::update(){
@@ -53,5 +66,11 @@ void GameStatisticObserver::update(){
 
         cout<<ownedRatio;
     }
+
+    DisplayStats();
+}
+
+void GameStatisticObserver::DisplayStats(){
+
 }
 

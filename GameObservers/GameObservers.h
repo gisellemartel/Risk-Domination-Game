@@ -6,20 +6,23 @@
 #pragma once
 
 #include <Vector>
+#include "../GameEngine/GameEngine.h"
+
 class Player;
 using namespace std;
-
+//------------------------------------Observer-----------------------------
 class Observer{
 public:
     Observer();
     ~Observer();
+
     virtual void Update() = 0;
 
 //protected:
-//    Observer():
+//    Observer();
 
  } ;
-
+//------------------------------------Observable-----------------------------
 class Observable{
 public:
     virtual ~Observable(){};
@@ -31,29 +34,34 @@ protected:
 private:
     vector<Observer*> observers_;
 };
-
+//------------------------------------Subject-----------------------------
 class Subject: public Observable{
 private:
     vector<Observer*> *observers_;
 public:
-    virtual void Attach(Observer* o);
-    virtual void Detach(Observer* o);
-    virtual void Notify();
+    void Attach(Observer* o);
+    void Detach(Observer* o);
+    void Notify();
     Subject();
     ~Subject();
 };
-
-class GameStatisticObserver: Observer{
+//------------------------------------GameStatisticObserver-----------------------------
+class GameStatisticObserver: public Observer{
 private:
     vector<Player*>* Players_;
+    GameLoop *GameSubject_;
+    int totalCountries;
 
 public:
     GameStatisticObserver();
-    GameStatisticObserver(Player players);
+    GameStatisticObserver(GameLoop* liveGame);
     ~GameStatisticObserver();
 
     void update();
+    void DisplayStats();
 };
+
+
 
 
 

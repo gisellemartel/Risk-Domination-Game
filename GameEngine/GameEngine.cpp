@@ -757,20 +757,25 @@ GameLoop::~GameLoop(){
     delete[] all_players_;
 }
 
-void GameLoop::Attach(){
-
-}
-
-void GameLoop::Detach(){
-
-}
-
-
 GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
     all_players_ = game_loop.all_players_;
     num_of_swaps_ = game_loop.num_of_swaps_;
     return *this;
 }
+
+
+vector<Player*>* GameLoop::GetPlayers() const {
+    return all_players_;
+}
+
+//void GameLoop::Attach(){
+//
+//}
+//
+//void GameLoop::Detach(){
+//
+//}
+
 
 void GameLoop::StartLoop(){
     int turn = 0;
