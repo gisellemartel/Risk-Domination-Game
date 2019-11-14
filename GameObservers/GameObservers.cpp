@@ -41,10 +41,17 @@ GameStatisticObserver::GameStatisticObserver(Player players){
 }
 
 void GameStatisticObserver::update(){
+    int totalCountries = Players_->at(0)->GetGameMap()->GetCountries()->size();
+    int playerCountries;
+    float ownedRatio;
+
     for(int i= 0; i< Players_->size() ; i++){
-        cout<<Players_->at(i)->GetPlayerName();
+        playerCountries = Players_->at(i)->GetPlayersCountries()->size();
+        ownedRatio = playerCountries / totalCountries;
 
         cout<<Players_->at(i)->GetPlayerName();
+
+        cout<<ownedRatio;
     }
 }
 

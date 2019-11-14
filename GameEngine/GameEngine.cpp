@@ -757,6 +757,14 @@ GameLoop::~GameLoop(){
     delete[] all_players_;
 }
 
+void GameLoop::Attach(){
+
+}
+
+void GameLoop::Detach(){
+
+}
+
 
 GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
     all_players_ = game_loop.all_players_;

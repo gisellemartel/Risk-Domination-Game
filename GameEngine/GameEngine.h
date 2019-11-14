@@ -19,6 +19,7 @@ using namespace std;
 #include "../Dice/Dice.h"
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
+#include "../GameObservers/GameObservers.h"
 
 class StartupPhase {
 
@@ -106,7 +107,7 @@ public:
     void DisplayCurrentGame();
 };
 
-class GameLoop{
+class GameLoop : public Observable{
 private:
     vector<Player*>* all_players_;
     int num_of_swaps_;
@@ -123,6 +124,8 @@ public:
 
     void StartLoop();
     bool WinCondition(Player* cur_player);
+    void Attach();
+    void Detach();
 };
 
 #endif
