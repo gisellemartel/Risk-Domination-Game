@@ -5,7 +5,6 @@
  */
 #include <iostream>
 #include "GameObservers.h"
-#include "../Player/Player.h"
 #include "../GameEngine/GameEngine.h"
 
 using namespace std;
@@ -45,8 +44,9 @@ GameStatisticObserver::GameStatisticObserver(GameLoop* liveGame){
 
     GameSubject_ = liveGame;
     Players_ = liveGame->GetPlayers();
+    totalCountries = liveGame->GetPlayers()->at(0)->GetGameMap()->GetCountries()->size();
+    totalCardSwaps = liveGame->GetPlayers()->at(0)->GetPlayersCards()->exchanges_done;
     GameSubject_->Attach(this);
-
 }
 
 GameStatisticObserver::~GameStatisticObserver(){
@@ -54,7 +54,11 @@ GameStatisticObserver::~GameStatisticObserver(){
 }
 
 void GameStatisticObserver::update(){
-    int totalCountries = Players_->at(0)->GetGameMap()->GetCountries()->size();
+
+    DisplayStats();
+}
+
+void GameStatisticObserver::DisplayStats(){
     int playerCountries;
     float ownedRatio;
 
@@ -62,15 +66,11 @@ void GameStatisticObserver::update(){
         playerCountries = Players_->at(i)->GetPlayersCountries()->size();
         ownedRatio = playerCountries / totalCountries;
 
-        cout<<Players_->at(i)->GetPlayerName();
-
-        cout<<ownedRatio;
+        cout<<"Player: "<<Players_->at(i)->GetPlayerName()
+        <<"\t"
+        <<"% Map Owned: "<<ownedRatio<<"%"
+        <<endl;
     }
-
-    DisplayStats();
-}
-
-void GameStatisticObserver::DisplayStats(){
-
+    cout<<"Number of Card Swaps: "<<totalCardSwaps;
 }
 

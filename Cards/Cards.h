@@ -68,7 +68,9 @@ class Hand{
 
 private:
     vector<Cards*>* cards_in_hand_;
+
 public:
+    inline static int exchanges_done = 0;
     Hand();
     Hand(const Hand& hand);
     ~Hand();

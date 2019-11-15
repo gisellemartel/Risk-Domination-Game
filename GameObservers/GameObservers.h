@@ -10,47 +10,51 @@
 
 class Player;
 using namespace std;
+
 //------------------------------------Observer-----------------------------
 class Observer{
 public:
-    Observer();
     ~Observer();
-
     virtual void Update() = 0;
 
-//protected:
-//    Observer();
-
+protected:
+    Observer();
  } ;
+
 //------------------------------------Observable-----------------------------
 class Observable{
 public:
     virtual ~Observable(){};
-    virtual void attach(Observer *) = 0;
-    virtual void detach(Observer *) = 0;
+    virtual void Attach(Observer *) = 0;
+    virtual void Detach(Observer *) = 0;
     virtual void notify() = 0;
 protected:
     Observable(){};
 private:
     vector<Observer*> observers_;
 };
+
 //------------------------------------Subject-----------------------------
 class Subject: public Observable{
 private:
-    vector<Observer*> *observers_;
+    vector<Observer*>* observers_;
 public:
-    void Attach(Observer* o);
-    void Detach(Observer* o);
-    void Notify();
     Subject();
     ~Subject();
+
+    void Attach(Observer *);
+    void Detach(Observer *);
+    void Notify();
+
 };
+
 //------------------------------------GameStatisticObserver-----------------------------
 class GameStatisticObserver: public Observer{
 private:
     vector<Player*>* Players_;
     GameLoop *GameSubject_;
     int totalCountries;
+    int totalCardSwaps;
 
 public:
     GameStatisticObserver();

@@ -119,6 +119,7 @@ void Deck::DisplayDeck() {
 // HAND class ----------------------------------------------------------------------------------------------------------
 Hand::Hand(){
     cards_in_hand_ = new vector<Cards*>;
+
 }
 
 Hand::Hand(const Hand &hand) {
@@ -131,6 +132,7 @@ size_t Hand::GetNumberOfCardsInHand() const {
     return cards_in_hand_->size();
 }
 
+
 void Hand::AddCardToHand(Cards* card_) {
     cards_in_hand_->push_back(card_);
 }
@@ -139,7 +141,8 @@ void Hand::AddCardToHand(Cards* card_) {
 // 2-(Inputs for choices of cards in hand are valid and unique)
 // 3-(Cards are 3 same type or 3 different type)
 int Hand::Exchange() {
-    static int exchanges_done = 0;
+//    static int exchanges_done = 0;
+
     //condition #1
     if(cards_in_hand_->size() < 3) {
         cout << "Not enough cards to exchange" << endl;
