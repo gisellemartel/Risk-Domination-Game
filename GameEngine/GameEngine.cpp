@@ -56,7 +56,7 @@ StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
 }
 
 StartupPhase::~StartupPhase() {
-    delete player_order_;
+    delete [] player_order_;
 }
 
 
@@ -770,8 +770,6 @@ void GameEngine::StartGameLoop() {
 
     while(!PlayerHasWon(players_->at(turn))){
         Player* current_player = players_->at(turn);
-        Observer* phase_observer = new PhaseObserver(current_player);//----------------------------------------------------------------------------------------------------------------------------------------Bug
-
         cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(current_player && !current_player->GetPlayersCountries()->empty()){

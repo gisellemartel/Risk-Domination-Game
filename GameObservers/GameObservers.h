@@ -9,25 +9,30 @@
 
 #include <list>
 
-#include "../Player/Player.h"
-class Player;
+#include "../GameEngine/GameEngine.h"
 
+//Observer interface
 class Observer {
 
 public:
-    virtual ~Observer() {}
     virtual void Update() = 0;
+};
 
-protected:
-    Observer() {}
+//Subject interface
+class Subject {
+
+public:
+    virtual void Register(Observer* observer) = 0;
+    virtual void Unregister(Observer* observer) = 0;
+    virtual void Notify() = 0;
 };
 
 class PhaseObserver : public Observer {
 
 public:
     PhaseObserver();
-    PhaseObserver(Player* subject);
-    PhaseObserver(const PhaseObserver& player);
+    PhaseObserver(GameEngine* game_data_);
+    PhaseObserver(const PhaseObserver& phase_observer);
     ~PhaseObserver();
 
     PhaseObserver& operator=(const Player& player);
@@ -39,26 +44,7 @@ public:
     void Update() override;
 
 private:
-    Player* player_subject_;
-    int turn_;
+    GameEngine* game_data_;
 };
-
-class Subject {
-
-public:
-    Subject();
-    Subject(const Subject& subject);
-    ~Subject();
-
-    Subject& operator=(const Subject& subject);
-
-    void Attach(Observer* o);
-    void Detach(Observer* o);
-    void Notify();
-
-private:
-    list<Observer*>* observers_;
-};
-
 
 #endif //GAMEOBSERVERS_H
