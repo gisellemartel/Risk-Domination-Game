@@ -17,7 +17,7 @@ class Player;
 class Observer {
 
 public:
-    virtual ~Observer() = default;
+    virtual ~Observer() {};
     virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;
 };
 
@@ -34,7 +34,7 @@ public:
 //Phase observer implements Observer interface -------------------------------------------------------------------------
 class PhaseObserver : public Observer {
 private:
-    Player* current_player_;
+    string current_player_name_;
     string current_phase_;
     string current_action_description_;
     bool phase_over_;
@@ -46,7 +46,7 @@ private:
 public:
     PhaseObserver();
     PhaseObserver(const PhaseObserver& phase_observer);
-    ~PhaseObserver() override;
+    ~PhaseObserver() override = default;
 
     PhaseObserver& operator=(const PhaseObserver& phase_observer);
 

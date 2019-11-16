@@ -4,6 +4,7 @@
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
+#include <utility>
 #include <vector>
 #include <iostream>
 #include <utility>
@@ -21,7 +22,7 @@ using namespace std;
 // Player class implementation ----------------------------------------------------------------------------
 
 Player::Player(string player_name) {
-    player_name_ = new string(player_name);
+    player_name_ = new string(std::move(player_name));
     is_player_turn_ = false;
     is_human_ = false;
     countries_ = new vector<Country*>;
@@ -36,7 +37,7 @@ Player::Player(string player_name) {
 }
 
 Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
-    player_name_ = new string(player_name);
+    player_name_ = new string(std::move(player_name));
     game_map_ = game_map;
     game_engine_ = game_engine;
     is_player_turn_ = false;
@@ -51,7 +52,7 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
-    player_name_ = new string(player_name);
+    player_name_ = new string(std::move(player_name));
     is_player_turn_ = is_player_turn;
     is_human_ = false;
     //countries to be assigned to each player are chosen randomly at start-up phase
@@ -91,6 +92,8 @@ Player::~Player() {
         country = nullptr;
         delete country;
     }
+
+    player_name_ = nullptr;
     risk_cards_ = nullptr;
     countries_ = nullptr;
     dice_roll_ = nullptr;
@@ -98,6 +101,7 @@ Player::~Player() {
     player_strategy_ = nullptr;
     attack_phase_ = nullptr;
 
+    delete player_name_;
     delete risk_cards_;
     delete countries_;
     delete dice_roll_;
@@ -246,10 +250,6 @@ void Player::SetPlayerDice(Dice *dice) {
 
 void Player::SetPlayerHand(Hand* hand) {
     risk_cards_ = hand;
-}
-
-void Player::SetNumberOfArmies(int number_of_armies) {
-    number_of_armies_ = number_of_armies;
 }
 
 void Player::SetPlayerStrategy(ConcreteStrategies *player_strategy) {
@@ -416,96 +416,115 @@ void Player::Attack() {
             msg = *player_name_ + " has selected " + *attack_phase_->GetDefendingCountry()->GetCountryName() + " to attack\n";
             Notify(this, GamePhase::Attack, msg, false, false);
 
+
             Country* attacking_country = attack_phase_->GetAttackingCountry();
             Country* defending_country = attack_phase_->GetDefendingCountry();
             Player* defender = defending_country->GetCountryOwner();
-            int attacker_num_dice = 0;
-            int defender_num_dice = 0;
-            //determine maximum number of rolls for each player based on rules of Risk
-            int max_num_dice_attacker = (attacking_country->GetNumberOfArmies() - 1) < 3 ? attacking_country ->GetNumberOfArmies() : 3;
 
-            const int MAX_NUM_OF_DICE_ATTACKER = (max_num_dice_attacker == 0) ? 1 : max_num_dice_attacker;
-            const int MAX_NUM_OF_DICE_DEFENDER = (defending_country->GetNumberOfArmies()) < 2 ? defending_country ->GetNumberOfArmies() : 2;
+            if(defending_country->GetNumberOfArmies() == 0) {
+                msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
+                Notify(this, GamePhase::Attack, msg, false, false);
+                msg = "";
 
-            player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
+                //defender has lost. Its country will now be transferred to the attacker
+                //store the id and name of country before we transfer ownership
+                string defender_country_name = *defending_country->GetCountryName();
+                int defender_country_id = defending_country->GetCountryID();
+                AddCountryToCollection(defending_country);
+                defender->RemoveCountryFromCollection(defending_country);
 
+                player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
-            msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
-            Notify(this, GamePhase::Attack, msg, false, false);
-
-            //if the player is human then they select their own number of dice otherwise it is randomly generated
-            if(defender->IsHuman()) {
-                while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
-                    cout << "You have entered an invalid number of dice to roll. Please try again: ";
-                    cin.clear();
-                    cin.ignore(132, '\n');
-                }
             } else {
-                defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER + 1);
-            }
 
-            msg = "\n" + *player_name_ + " has chosen to roll " + to_string(attacker_num_dice) + " dice\n";
-            msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
-            Notify(this, GamePhase::Attack, msg, false, false);
+                int attacker_num_dice = 0;
+                int defender_num_dice = 0;
+                //determine maximum number of rolls for each player based on rules of Risk
+                int max_num_dice_attacker = (attacking_country->GetNumberOfArmies() - 1) < 3 ? attacking_country ->GetNumberOfArmies() : 3;
 
-            vector<int> attacker_dice_rolls = dice_roll_->Roll(attacker_num_dice);
-            msg = "Attacker dice rolled:\n";
+                const int MAX_NUM_OF_DICE_ATTACKER = (max_num_dice_attacker == 0) ? 1 : max_num_dice_attacker;
+                const int MAX_NUM_OF_DICE_DEFENDER = (defending_country->GetNumberOfArmies()) < 2 ? defending_country ->GetNumberOfArmies() : 2;
 
-            for(int i : attacker_dice_rolls) {
-                msg.append(to_string(i) + "\n");
-            }
-            vector<int> defender_dice_rolls = defender->GetPlayerDice()->Roll(defender_num_dice);
-            msg.append("Defender dice rolled:\n");
-            for(int i : defender_dice_rolls) {
-                msg.append(to_string(i) + "\n");
-            }
-            msg.append("\n");
+                player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
 
-            Notify(this, GamePhase::Attack, msg, false, false);
-            //sort the rolls from highest value to lowest value
-            sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
-            reverse(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
-            sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
-            reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
 
-            int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
+                msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
+                Notify(this, GamePhase::Attack, msg, false, false);
 
-            msg = "Carrying out attacks....\n";
-
-            for(int i = 0; i < num_of_iterations; ++i) {
-                //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
-                if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
-                    msg.append("Attacker has lost this roll. Loosing an army\n");
-                    attacking_country->RemoveArmiesFromCountry(1);
-                    if(attacking_country->GetNumberOfArmies() == 0) {
-                        msg.append("Attacking country " + *attacking_country->GetCountryName() + " has run out of armies. Attack phase has ended\n");
-                        Notify(this, GamePhase::Attack, msg, false, true);
-                        return;
+                //if the player is human then they select their own number of dice otherwise it is randomly generated
+                if(defender->IsHuman()) {
+                    while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
+                        cout << "You have entered an invalid number of dice to roll. Please try again: ";
+                        cin.clear();
+                        cin.ignore(132, '\n');
                     }
-                    //defender lose an army if attacker's dice has a greater value
-                } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
-                    msg.append("Defender has lost this roll. Loosing an army\n");
+                } else {
+                    defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER + 1);
+                }
 
-                    defending_country->RemoveArmiesFromCountry(1);
+                msg = "\n" + *player_name_ + " has chosen to roll " + to_string(attacker_num_dice) + " dice\n";
+                msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
+                Notify(this, GamePhase::Attack, msg, false, false);
 
-                    if(defending_country->GetNumberOfArmies() == 0) {
-                        msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
+                vector<int> attacker_dice_rolls = dice_roll_->Roll(attacker_num_dice);
+                msg = "Attacker dice rolled:\n";
 
-                        //defender has lost. Its country will now be transferred to the attacker
-                        //store the id and name of country before we transfer ownership
-                        string defender_country_name = *defending_country->GetCountryName();
-                        int defender_country_id = defending_country->GetCountryID();
-                        AddCountryToCollection(defending_country);
-                        defender->RemoveCountryFromCollection(defending_country);
+                for(int i : attacker_dice_rolls) {
+                    msg.append(to_string(i) + "\n");
+                }
+                vector<int> defender_dice_rolls = defender->GetPlayerDice()->Roll(defender_num_dice);
+                msg.append("Defender dice rolled:\n");
+                for(int i : defender_dice_rolls) {
+                    msg.append(to_string(i) + "\n");
+                }
+                msg.append("\n");
 
-                        player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
+                Notify(this, GamePhase::Attack, msg, false, false);
+                //sort the rolls from highest value to lowest value
+                sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
+                reverse(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
+                sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
+                reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
+
+                int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
+
+                msg = "Carrying out attacks....\n";
+
+                for(int i = 0; i < num_of_iterations; ++i) {
+                    //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
+                    if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
+                        msg.append("Attacker has lost this roll. Loosing an army\n");
+                        attacking_country->RemoveArmiesFromCountry(1);
+                        if(attacking_country->GetNumberOfArmies() == 0) {
+                            msg.append("Attacking country " + *attacking_country->GetCountryName() + " has run out of armies. Attack phase has ended\n");
+                            Notify(this, GamePhase::Attack, msg, false, true);
+                            return;
+                        }
+                        //defender lose an army if attacker's dice has a greater value
+                    } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
+                        msg.append("Defender has lost this roll. Loosing an army\n");
+
+                        defending_country->RemoveArmiesFromCountry(1);
+
+                        if(defending_country->GetNumberOfArmies() == 0) {
+                            msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
+
+                            //defender has lost. Its country will now be transferred to the attacker
+                            //store the id and name of country before we transfer ownership
+                            string defender_country_name = *defending_country->GetCountryName();
+                            int defender_country_id = defending_country->GetCountryID();
+                            AddCountryToCollection(defending_country);
+                            defender->RemoveCountryFromCollection(defending_country);
+
+                            player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
+                        }
                     }
                 }
             }
 
             msg.append("\nResult:\n");
 
-            msg.append(*player_name_ = "\n");
+            msg.append(*player_name_ + "\n");
             msg.append(attacking_country->GetDisplayInfo());
 
             msg.append("\n" +  *defender->GetPlayerName() + "\n");
@@ -630,7 +649,7 @@ void Player::Fortify() {
 }
 
 //will be used to implicitly notify the game engine of phase changes
-void Player::Notify(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) {
+void Player::Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over) {
     game_engine_->Notify(current_player, current_phase, current_action_description, phase_start, phase_over);
 }
 
@@ -750,6 +769,7 @@ vector<int>* ReinforcePhase::GetReinforceValues() const {
     return reinforce_values_;
 
 }
+
 void ReinforcePhase::SetTotalReinforcementArmy(int num_reinforcements) {
     reinforcement_army_= num_reinforcements;
 }

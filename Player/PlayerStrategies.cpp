@@ -166,7 +166,7 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
 
 void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
     //prompt attacker if they would like to assign armies from their newly acquired country to their other countries
-    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise\n";
+    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise)\n";
 
     string user_response;
     while(!(cin >> user_response)) {

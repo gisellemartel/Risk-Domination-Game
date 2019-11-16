@@ -35,7 +35,6 @@ class Player {
 private:
     bool is_player_turn_;
     bool is_human_;
-    int number_of_armies_;
     string* player_name_;
 
     vector<Country*>* countries_;
@@ -65,7 +64,6 @@ public:
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
-    void SetNumberOfArmies(int number_of_armies);
     void SetGameMap(Map* map);
     void SetPlayerStrategy(ConcreteStrategies* player_strategy);
 
@@ -101,7 +99,7 @@ public:
     void Fortify();
 
     //will be used to implicitly notify the game engine of phase changes
-    void Notify(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over);
+    void Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over);
 };
 
 // ReinforcePhase --------------------------------------

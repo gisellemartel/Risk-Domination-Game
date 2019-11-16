@@ -17,26 +17,21 @@ using namespace std;
 // PhaseObserver -------------------------------------------------------------------------------------------------------
 
 PhaseObserver::PhaseObserver() {
-    current_player_ = nullptr;
+    current_player_name_ = "";
     current_phase_ = "";
     current_action_description_ = "";
     phase_over_ = false;
 }
 
 PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
-    current_player_ = phase_observer.current_player_;
+    current_player_name_ = phase_observer.current_player_name_;
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
 }
 
-PhaseObserver::~PhaseObserver() {
-    current_player_ = nullptr;
-    delete current_player_;
-}
-
 PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
-    current_player_ = phase_observer.current_player_;
+    current_player_name_ = phase_observer.current_player_name_;
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
@@ -46,9 +41,10 @@ PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
 void PhaseObserver::Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) {
     if(!current_player) {
         cout << "Something went wrong! Unable to update phase observer" << endl;
+        return;
     }
 
-    current_player_ = current_player;
+    current_player_name_ = *current_player->GetPlayerName();
     current_action_description_ = current_action_description;
     phase_over_ = phase_over;
 
@@ -97,6 +93,6 @@ void PhaseObserver::DisplayPhaseData() {
 
 void PhaseObserver::DisplayPhaseHeader() {
     cout << endl << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #" << endl << endl;
-    cout << *current_player_->GetPlayerName() + ": " + current_phase_ << endl << endl;
+    cout << current_player_name_ + ": " + current_phase_ << endl << endl;
     cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # " << endl << endl;
 }
