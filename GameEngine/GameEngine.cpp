@@ -76,6 +76,8 @@ map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
 //Setters
 void StartupPhase::SetNumberOfArmies(int number_of_players) {
     switch(number_of_players) {
+        case -1: number_of_armies_ = 5; //for testing only
+            break;
         case 2: number_of_armies_ = 40;
             break;
         case 3: number_of_armies_ = 35;
@@ -662,7 +664,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Human Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         player->SetAsHuman();
         players_->push_back(player);
@@ -672,7 +674,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Aggressive Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -681,7 +683,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Benevolant Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -772,11 +774,16 @@ void GameEngine::DisplayCurrentGame() {
 }
 
 void GameEngine::StartGameLoop() {
-    cout << "############################################################################# GAME START #############################################################################" << endl;
-
     if(!players_ || players_->empty() || num_of_players_ == 0){
         cout << "Something went wrong! aborting game loop" << endl;
     }
+
+    for(Player* player : *players_) {
+        cout << *player->GetPlayerName() << endl;
+        player->DisplayCountries();
+    }
+    cout << "############################################################################# GAME START #############################################################################" << endl;
+
 
     int num_iterations = 0;
     int current_index = game_start_->current_player_index_;
@@ -787,28 +794,26 @@ void GameEngine::StartGameLoop() {
         return;
     }
 
-    while(!PlayerHasWon(current_player) && num_iterations < 50){
+    while(!PlayerHasWon(current_player) && num_iterations < 1000){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
         }
-        cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+       // cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
-           // Notify();
+
             current_phase_ = GamePhase ::Reinforce;
             current_player->Reinforce();
-           // Notify();
+
 
             current_phase_ = GamePhase ::Attack;
-           // Notify();
             current_player->Attack();
-           // Notify();
+
 
             current_phase_ = GamePhase ::Fortify;
-            //Notify();
             current_player->Fortify();
-            //Notify();
+
 
             ++num_iterations;
         }

@@ -12,6 +12,7 @@
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
 
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -26,6 +27,7 @@ class Continent;
 class ConcreteStrategies;
 class AttackPhase;
 class FortifyPhase;
+class GameEngine;
 
 class Player {
 
@@ -45,10 +47,11 @@ private:
     FortifyPhase* fortify_phase_;
 
     ConcreteStrategies* player_strategy_;
+    GameEngine* game_data_;
 
 public:
     explicit Player(string player_name);
-    Player(string player_name, Map* game_map);
+    Player(string player_name, Map* game_map, GameEngine* game_data);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
@@ -152,7 +155,7 @@ public:
     void SetDefendingCountry(Country* defending_country);
     void SetDefender(Player* defender);
 
-    bool DoesOpposingCountryExistWithArmies();
+    bool DoesOpposingCountryExist();
 
     void FindOpponentNeighboursToAttackingCountry();
 };
