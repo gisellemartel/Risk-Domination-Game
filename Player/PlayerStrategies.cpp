@@ -227,8 +227,6 @@ bool HumanPlayerStrategy::SelectTargetCountry(Player *player) {
     cout << "Please choose which country you would like to fortify (enter by numerical id):\n";
     int fortify_id;
 
-
-    //USE FORTIFY STRATEGY HERE
     Country* target = nullptr;
     while(!(cin >> fortify_id) || fortify_id < 1 || !(target = player->GetCountryInVectorById(fortify_phase->GetNeighboursToFortify(), fortify_id))) {
         cout << "Invalid entry entered! Please try again: ";

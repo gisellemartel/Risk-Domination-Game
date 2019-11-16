@@ -31,8 +31,6 @@ enum GamePhase {
     Fortify = 3
 };
 
-static int current_player_index_;
-
 class StartupPhase {
 
 private:
@@ -44,6 +42,7 @@ private:
     static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
 
 public:
+    int current_player_index_;
     //Constructors
     StartupPhase();
     StartupPhase(const StartupPhase& startup_phase);
@@ -89,7 +88,6 @@ private:
     MapLoader* SelectFile();
 
 public:
-
     // Function to test Player functions within game
     void TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players);
 

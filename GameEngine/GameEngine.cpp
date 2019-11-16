@@ -38,6 +38,7 @@ vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& v
 // class constructors
 StartupPhase::StartupPhase() {
     player_order_ = new map<Player*, int>;
+    current_player_index_ = 0;
 }
 
 StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
@@ -46,6 +47,7 @@ StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
     for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
         player_order_->insert(*it);
     }
+    current_player_index_ = startup_phase.current_player_index_;
 }
 
 StartupPhase::~StartupPhase() {
@@ -60,7 +62,7 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     for(const auto& it : *startup_phase.player_order_) {
         player_order_->insert(it);
     }
-
+    current_player_index_ = startup_phase.current_player_index_;
     return *this;
 }
 
@@ -372,7 +374,6 @@ GameEngine::GameEngine() {
     game_start_ = new StartupPhase;
     current_phase_ = GamePhase::Startup;
     observers_ = new vector<Observer*>;
-    current_player_index_ = 0;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
@@ -400,7 +401,6 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     num_of_players_ = game_engine.num_of_players_;
     exit_game_ = game_engine.exit_game_;
     current_phase_ = game_engine.current_phase_;
-    current_player_index_ = 0;
 }
 
 GameEngine::~GameEngine() {
@@ -578,12 +578,12 @@ bool GameEngine::PlayerHasWon(Player *current_player) {
 
     for(Country* country : *all_countries){
         int id = country->GetCountryID();
-        if(current_player->DoesPlayerOwnCountry(id)) {
+        if(!current_player->DoesPlayerOwnCountry(id)) {
             return false;
         }
     }
     cout << "Game Over" << endl;
-    cout << "Winner: " << current_player->GetPlayerName();
+    cout << "Winner: " << *current_player->GetPlayerName();
 
     return true;
 }
@@ -774,31 +774,47 @@ void GameEngine::DisplayCurrentGame() {
 void GameEngine::StartGameLoop() {
     cout << "############################################################################# GAME START #############################################################################" << endl;
 
-    while(!PlayerHasWon(players_->at(current_player_index_))){
-        Player* current_player = players_->at(current_player_index_);
+    if(!players_ || players_->empty() || num_of_players_ == 0){
+        cout << "Something went wrong! aborting game loop" << endl;
+    }
+
+    int num_iterations = 0;
+    int current_index = game_start_->current_player_index_;
+
+    Player* current_player = players_->at(current_index);
+
+    if(!current_player) {
+        return;
+    }
+
+    while(!PlayerHasWon(current_player) && num_iterations < 50){
+        current_player = players_->at(current_index);
         if(!current_player) {
             break;
         }
         cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
-            Notify();
+           // Notify();
             current_phase_ = GamePhase ::Reinforce;
             current_player->Reinforce();
-            Notify();
+           // Notify();
 
             current_phase_ = GamePhase ::Attack;
-            Notify();
+           // Notify();
             current_player->Attack();
-            Notify();
+           // Notify();
 
             current_phase_ = GamePhase ::Fortify;
-            Notify();
+            //Notify();
             current_player->Fortify();
-            Notify();
+            //Notify();
+
+            ++num_iterations;
         }
 
-        current_player_index_ += (current_player_index_ + 1) % num_of_players_;
+        current_index = (current_index + 1) % num_of_players_;
+        current_player = players_->at(game_start_->current_player_index_);
     }
 
     cout << "############################################################################# GAME OVER #############################################################################" << endl;
