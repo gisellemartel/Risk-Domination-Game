@@ -12,6 +12,12 @@
 
 using namespace std;
 
+//MapLoader class (TARGET) ---------------------------------------------------------------------------------------------
+MapLoader::MapLoader() {
+    file_name_ = "";
+    parsed_map_ = nullptr;
+}
+
 MapLoader::MapLoader(string file_name) {
     cout << "Creating MapLoader object for file: " << file_name << endl;
     string map_name = StripString(file_name, "/", ".");
@@ -334,3 +340,63 @@ bool MapLoader::ParseMap() {
     }
 }
 
+
+
+//ConquestMapLoader class (ADAPTEE)-------------------------------------------------------------------------------------
+ConquestMapLoader::ConquestMapLoader(string file_name) {
+    file_name_ = file_name;
+    parsed_map_ = nullptr;
+}
+
+ConquestMapLoader::ConquestMapLoader(const ConquestMapLoader &conquest_map_loader) {
+    file_name_ = conquest_map_loader.file_name_;
+    parsed_map_ = conquest_map_loader.parsed_map_;
+}
+
+ConquestMapLoader::~ConquestMapLoader() {
+    parsed_map_ = nullptr;
+    delete parsed_map_;
+}
+
+ConquestMapLoader& ConquestMapLoader::operator=(const ConquestMapLoader &conquest_map_loader) {
+    file_name_ = conquest_map_loader.file_name_;
+    parsed_map_ = conquest_map_loader.parsed_map_;
+    return *this;
+}
+
+Map* ConquestMapLoader::GetParsedConquestMap() const {
+    return parsed_map_;
+}
+
+bool ConquestMapLoader::ParseConquestMap() {
+
+    //TODO unique implementation to parse conquest maps
+        // returns true if successfully read map file, false otherwise
+    return true;
+}
+
+
+
+//Adapter class --------------------------------------------------------------------------------------------------------
+
+Adapter::Adapter(ConquestMapLoader *conquest_map_loader) : MapLoader() {
+    conquest_map_loader_ = conquest_map_loader;
+}
+
+Adapter::Adapter(const Adapter &adapter) : MapLoader(adapter){
+    conquest_map_loader_ = adapter.conquest_map_loader_;
+}
+
+Adapter::~Adapter() {
+    conquest_map_loader_ = nullptr;
+    delete conquest_map_loader_;
+}
+
+Adapter& Adapter::operator=(const Adapter &adapter) {
+    conquest_map_loader_ = adapter.conquest_map_loader_;
+    return *this;
+}
+
+bool Adapter::ParseMap() {
+    return conquest_map_loader_->ParseConquestMap();
+}
