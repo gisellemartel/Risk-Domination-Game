@@ -4,6 +4,7 @@ project(TeamProject-COMP345)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(GameEngine
+        GameObservers/GameObservers.cpp
         GameEngine/GameEngineDriver.cpp
         GameEngine/GameEngine.cpp
         Player/Player.cpp
@@ -12,7 +13,6 @@ add_executable(GameEngine
         Cards/Cards.cpp
         MapLoader/MapLoader.cpp
         Map/Map.cpp
-        GameObservers/GameObservers.cpp
         Utility/Utility.cpp
         )
 add_executable(Map

@@ -10,14 +10,13 @@
 #include "../Map/Map.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
-#include "../GameObservers/GameObservers.h"
 #include "PlayerStrategies.h"
 
 #include <iostream>
 #include <vector>
 using namespace std;
 
-//forward declaration
+//forward declarations
 class Country;
 class Dice;
 class Cards;
@@ -28,32 +27,24 @@ class ConcreteStrategies;
 class AttackPhase;
 class FortifyPhase;
 
-class Player: public Subject {
+class Player {
 
 private:
     bool is_player_turn_;
     bool is_human_;
     int number_of_armies_;
     string* player_name_;
+
     vector<Country*>* countries_;
+
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
-
-    //should be placed in reinforce phase class and not player
-    vector<Country*>* countries_reinforced_;//add to constructor
-    vector<int>* number_of_armies_reinforced_;//add to constructor
-    bool has_attacked_ = false;//add to constructor
-    //should be placed in reinforce phase class and not player
-
-    //better as an enum
-    int game_phase_;//add to constructor
 
     AttackPhase* attack_phase_;
     FortifyPhase* fortify_phase_;
 
     ConcreteStrategies* player_strategy_;
-
 
 public:
     explicit Player(string player_name);
@@ -174,9 +165,6 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
-
-    //what is this used for?
-    int fortification_armies_;//----------------------------------------------------------------------added
 
     vector<Country*>* neighbours_to_fortify_;
 

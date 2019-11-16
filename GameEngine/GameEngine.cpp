@@ -14,12 +14,14 @@
 
 using namespace std;
 
+#include "../GameObservers/GameObservers.h"
 #include "../Player/PlayerStrategies.h"
 #include "GameEngine.h"
 
+class PhaseObserver;
+
 
 // STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
-
 
 // generic function which randomized order of passed vector.
 // used to randomize both order of players, order in which countries are assigned
@@ -348,7 +350,6 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
     }
 }
 
-
 //private helper methods
 MapLoader* GameEngine::SelectFile() {
 
@@ -382,6 +383,7 @@ GameEngine::GameEngine() {
     exit_game_ = false;
     file_paths_ = new vector<filesystem::path>;
     game_start_ = new StartupPhase;
+    current_phase_ = GamePhase::Startup;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
@@ -402,6 +404,7 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     game_start_ = game_engine.game_start_;
     num_of_players_ = game_engine.num_of_players_;
     exit_game_ = game_engine.exit_game_;
+    current_phase_ = game_engine.current_phase_;
 }
 
 GameEngine::~GameEngine() {
@@ -448,6 +451,7 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     num_of_players_ = game_engine.num_of_players_;
     game_start_ = game_engine.game_start_;
     exit_game_ = game_engine.exit_game_;
+    current_phase_ = game_engine.current_phase_;
 
     return *this;
 }
@@ -476,6 +480,10 @@ StartupPhase* GameEngine::GetGameStart() const {
 
 bool GameEngine::ExitGameSelected() const {
     return exit_game_;
+}
+
+GamePhase GameEngine::GetCurrentPhase() const {
+    return current_phase_;
 }
 
 
@@ -550,6 +558,28 @@ bool GameEngine::LoadSelectedMap() {
         return false;
     }
 }
+
+bool GameEngine::PlayerHasWon(Player *current_player) {
+
+    Map* game_map_ = current_player->GetGameMap();
+    vector<Country*>* all_countries;
+
+    if(game_map_) {
+        all_countries = game_map_->GetCountries();
+    }
+
+    for(Country* country : *all_countries){
+        int id = country->GetCountryID();
+        if(current_player->DoesPlayerOwnCountry(id)) {
+            return false;
+        }
+    }
+    cout << "Game Over" << endl;
+    cout << "Winner: " << current_player->GetPlayerName();
+
+    return true;
+}
+
 
 void GameEngine::SelectNumOfHumanPlayers() {
     int num_players = -1;
@@ -733,79 +763,33 @@ void GameEngine::DisplayCurrentGame() {
     cout << endl;
 }
 
-// GAME LOOP CLASS --------------------------------------------------------------------------------------------------
-
-GameLoop::GameLoop(){
-    all_players_ = nullptr;
-    num_of_swaps_ = 0;
-}
-
-GameLoop::GameLoop(vector<Player*>* all_players){
-    all_players_ = all_players;
-}
-
-GameLoop::GameLoop(const GameLoop& game_loop){
-    all_players_ = game_loop.all_players_;
-    num_of_swaps_ = game_loop.num_of_swaps_;
-}
-
-GameLoop::~GameLoop(){
-    for(int i = 0; i < all_players_->size(); ++i){
-        all_players_->at(i) = nullptr;
-        delete all_players_->at(i);
-    }
-    delete[] all_players_;
-}
-
-
-GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
-    all_players_ = game_loop.all_players_;
-    num_of_swaps_ = game_loop.num_of_swaps_;
-    return *this;
-}
-
-void GameLoop::StartLoop(){
+void GameEngine::StartGameLoop() {
     int turn = 0;
 
     cout << "############################################################################# GAME START #############################################################################" << endl;
 
-    while(!WinCondition(all_players_->at(turn))){
-        Player* current_player = all_players_->at(turn);
-        PhaseObserver* phase_observer = new PhaseObserver(current_player);//----------------------------------------------------------------------------------------------------------------------------------------Bug
+    while(!PlayerHasWon(players_->at(turn))){
+        Player* current_player = players_->at(turn);
+        Observer* phase_observer = new PhaseObserver(current_player);//----------------------------------------------------------------------------------------------------------------------------------------Bug
 
         cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(current_player && !current_player->GetPlayersCountries()->empty()){
+
+            current_phase_ = GamePhase ::Reinforce;
             current_player->Reinforce();
+
             current_player->Attack();
+            current_phase_ = GamePhase ::Attack;
+
             current_player->Fortify();
+            current_phase_ = GamePhase ::Fortify;
         }
 
         turn += 1;
 
-        if(!all_players_->empty()) {
-            turn = turn % all_players_->size();
+        if(!players_->empty()) {
+            turn = turn % players_->size();
         }
     }
-}
-
-bool GameLoop::WinCondition(Player* cur_player){
-
-    Map* game_map_ = cur_player->GetGameMap();
-    vector<Country*>* all_countries;
-
-    if(game_map_) {
-        all_countries = game_map_->GetCountries();
-    }
-
-    for(Country* country : *all_countries){
-        int id = country->GetCountryID();
-        if(cur_player->DoesPlayerOwnCountry(id)) {
-            return false;
-        }
-    }
-    cout << "Game Over" << endl;
-    cout << "Winner: " << cur_player->GetPlayerName();
-
-    return true;
 }

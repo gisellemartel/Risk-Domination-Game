@@ -7,7 +7,6 @@
 #include <vector>
 #include <iostream>
 #include <utility>
-#include <string>
 #include <map>
 #include <iterator>
 #include <filesystem>
@@ -206,26 +205,6 @@ string* Player::GetPlayerName() const {
     return player_name_;
 }
 
-
-// observer ------------------------------------------------------------------------------------------------------------------------
-vector<Country*>* Player::GetCountriesReinforced() {
-    return countries_reinforced_;
-}
-
-vector<int>* Player::GetNumberOfArmiesReinforced() {
-    return number_of_armies_reinforced_;
-}
-
-bool Player::GetHasAttacked() {
-    return has_attacked_;
-}
-
-int Player::GetGamePhase(){
-    return game_phase_;
-}
-// observer ------------------------------------------------------------------------------------------------------------------------
-
-
 void Player::SetPlayersTurn(bool is_turn) {
     is_player_turn_ = is_turn;
 }
@@ -312,12 +291,6 @@ void Player::DisplayCountries() const {
 }
 
 void Player::Reinforce() {
-
-    //observer
-    game_phase_ = 1;
-    Notify();
-    //
-
     if(!player_strategy_) {
         cout << "Player strategy undefined! Cannot Reinforce!" << endl;
         return;
@@ -356,10 +329,6 @@ void Player::Reinforce() {
     }
 
     cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-
-    //observer
-    Notify();
-    //observer
 }
 
 void Player::Attack() {
@@ -371,11 +340,6 @@ void Player::Attack() {
     cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
     cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Attack phase for " << *player_name_ << endl << endl;
-
-    //observer
-    game_phase_ = 2;
-    Notify();
-    //observer
 
     attack_phase_ = new AttackPhase(this);
 
@@ -503,8 +467,6 @@ void Player::Attack() {
 
     cout << *player_name_ << "'s Attack phase is over, going to next phase";
     cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-
-    Notify();
 }
 
 
@@ -515,11 +477,6 @@ void Player::Fortify() {
     }
     cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
     cout << "Beginning Fortify phase for " << *player_name_ << endl << endl;
-
-    //observer
-    game_phase_ = 3;
-    Notify();
-    //observer
 
     fortify_phase_ = new FortifyPhase(this);
 
@@ -537,7 +494,6 @@ void Player::Fortify() {
             cout << "No countries with enough armies to assign to another country!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
             cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-            Notify();
             return;
         }
 
@@ -546,7 +502,6 @@ void Player::Fortify() {
         if(!fortify_phase_->GetSourceCountry()) {
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
             cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-            Notify();
             return;
         }
 
@@ -561,7 +516,6 @@ void Player::Fortify() {
             cout << *source_country->GetCountryName() << " has no neighbours!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
             cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-            Notify();
             return;
         }
 
@@ -577,7 +531,6 @@ void Player::Fortify() {
             cout << *source_country->GetCountryName() << " has no neighbours to assign armies to!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
             cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-            Notify();
             return;
         }
 
@@ -595,7 +548,6 @@ void Player::Fortify() {
         if(!fortify_phase_->GetTargetCountry()) {
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
             cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-            Notify();
             return;
         }
 
@@ -623,7 +575,6 @@ void Player::Fortify() {
 
     cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
     cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-    Notify();
 }
 
 
@@ -873,13 +824,6 @@ bool AttackPhase::DoesOpposingCountryExistWithArmies() {
     }
 }
 
-Country* AttackPhase::GetAttackingCountry() const {
-    return attacking_country_;
-}
-Country* AttackPhase::GetDefendingCountry() const {
-    return defending_country_;
-}
-
 // FortifyPhase class implementation -----------------------------------------------------------------------------------
 
 FortifyPhase::FortifyPhase() {
@@ -887,10 +831,6 @@ FortifyPhase::FortifyPhase() {
     game_map_ = nullptr;
     source_country_ = nullptr;
     target_country_ = nullptr;
-
-    //added for observers
-    fortification_armies_ = 0;
-
     neighbours_to_fortify_ = new vector<Country*>;
 }
 
@@ -899,10 +839,6 @@ FortifyPhase::FortifyPhase(Player* player) {
     game_map_ = player->GetGameMap();
     source_country_ = nullptr;
     target_country_ = nullptr;
-
-    //added for observers
-    fortification_armies_ = 0;
-
     neighbours_to_fortify_ = new vector<Country*>;
 }
 
@@ -911,10 +847,6 @@ FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
     game_map_ = fortify.game_map_;
     source_country_ = fortify.source_country_;
     target_country_ = fortify.target_country_;
-
-    //added for observers
-    fortification_armies_ = fortify.fortification_armies_;
-
     neighbours_to_fortify_ = fortify.neighbours_to_fortify_;
 
     for(int i = 0; i < fortify.neighbours_to_fortify_->size(); ++i) {
@@ -948,11 +880,6 @@ FortifyPhase& FortifyPhase::operator=(const FortifyPhase &fortify) {
     game_map_ = fortify.game_map_;
     source_country_ = fortify.source_country_;
     target_country_ = fortify.target_country_;
-
-    //added for observers
-    fortification_armies_ = fortify.fortification_armies_;
-
-
     neighbours_to_fortify_ = fortify.neighbours_to_fortify_;
     for(int i = 0; i < fortify.neighbours_to_fortify_->size(); ++i) {
         neighbours_to_fortify_[i] = fortify.neighbours_to_fortify_[i];
@@ -979,14 +906,4 @@ void FortifyPhase::SetSourceCountry(Country *source) {
 
 void FortifyPhase::SetTargetCountry(Country *target) {
     target_country_ = target;
-}
-
-Country* FortifyPhase::GetSourceCountry() const {
-    return source_country_;
-}
-Country* FortifyPhase::GetTargetCountry() const {
-    return target_country_;
-}
-int FortifyPhase::GetFortificationArmiesMoved() {//added----------------------------------------------------------------------------------
-    return fortification_armies_;
 }

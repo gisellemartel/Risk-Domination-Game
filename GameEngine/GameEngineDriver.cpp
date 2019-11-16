@@ -18,9 +18,13 @@ int main() {
 
 
     GameEngine* game_engine = new GameEngine;
+    // test arguments: ( map to load, # human player, # aggressive  player, # benevolant player)
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 1, 1, 1);
+    //Test game loop
+    game_engine->StartGameLoop();
 
 
-    // Testing Game Engine and game Startup  ---------------------------------------------------------------------------
+    // Assignment 2: Testing Game Engine and game Startup  ---------------------------------------------------------------------------
 //
 //    while(!game_engine->ExitGameSelected()) {
 //        if( game_engine->SelectMap() && game_engine->LoadSelectedMap()) {
@@ -49,14 +53,7 @@ int main() {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-
-    // test arguments: ( map to load, # human player, # aggressive  plaeyer, # benevolant player)
-    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 1, 1, 1);
-
-    //Test game loop
-    GameLoop* gameloop = new GameLoop(game_engine->GetPlayers());
-    gameloop->StartLoop();
-
+//    Assignment 2: Testing player methods
 //    //Test Reinforce
 //    cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-------- Testing the Reinforce phase --------%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
 //    for(Player* player : *game_engine->GetPlayers()) {
@@ -79,8 +76,6 @@ int main() {
 //        player->Fortify();
 //    }
 
-    gameloop = nullptr;
-    delete gameloop;
     game_engine = nullptr;
     delete game_engine;
 

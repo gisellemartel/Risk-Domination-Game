@@ -20,6 +20,16 @@ using namespace std;
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
 
+class GameEngine;
+
+enum GamePhase {
+    Startup = 0,
+    Reinforce = 1,
+    Attack = 2,
+    Fortify = 3
+};
+
+
 class StartupPhase {
 
 private:
@@ -61,11 +71,14 @@ private:
     StartupPhase* game_start_;
     MapLoader* loaded_map_;
     Deck* cards_deck_;
+
+    GamePhase current_phase_;
     int num_of_players_;
     int num_of_human_players_;
     int num_aggressive_players_;
     int num_benevolant_players_;
     bool exit_game_;
+
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
     vector<filesystem::path>* file_paths_;
@@ -85,9 +98,13 @@ public:
     //operator overloader
     GameEngine& operator=(const GameEngine& game_engine);
 
+    //Setters
+    void SetCurrentPhase(GamePhase phase);
+
     //Getters
     MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
+    GamePhase GetCurrentPhase() const;
     vector<Player*>* GetPlayers() const;
     int GetNumPlayers() const;
     bool ExitGameSelected() const;
@@ -96,6 +113,8 @@ public:
     //Methods
     bool SelectMap();
     bool LoadSelectedMap();
+    bool PlayerHasWon(Player* current_player);
+
     void SelectNumOfHumanPlayers();
     void SelectNumOfAggressivePlayers();
     void SelectNumOfBenevolantPlayers();
@@ -104,25 +123,9 @@ public:
     void AssignHandOfCardsToPlayers();
     void CreateCardsDeck();
     void DisplayCurrentGame();
+
+    void StartGameLoop();
 };
 
-class GameLoop{
-private:
-    vector<Player*>* all_players_;
-    int num_of_swaps_;
-
-public:
-    explicit GameLoop();
-    explicit GameLoop(vector<Player*>* all_players);
-    GameLoop(const GameLoop& game_loop);
-    ~GameLoop();
-
-    GameLoop& operator=(const GameLoop& game_loop);
-
-    int GetNumberOfSwaps() const;
-
-    void StartLoop();
-    bool WinCondition(Player* cur_player);
-};
 
 #endif
