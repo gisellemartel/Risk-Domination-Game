@@ -1,5 +1,5 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -14,6 +14,7 @@
 using namespace std;
 
 #include "../Map/Map.h"
+#include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Player/Player.h"
@@ -27,11 +28,8 @@ private:
     int number_of_armies_;
 
     //private helper functions
-    static int GenerateRandomNumInRange(int lower_bound, int upper_bound);
     template <class V>
     static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
-    static bool HasValue(const vector<int>& values, int value);
-    static bool ContainsAllZeros(const vector<int>& vector_to_check);
 
 public:
     //Constructors
@@ -52,6 +50,7 @@ public:
     //Methods
     void RandomlyDeterminePlayerOrder(vector<Player*>* players);
     void AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign);
+    void AutoAssignArmiesToAllPlayers(vector<Player*>* players);
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
@@ -63,6 +62,9 @@ private:
     MapLoader* loaded_map_;
     Deck* cards_deck_;
     int num_of_players_;
+    int num_of_human_players_;
+    int num_aggressive_players_;
+    int num_benevolant_players_;
     bool exit_game_;
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
@@ -73,7 +75,7 @@ private:
 
 public:
     // Function to test Player functions within game
-    void TestAutoLoadMapAndCreateGame(string file_path, int num_players);
+    void TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players);
 
     //Constructors
     explicit GameEngine();
@@ -94,7 +96,9 @@ public:
     //Methods
     bool SelectMap();
     bool LoadSelectedMap();
-    void SelectNumOfPlayers();
+    void SelectNumOfHumanPlayers();
+    void SelectNumOfAggressivePlayers();
+    void SelectNumOfBenevolantPlayers();
     void CreatePlayers();
     void AssignDiceToPlayers();
     void AssignHandOfCardsToPlayers();

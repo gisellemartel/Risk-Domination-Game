@@ -1,5 +1,5 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -50,8 +50,8 @@ int main() {
     // -----------------------------------------------------------------------------------------------------------------
 
 
-
-    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 2);
+    // test arguments: ( map to load, # human player, # aggressive  plaeyer, # benevolant player)
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/google.map", 1, 1, 1);
 
     //Test game loop
     GameLoop* gameloop = new GameLoop(game_engine->GetPlayers());
@@ -79,7 +79,8 @@ int main() {
 //        player->Fortify();
 //    }
 
-
+    gameloop = nullptr;
+    delete gameloop;
     game_engine = nullptr;
     delete game_engine;
 

@@ -7,12 +7,16 @@ add_executable(GameEngine
         GameEngine/GameEngineDriver.cpp
         GameEngine/GameEngine.cpp
         Player/Player.cpp
+        Player/PlayerStrategies.cpp
         Dice/Dice.cpp
         Cards/Cards.cpp
         MapLoader/MapLoader.cpp
         Map/Map.cpp
-        GameObservers/GameObservers.cpp)
+        GameObservers/GameObservers.cpp
+        Utility/Utility.cpp
+        )
 add_executable(Map
+        Utility/Utility.cpp
         Player/Player.cpp
         Dice/Dice.cpp
         Cards/Cards.cpp
@@ -22,11 +26,13 @@ add_executable(Map
 add_executable(MapLoader
         Map/Map.cpp
         Player/Player.cpp
+        Player/PlayerStrategies.cpp
         Dice/Dice.cpp
         Cards/Cards.cpp
         MapLoader/MapLoaderDriver.cpp
         MapLoader/MapLoader.cpp
         GameEngine/GameEngine.cpp
+        Utility/Utility.cpp
         )
 add_executable(Dice
         Dice/DiceDriver.cpp
@@ -38,6 +44,8 @@ add_executable(Player
         Cards/Cards.cpp
         Player/PlayerDriver.cpp
         Player/Player.cpp
+        Player/PlayerStrategies.cpp
+        Utility/Utility.cpp
         )
 add_executable(Cards
         Cards/CardsDriver.cpp

@@ -1,5 +1,5 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -11,6 +11,7 @@
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
 #include "../GameObservers/GameObservers.h"
+#include "PlayerStrategies.h"
 
 #include <iostream>
 #include <vector>
@@ -23,21 +24,36 @@ class Cards;
 class Hand;
 class Map;
 class Continent;
+class ConcreteStrategies;
+class AttackPhase;
+class FortifyPhase;
 
 class Player: public Subject {
 
 private:
     bool is_player_turn_;
+    bool is_human_;
     int number_of_armies_;
     string* player_name_;
     vector<Country*>* countries_;
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
+
+    //should be placed in reinforce phase class and not player
     vector<Country*>* countries_reinforced_;//add to constructor
     vector<int>* number_of_armies_reinforced_;//add to constructor
     bool has_attacked_ = false;//add to constructor
+    //should be placed in reinforce phase class and not player
+
+    //better as an enum
     int game_phase_;//add to constructor
+
+    AttackPhase* attack_phase_;
+    FortifyPhase* fortify_phase_;
+
+    ConcreteStrategies* player_strategy_;
+
 
 public:
     explicit Player(string player_name);
@@ -55,8 +71,13 @@ public:
     void SetPlayerHand(Hand* hand);
     void SetNumberOfArmies(int number_of_armies);
     void SetGameMap(Map* map);
+    void SetPlayerStrategy(ConcreteStrategies* player_strategy);
+
+    void SetAsHuman();
 
     vector<Country*>* GetPlayersCountries() const;
+    AttackPhase* GetAttackPhase() const;
+    FortifyPhase* GetFortifyPhase() const;
     Country* GetCountryById(int id) const;
     Hand* GetPlayersCards() const;
     Dice* GetPlayerDice() const;
@@ -68,6 +89,7 @@ public:
 
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
+    bool IsHuman() const;
 
     int Find(Country* country) const;
 
@@ -87,7 +109,8 @@ public:
     int GetGamePhase();
 };
 
-class Reinforcement
+// ReinforcePhase --------------------------------------
+class ReinforcePhase
 {
 private:
     Player* turn_player_;
@@ -96,18 +119,17 @@ private:
     int reinforcement_army_;
 
 public:
-    explicit Reinforcement();
-    Reinforcement(Player* turn_player, int num_of_swaps);
-    Reinforcement(const Reinforcement& reinforce);
-    ~Reinforcement();
+    explicit ReinforcePhase();
+    ReinforcePhase(Player* turn_player, int num_of_swaps);
+    ReinforcePhase(const ReinforcePhase& reinforce);
+    ~ReinforcePhase();
 
-    Reinforcement& operator = (const Reinforcement& reinforce);
+    ReinforcePhase& operator = (const ReinforcePhase& reinforce);
 
     int TotalReinforceArmy();
     int PerCountryReinforceArmy();
     int PerContinentReinforceArmy();
     int CardSwapReinforceArmy();
-
 };
 
 
@@ -120,9 +142,7 @@ private:
     Map* game_map_;
     Country* attacking_country_;
     Country* defending_country_;
-
-    //private helper methods
-    Country* PromptPlayerToSelectDefender(vector<Country*>* neighbouring_countries);
+    vector<Country*>* opponent_neighbours_;
 
 public:
 
@@ -133,14 +153,17 @@ public:
 
     AttackPhase& operator=(const AttackPhase& attack);
 
-    bool PromptUserToAttack();
-    bool SelectCountryToAttack();
-    bool SelectCountryToAttackFrom();
+    Country* GetAttackingCountry() const;
+    Country* GetDefendingCountry() const;
+    vector<Country*>* GetOpponentNeighbours() const;
 
-    void PerformDiceRoll();
+    void SetAttackingCountry(Country* attacking_country);
+    void SetDefendingCountry(Country* defending_country);
+    void SetDefender(Player* defender);
 
-    Country* GetAttackingCountry();
-    Country* GetDefendingCountry();
+    bool DoesOpposingCountryExistWithArmies();
+
+    void FindOpponentNeighboursToAttackingCountry();
 };
 
 
@@ -151,7 +174,11 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
+
+    //what is this used for?
     int fortification_armies_;//----------------------------------------------------------------------added
+
+    vector<Country*>* neighbours_to_fortify_;
 
 public:
 
@@ -162,15 +189,15 @@ public:
 
     FortifyPhase& operator=(const FortifyPhase& fortify);
 
-    bool PromptUserToFortify();
-    bool SelectTargetCountry();
-    bool SelectSourceCountry();
+    Country* GetSourceCountry() const;
+    Country* GetTargetCountry() const;
+    vector<Country*>* GetNeighboursToFortify() const;
 
-    void MoveArmies();
-
-    Country* GetSourceCountry();
-    Country* GetTargetCountry();
+    //what is this used for?
     int GetFortificationArmiesMoved();
+
+    void SetSourceCountry(Country* source);
+    void SetTargetCountry(Country* target);
 };
 
 #endif //PLAYER_H

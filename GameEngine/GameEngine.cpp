@@ -1,5 +1,5 @@
 /**
- * Assignment #2 COMP345, FALL 2019
+ * Assignment #3 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -14,54 +14,28 @@
 
 using namespace std;
 
+#include "../Player/PlayerStrategies.h"
 #include "GameEngine.h"
 
 
 // STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
-//static helper methods --------------------------------------------------------
-int StartupPhase::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
-    std::uniform_real_distribution<double> distribution(lower_bound, upper_bound);
-    std::random_device rd;
-    std::default_random_engine generator( rd() );
-    return distribution(generator);
-}
 
 // generic function which randomized order of passed vector.
 // used to randomize both order of players, order in which countries are assigned
 template<class V>
 vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
-    int random = GenerateRandomNumInRange(0, vector_to_randomize.size());
+    int random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
     vector<int> random_order;
     //randomize the order for the indices in the players vector
-    while(!HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
-        random = GenerateRandomNumInRange(0, vector_to_randomize.size());
-        if(!HasValue(random_order, random)) {
+    while(!Utility::HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
+        random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
+        if(!Utility::HasValue(random_order, random)) {
             random_order.push_back(random);
         }
     }
     return random_order;
 }
-
-//returns true if finds passed value within passed vector
-bool StartupPhase::HasValue(const vector<int>& values, const int value) {
-    for(int i : values) {
-        if(i == value) {
-            return true;
-        }
-    }
-    return false;
-}
-
-//returns true if all values in passed vector are 0
-bool StartupPhase::ContainsAllZeros(const vector<int> &vector_to_check) {
-    bool result = std::all_of(vector_to_check.begin(), vector_to_check.end(), [](int i) {
-        return i == 0;
-    });
-
-    return result;
-}
-
 
 // class constructors
 StartupPhase::StartupPhase() {
@@ -212,7 +186,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
     }
 
     //assign countries to each player in round robin fashion
-    while(!ContainsAllZeros(num_armies)) {
+    while(!Utility::ContainsAllZeros(num_armies)) {
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_turn_) {
@@ -273,6 +247,77 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         current_turn_ = (int)((current_turn_ + 1) % players->size());
     }
     cout << endl;
+}
+
+void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
+
+    if(players->empty()) {
+        return;
+    }
+
+    cout << "* * * * * * * Assigning " << number_of_armies_ << " armies to each player in round-robin fashion... * * * * * * *\n";
+
+    //create vector to track number of armies left to assign for each player
+    vector<int> num_armies;
+    for(int i = 0; i < players->size(); ++i) {
+        num_armies.push_back(number_of_armies_);
+    }
+
+    //assign countries to each player in round robin fashion
+    while(!Utility::ContainsAllZeros(num_armies)) {
+        for (auto &it : *player_order_) {
+            //find the player whose is currently to be assigned countries
+            if (it.second == current_turn_) {
+                //debug string
+                cout << "\nCurrent turn is " << (current_turn_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
+
+                vector<Country*>& players_countries = *it.first->GetPlayersCountries();
+
+                if(players_countries.empty()) {
+                    cout << *it.first->GetPlayerName() << " does not own any countries. Going to next turn\n\n";
+                    break;
+                } else if (num_armies[it.second] == 0) {
+                    cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n\n";
+                    break;
+                }
+
+                it.first->SetPlayersTurn(true);
+
+                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                while(!it.first->DoesPlayerOwnCountry(country_id)) {
+                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                }
+
+                Country* current_country = it.first->GetCountryById(country_id);
+
+                if(current_country) {
+                    string name_country = *current_country->GetCountryName();
+                    cout << "Auto selected " << name_country << " to assign armies to" << endl;
+
+                    cout << "Auto selecting number of armign to assign to " << name_country  << " (you currently have " << num_armies[it.second] << " armies remaining to assign)..." << endl;
+
+                    int num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
+                    while(num_armies_to_assign < 1 || num_armies_to_assign > num_armies[it.second]) {
+                        num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
+                    }
+
+                    //debug string
+                    cout << "Assigning " << country_id << " armies to " << name_country << "...\n";
+
+                    current_country->SetNumberOfArmies(num_armies_to_assign + current_country->GetNumberOfArmies());
+
+                    //update number of armies for current player after assignment
+                    num_armies[it.second] = num_armies[it.second] - num_armies_to_assign;
+
+                    it.first->SetPlayersTurn(false);
+                }
+            }
+        }
+
+        //get the current players turn
+        current_turn_ = (int)((current_turn_ + 1) % players->size());
+    }
+    cout << endl;
 
 }
 
@@ -281,18 +326,21 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_players) {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players) {
     exit_game_ = false;
     loaded_map_ = new MapLoader(file_path);
     if(loaded_map_->ParseMap()) {
-        num_of_players_ = num_players;
+        num_of_players_ = num_human_players + num_aggressive_players + num_benevolant_players;
+        num_of_human_players_ = num_human_players;
+        num_aggressive_players_ = num_aggressive_players;
+        num_benevolant_players_ = num_benevolant_players;
         CreatePlayers();
         CreateCardsDeck();
         AssignHandOfCardsToPlayers();
         AssignDiceToPlayers();
         game_start_->RandomlyDeterminePlayerOrder(players_);
         game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
-        game_start_->AssignArmiesToAllPlayers(players_);
+        game_start_->AutoAssignArmiesToAllPlayers(players_);
     }
 
     for(Player* player : *players_) {
@@ -503,18 +551,59 @@ bool GameEngine::LoadSelectedMap() {
     }
 }
 
-void GameEngine::SelectNumOfPlayers() {
+void GameEngine::SelectNumOfHumanPlayers() {
     int num_players = -1;
 
-    cout << "Please enter the number of players joining the game (between 2 and 6 players per game): ";
+    cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
     while(!(cin >> num_players) || num_players < 2 || num_players > 6) {
         cout << "Invalid number of players entered. Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
     }
 
-    num_of_players_ = num_players;
+    num_of_human_players_ = num_players;
+    num_of_players_ += num_of_human_players_;
 }
+
+void GameEngine::SelectNumOfAggressivePlayers() {
+
+    if(num_of_players_ == 6) {
+        return;
+    }
+
+    int num_players = 0;
+    int num_players_remaining = 6 - num_of_players_;
+
+    cout << "Please enter the number of aggressive computer players joining the game. You have " << num_players_remaining << " left to assign" ;
+    while(!(cin >> num_players) || num_players < 1 || num_players > num_players_remaining) {
+        cout << "Invalid number of players entered. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    num_aggressive_players_ = num_players_remaining;
+    num_of_players_ += num_players_remaining;
+}
+
+void GameEngine::SelectNumOfBenevolantPlayers() {
+    if(num_of_players_ == 6) {
+        return;
+    }
+
+    int num_players = 0;
+    int num_players_remaining = 6 - num_of_players_;
+
+    cout << "Please enter the number of benevolant computer players joining the game. You have " << num_players_remaining << " left to assign" ;
+    while(!(cin >> num_players) || num_players < 1 || num_players > num_players_remaining) {
+        cout << "Invalid number of players entered. Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+
+    num_benevolant_players_ = num_players_remaining;
+    num_of_players_ += num_players_remaining;
+}
+
 
 void GameEngine::CreatePlayers() {
 
@@ -528,11 +617,35 @@ void GameEngine::CreatePlayers() {
         num_of_players_ = 2;
     }
 
-    cout << "Creating " << num_of_players_ << " players for new game...\n";
-    for(size_t i = 0; i < num_of_players_; ++i) {
-        string player_name = "Player " + std::to_string(i + 1);
+    int player_counter = 1;
 
-        players_->push_back(new Player(player_name, loaded_map_->GetParsedMap()));
+    cout << "Creating " << num_of_players_ << " players for new game...\n";
+    for(size_t i = 0; i < num_of_human_players_; ++i) {
+        string player_name = "Human Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new HumanPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        player->SetAsHuman();
+        players_->push_back(player);
+    }
+
+    for(size_t i = 0; i < num_aggressive_players_; ++i) {
+        string player_name = "Aggressive Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        players_->push_back(player);
+    }
+
+    for(size_t i = 0; i < num_benevolant_players_; ++i) {
+        string player_name = "Benevolant Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        player->SetPlayerStrategy(strategy);
+        players_->push_back(player);
     }
 
     game_start_->SetNumberOfArmies(num_of_players_);
@@ -659,7 +772,8 @@ void GameLoop::StartLoop(){
     while(!WinCondition(all_players_->at(turn))){
         Player* current_player = all_players_->at(turn);
         PhaseObserver* phase_observer = new PhaseObserver(current_player);//----------------------------------------------------------------------------------------------------------------------------------------Bug
-        cout << endl << "*********************** Currently " << *current_player->GetPlayerName() << "'s turn ***********************\n\n";
+
+        cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(current_player && !current_player->GetPlayersCountries()->empty()){
             current_player->Reinforce();
