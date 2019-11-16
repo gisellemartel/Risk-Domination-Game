@@ -803,20 +803,11 @@ void GameEngine::StartGameLoop() {
        // cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
-            Notify();
 
-            current_phase_ = GamePhase ::Reinforce;
-            Notify();
             current_player->Reinforce();
-            Notify();
+            current_player->Attack();
+            current_player->Fortify();
 
-//            current_phase_ = GamePhase ::Attack;
-//            current_player->Attack();
-//            Notify();
-//
-//            current_phase_ = GamePhase ::Fortify;
-//            current_player->Fortify();
-//            Notify();
             ++num_iterations;
         }
 
@@ -840,8 +831,8 @@ void GameEngine::Unregister(Observer *observer) {
     }
 }
 
-void GameEngine::Notify() {
+void GameEngine::Notify(Player* current_player, int current_phase, string current_phase_action_description) {
     for(Observer* observer : *observers_) {
-        observer->Update(*this);
+        observer->Update(current_player, current_phase, current_phase_action_description);
     }
 }

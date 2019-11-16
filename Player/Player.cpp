@@ -14,6 +14,7 @@
 using namespace std;
 
 #include "../Utility/Utility.h"
+#include "../GameEngine/GameEngine.h"
 #include "Player.h"
 
 
@@ -31,12 +32,13 @@ Player::Player(string player_name) {
     attack_phase_ = nullptr;
     reinforce_phase_ = nullptr;
     fortify_phase_ = nullptr;
+    game_engine_ = nullptr;
 }
 
-Player::Player(string player_name, Map *game_map, GameEngine* game_data) {
+Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
     player_name_ = new string(player_name);
     game_map_ = game_map;
-    game_data_ = game_data;
+    game_engine_ = game_engine;
     is_player_turn_ = false;
     is_human_ = false;
     countries_ = new vector<Country*>;
@@ -61,7 +63,7 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     fortify_phase_ = nullptr;
     attack_phase_ = nullptr;
     reinforce_phase_ = nullptr;
-    game_data_ = nullptr;
+    game_engine_ = nullptr;
 }
 
 Player::Player(const Player &player) {
@@ -80,7 +82,7 @@ Player::Player(const Player &player) {
     reinforce_phase_ = player.reinforce_phase_;
     attack_phase_ = player.attack_phase_;
     fortify_phase_ = player.fortify_phase_;
-    game_data_ = player.game_data_;
+    game_engine_ = player.game_engine_;
 }
 
 Player::~Player() {
@@ -95,7 +97,6 @@ Player::~Player() {
     game_map_ = nullptr;
     player_strategy_ = nullptr;
     attack_phase_ = nullptr;
-    game_data_ = nullptr;
 
     delete risk_cards_;
     delete countries_;
@@ -105,7 +106,6 @@ Player::~Player() {
     delete attack_phase_;
     delete reinforce_phase_;
     delete fortify_phase_;
-    delete game_map_;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -121,6 +121,7 @@ Player& Player::operator=(const Player &player) {
     countries_ = player.countries_;
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
+    game_engine_ = player.game_engine_;
     player_strategy_ = player.player_strategy_;
     reinforce_phase_ = player.reinforce_phase_;
     attack_phase_ = player.attack_phase_;
@@ -136,7 +137,11 @@ bool Player::operator==(const Player& player) {
             && dice_roll_ == player.dice_roll_
             && game_map_ == player.game_map_
             && player_strategy_ == player.player_strategy_
-            && attack_phase_ == player.attack_phase_;
+            && reinforce_phase_ == player.reinforce_phase_
+            && attack_phase_ == player.attack_phase_
+            && fortify_phase_ == player.fortify_phase_
+            && game_engine_ == player.game_engine_
+            && is_human_ == player.is_human_;
 }
 
 int Player::Find(Country* country) const {
@@ -353,7 +358,7 @@ void Player::Attack() {
     attack_phase_ = new AttackPhase(this);
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
-        game_data_->Notify();
+
         if(!attack_phase_->DoesOpposingCountryExist()) {
             cout << "No opposing country exists that has enough armies to be attacked!" << endl;
             break;
@@ -579,6 +584,12 @@ void Player::Fortify() {
 
 //    cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
 }
+
+//will be used to implicitly notify the game engine of phase changes
+void Player::Notify(Player* current_player, int current_phase, string current_action_description) {
+    game_engine_->Notify(current_player, current_phase, current_action_description);
+}
+
 
 
 

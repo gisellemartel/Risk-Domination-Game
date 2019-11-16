@@ -14,120 +14,40 @@ using namespace std;
 
 // PhaseObserver -------------------------------------------------------------------------------------------------------
 
-void PhaseObserver::Update(const GameEngine& game_data){
-    Player* current_player = (*game_data.GetPlayers())[game_data.GetGameStart()->current_player_index_];
+void PhaseObserver::Update(Player* current_player, int current_phase, string current_action_description) {
     if(!current_player) {
         cout << "Something went wrong! Unable to update phase observer" << endl;
     }
 
-    int current_phase = game_data.GetCurrentPhase();
-    DisplayCurrentPhase(current_player, current_phase);
+    current_player_ = current_player;
+    current_action_description_ = current_action_description;
+    current_phase_ = current_phase;
+
+
+    switch(current_phase) {
+        case GamePhase::Startup :
+            current_phase_ = "Current Phase: Startup";
+            break;
+        case GamePhase::Reinforce :
+            current_phase_ = "Current Phase: Reinforce";
+            break;
+        case GamePhase::Attack :
+            current_phase_ = "Current Phase: Attack";
+            break;
+        case GamePhase::Fortify :
+            current_phase_ = "Current Phase: Fortify";
+            break;
+        default:
+            current_phase_ = "";
+            break;
+    }
+
+    DisplayPhaseData();
 }
 
-void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int current_phase) {
-
-   switch(current_phase) {
-       case GamePhase::Reinforce:
-           ReinforceDisplay(current_player);
-           break;
-       case GamePhase ::Attack:
-           AttackDisplay(current_player);
-           break;
-       case GamePhase::Fortify:
-           FortifyDisplay(current_player);
-           break;
-       default:
-           break;
-   }
-}
-
-void PhaseObserver::ReinforceDisplay(const Player* current_player) {
-    string name = *current_player->GetPlayerName();
-    ReinforcePhase* phase = current_player->GetReinforcePhase();
-
-
-    if(!phase) {
-        cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
-        cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-        cout << name << ": Reinforce\n\n";
-        return;
-    }
-
-    if(phase->TotalReinforceArmy() < 1) {
-        cout << name << " currently has to armies to reinforce a country with. Please try again next round" << endl;
-        return;
-    }
-
-    if(!phase->GetCountriesToReinforce() || phase->GetReinforceValues()->empty()) {
-        return;
-    }
-
-    cout << "Total armies available to reinforce with: " << phase->TotalReinforceArmy() << endl;
-
-    for(int i = 0; i < phase->GetCountriesToReinforce()->size(); ++i) {
-        Country* country= current_player->GetCountryById((*phase->GetCountriesToReinforce())[i]);
-
-        if(!country) {
-            continue;
-        }
-        string country_name = *country->GetCountryName();
-
-        if((*phase->GetReinforceValues())[i] > 0) {
-            cout << name << " reinforcing " << country_name << " with " << (*phase->GetReinforceValues())[i] << " armies" << endl;
-            cout << "Result: " << country_name << " | #armies: " << country->GetNumberOfArmies() << endl;
-        }
-    }
-
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-
-    cout.clear();
-}
-
-void PhaseObserver::AttackDisplay(const Player* current_player) {
-    cout << *current_player->GetPlayerName() << ": Attack\n";
-    string name = *current_player->GetPlayerName();
-    AttackPhase* phase = current_player->GetAttackPhase();
-
-    if(!phase) {
-        cout << name << ": Attack\n";
-        return;
-    }
-
-//    if(current_player_index_ == GamePhase::Attack) {
-//        if (current_player->GetAttackPhase()) {
-//            AttackPhase* attack_phase = current_player->GetAttackPhase();
-//            if (attack_phase->GetDefendingCountry()->GetNumberOfArmies() == 0) {
-//                cout << "Player has won the battle" << endl;
-//            } else if (attack_phase->GetAttackingCountry()->GetNumberOfArmies() == 0) {
-//                cout << "Player has lost the battle" << endl;
-//            } else {
-//                cout << "Player stopped attacking." << endl;
-//            }
-////        } else if (!player_subject_->GetHasAttacked()) {
-////            cout << "Player did not attack." << endl;
-////        }
-//        }
-//    }
-}
-
-void PhaseObserver::FortifyDisplay(const Player* current_player) {
-    string name = *current_player->GetPlayerName();
-    FortifyPhase* phase = current_player->GetFortifyPhase();
-
-    if(!phase) {
-        cout << name << ": Fortify\n";
-        return;
-    }
-//    if(current_player_index_ == GamePhase::Reinforce) {
-//        FortifyPhase* fortify_phase = current_player->GetFortifyPhase();
-////
-////        if (fortify_phase && fortify_phase->GetFortificationArmiesMoved() == 0) {
-////            cout << "No fortifications were made." << endl;
-////        } else if (fortify_phase && fortify_phase->GetFortificationArmiesMoved() > 0){
-////            cout << fortify_phase->GetTargetCountry()->GetCountryName() << " has been fortified with "
-////                 << fortify_phase->GetFortificationArmiesMoved() << " armies from "
-////                 << fortify_phase->GetSourceCountry()->GetCountryName()
-////                 << endl;//not sure if this returns country names--------------------------------
-////        }
-//    }
+void PhaseObserver::DisplayPhaseData() {
+    cout << endl << "__________________________________________________" << endl;
+    cout << *current_player_->GetPlayerName() + ": " + current_phase_ + " phase" << endl;
+    cout << current_action_description_ << endl;
+    cout << "__________________________________________________" << endl << endl;
 }

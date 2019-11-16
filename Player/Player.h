@@ -11,7 +11,6 @@
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
-#include "../GameEngine/GameEngine.h"
 
 #include <iostream>
 #include <vector>
@@ -50,11 +49,11 @@ private:
     FortifyPhase* fortify_phase_;
 
     ConcreteStrategies* player_strategy_;
-    GameEngine* game_data_;
+    GameEngine* game_engine_;
 
 public:
     explicit Player(string player_name);
-    Player(string player_name, Map* game_map, GameEngine* game_data);
+    Player(string player_name, Map* game_map, GameEngine* game_engine);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
@@ -100,6 +99,9 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
+
+    //will be used to implicitly notify the game engine of phase changes
+    void Notify(Player* current_player, int current_phase, string current_action_description);
 };
 
 // ReinforcePhase --------------------------------------

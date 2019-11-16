@@ -131,7 +131,7 @@ public:
 
     void Register(Observer* observer) override;
     void Unregister(Observer* observer) override;
-    void Notify() override;
+    void Notify(Player* current_player, int current_phase, string current_phase_action_description) override;
 };
 
 
