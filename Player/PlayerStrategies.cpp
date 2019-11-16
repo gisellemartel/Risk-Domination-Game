@@ -59,8 +59,6 @@ void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
         reinforce_phase->GetCountriesToReinforce()->push_back(country_id);
 
 
-        cout << reinforce_value << " armies added to current country" << endl;
-
         num_bonus_army -= reinforce_value;
         reinforce_phase->SetTotalReinforcementArmy(num_bonus_army);
         ++country_index;
@@ -563,7 +561,7 @@ void BenevolantComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Cou
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
 
 bool BenevolantComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
-    cout << "Benevolant player always wants to fortify" << endl;
+    // Benevolant player always wants to fortify
     return true;
 }
 

@@ -101,7 +101,7 @@ public:
     void Fortify();
 
     //will be used to implicitly notify the game engine of phase changes
-    void Notify(Player* current_player, int current_phase, string current_action_description);
+    void Notify(Player* current_player, int current_phase, string current_action_description, bool phase_over);
 };
 
 // ReinforcePhase --------------------------------------

@@ -18,7 +18,7 @@ class Observer {
 
 public:
     virtual ~Observer() = default;
-    virtual void Update(Player* current_player, int current_phase, string current_action_description) = 0;
+    virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_over) = 0;
 };
 
 //Subject interface ----------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class Subject {
 public:
     virtual void Register(Observer* observer) = 0;
     virtual void Unregister(Observer* observer) = 0;
-    virtual void Notify(Player* current_player, int current_phase, string current_action_description) = 0;
+    virtual void Notify(Player* current_player, int current_phase, string current_action_description, bool phase_over) = 0;
 };
 
 
@@ -37,14 +37,19 @@ private:
     Player* current_player_;
     string current_phase_;
     string current_action_description_;
+    bool phase_over_;
 
 
     void DisplayPhaseData();
 
 public:
-    PhaseObserver() = default;
-    ~PhaseObserver() override = default;
-    void Update(Player* current_player, int current_phase, string current_action_description) override;
+    PhaseObserver();
+    PhaseObserver(const PhaseObserver& phase_observer);
+    ~PhaseObserver() override;
+
+    PhaseObserver& operator=(const PhaseObserver& phase_observer);
+
+    void Update(Player* current_player, int current_phase, string current_action_description, bool phase_over) override;
 };
 
 #endif //GAMEOBSERVERS_H

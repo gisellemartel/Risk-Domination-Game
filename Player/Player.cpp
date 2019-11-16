@@ -323,10 +323,14 @@ void Player::Reinforce() {
         return;
     }
 
+    Notify(this, GamePhase::Reinforce, "", false);
+
     reinforce_phase_ = new ReinforcePhase(this, 0);
 
     if(reinforce_phase_->TotalReinforceArmy() < 1) {
-        cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
+        string msg = *player_name_;
+        msg.append(" currently has to armies to reinforce a country with. Please try again next round");
+        Notify(this, GamePhase::Reinforce, msg, false);
         return;
     }
 
@@ -342,7 +346,19 @@ void Player::Reinforce() {
 
         int num_armies_to_add = (*reinforce_phase_->GetReinforceValues())[i];
         int current_num_armies = current_country->GetNumberOfArmies();
+
+        string msg = *current_country->GetCountryName();
+        msg.append(" | #armies: " + to_string(current_country->GetNumberOfArmies()));
+        msg.append("\n" + *player_name_ + " reinforcing " + *current_country->GetCountryName() + " with " + to_string(num_armies_to_add) + " armies\n");
+
+        Notify(this, GamePhase::Reinforce, msg, false);
+
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
+
+        msg = "Result: ";
+        msg.append(*current_country->GetCountryName() + " | #armies: " + to_string(current_country->GetNumberOfArmies()) + "\n\n");
+
+        Notify(this, GamePhase::Reinforce, msg, true);
     }
 
 
@@ -586,8 +602,8 @@ void Player::Fortify() {
 }
 
 //will be used to implicitly notify the game engine of phase changes
-void Player::Notify(Player* current_player, int current_phase, string current_action_description) {
-    game_engine_->Notify(current_player, current_phase, current_action_description);
+void Player::Notify(Player* current_player, int current_phase, string current_action_description, bool phase_over) {
+    game_engine_->Notify(current_player, current_phase, current_action_description, phase_over);
 }
 
 

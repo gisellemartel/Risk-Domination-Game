@@ -6,6 +6,8 @@
  */
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -14,40 +16,91 @@ using namespace std;
 
 // PhaseObserver -------------------------------------------------------------------------------------------------------
 
-void PhaseObserver::Update(Player* current_player, int current_phase, string current_action_description) {
+PhaseObserver::PhaseObserver() {
+    current_player_ = nullptr;
+    current_phase_ = "";
+    current_action_description_ = "";
+    phase_over_ = false;
+}
+
+PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
+    current_player_ = phase_observer.current_player_;
+    current_phase_ = phase_observer.current_phase_;
+    current_action_description_ = phase_observer.current_action_description_;
+    phase_over_ = phase_observer.phase_over_;
+}
+
+PhaseObserver::~PhaseObserver() {
+    current_player_ = nullptr;
+    delete current_player_;
+}
+
+PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
+    current_player_ = phase_observer.current_player_;
+    current_phase_ = phase_observer.current_phase_;
+    current_action_description_ = phase_observer.current_action_description_;
+    phase_over_ = phase_observer.phase_over_;
+    return *this;
+}
+
+void PhaseObserver::Update(Player* current_player, int current_phase, string current_action_description, bool phase_over) {
     if(!current_player) {
         cout << "Something went wrong! Unable to update phase observer" << endl;
     }
 
     current_player_ = current_player;
     current_action_description_ = current_action_description;
-    current_phase_ = current_phase;
+    phase_over_ = phase_over;
 
-
-    switch(current_phase) {
-        case GamePhase::Startup :
-            current_phase_ = "Current Phase: Startup";
-            break;
-        case GamePhase::Reinforce :
-            current_phase_ = "Current Phase: Reinforce";
-            break;
-        case GamePhase::Attack :
-            current_phase_ = "Current Phase: Attack";
-            break;
-        case GamePhase::Fortify :
-            current_phase_ = "Current Phase: Fortify";
-            break;
-        default:
-            current_phase_ = "";
-            break;
+    //only print header once
+    if(current_phase_.empty()) {
+        switch(current_phase) {
+            case GamePhase::Startup :
+                Utility::ClearScreen();
+                current_phase_ = "Current Phase: Startup";
+                cout << endl << "__________________________________________________" << endl;
+                cout << *current_player_->GetPlayerName() + ": " + current_phase_ << endl;
+                cout << "__________________________________________________" << endl << endl;
+                break;
+            case GamePhase::Reinforce :
+                Utility::ClearScreen();
+                current_phase_ = "Current Phase: Reinforce";
+                cout << endl << "__________________________________________________" << endl;
+                cout << *current_player_->GetPlayerName() + ": " + current_phase_ << endl;
+                cout << "__________________________________________________" << endl << endl;
+                break;
+            case GamePhase::Attack :
+                Utility::ClearScreen();
+                current_phase_ = "Current Phase: Attack";
+                cout << endl << "__________________________________________________" << endl;
+                cout << *current_player_->GetPlayerName() + ": " + current_phase_ << endl;
+                cout << "__________________________________________________" << endl << endl;
+                break;
+            case GamePhase::Fortify :
+                Utility::ClearScreen();
+                current_phase_ = "Current Phase: Fortify";
+                cout << endl << "__________________________________________________" << endl;
+                cout << *current_player_->GetPlayerName() + ": " + current_phase_ << endl;
+                cout << "__________________________________________________" << endl << endl;
+                break;
+            default:
+                Utility::ClearScreen();
+                current_phase_ = "";
+                break;
+        }
     }
+
 
     DisplayPhaseData();
 }
 
 void PhaseObserver::DisplayPhaseData() {
-    cout << endl << "__________________________________________________" << endl;
-    cout << *current_player_->GetPlayerName() + ": " + current_phase_ + " phase" << endl;
     cout << current_action_description_ << endl;
-    cout << "__________________________________________________" << endl << endl;
+
+    if(phase_over_) {
+        current_phase_ = "";
+    }
+
+    //put thread to sleep to allow observer to see output
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
