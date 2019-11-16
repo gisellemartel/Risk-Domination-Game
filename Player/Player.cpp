@@ -319,7 +319,7 @@ void Player::DisplayCountries() const {
 
 void Player::Reinforce() {
     if(!player_strategy_) {
-        cout << "Player strategy undefined! Cannot Reinforce!" << endl;
+        Notify(this, GamePhase::Reinforce, "Player strategy undefined! Cannot Reinforce!\n", true);
         return;
     }
 
@@ -336,7 +336,7 @@ void Player::Reinforce() {
 
     player_strategy_->ReinforceStrategy(this);
 
-
+    string msg;
     for(int i = 0; i < reinforce_phase_->GetReinforceValues()->size(); ++i) {
         Country* current_country = GetCountryById((*reinforce_phase_->GetCountriesToReinforce())[i]);
 
@@ -347,7 +347,7 @@ void Player::Reinforce() {
         int num_armies_to_add = (*reinforce_phase_->GetReinforceValues())[i];
         int current_num_armies = current_country->GetNumberOfArmies();
 
-        string msg = *current_country->GetCountryName();
+        msg = *current_country->GetCountryName();
         msg.append(" | #armies: " + to_string(current_country->GetNumberOfArmies()));
         msg.append("\n" + *player_name_ + " reinforcing " + *current_country->GetCountryName() + " with " + to_string(num_armies_to_add) + " armies\n");
 
@@ -355,13 +355,11 @@ void Player::Reinforce() {
 
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
 
-        msg = "Result: ";
+        msg.append("Result: ");
         msg.append(*current_country->GetCountryName() + " | #armies: " + to_string(current_country->GetNumberOfArmies()) + "\n\n");
-
-        Notify(this, GamePhase::Reinforce, msg, true);
     }
-
-
+    msg.append("Reinforce Phase is now over\n");
+    Notify(this, GamePhase::Reinforce, msg, true);
 }
 
 void Player::Attack() {
@@ -375,17 +373,22 @@ void Player::Attack() {
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
 
+        string msg;
         if(!attack_phase_->DoesOpposingCountryExist()) {
-            cout << "No opposing country exists that has enough armies to be attacked!" << endl;
+            msg = "No opposing country exists that has enough armies to be attacked!\n";
+            Notify(this, GamePhase::Attack, msg, false);
             break;
         }
 
         if(!player_strategy_->SelectCountryToAttackFrom(this)) {
-            cout << "Failed to Select valid country to attack from!" << endl;
+            msg = "Failed to Select valid country to attack from!\n";
+            Notify(this, GamePhase::Attack, msg, false);
             break;
         }
 
-        cout << *player_name_ << " has selected " << *attack_phase_->GetAttackingCountry()->GetCountryName() << " to attack with" << endl;
+        msg =  *player_name_ + " has selected " + *attack_phase_->GetAttackingCountry()->GetCountryName() + " to attack with\n";
+        Notify(this, GamePhase::Attack, msg, false);
+
         attack_phase_->FindOpponentNeighboursToAttackingCountry();
 
         bool can_attack = !attack_phase_->GetOpponentNeighbours()->empty();
@@ -394,17 +397,22 @@ void Player::Attack() {
             can_attack &= player_strategy_->SelectCountryToAttack(this);
 
             if(!can_attack){
-                cout << *player_name_ << " cannot attack since no neighbouring countries have armies!\n";
+                string msg = *player_name_ + " cannot attack since no neighbouring countries have armies!\n";
+                Notify(this, GamePhase::Attack, msg, false);
+
                 can_attack = player_strategy_->SelectCountryToAttackFrom(this);
                 can_attack &= player_strategy_->SelectCountryToAttack(this);
             }
 
             if(!attack_phase_->GetDefendingCountry()) {
-                cout << "Invalid country selected to attack!" << endl;
+                string msg = "Invalid country selected to attack!\n";
+                Notify(this, GamePhase::Attack, msg, false);
                 break;
             }
 
-            cout << *player_name_<< " has selected " << *attack_phase_->GetDefendingCountry()->GetCountryName() << " to attack" << endl;
+
+            msg = *player_name_ + " has selected " + *attack_phase_->GetDefendingCountry()->GetCountryName() + " to attack\n";
+            Notify(this, GamePhase::Attack, msg, false);
 
             Country* attacking_country = attack_phase_->GetAttackingCountry();
             Country* defending_country = attack_phase_->GetDefendingCountry();
@@ -419,7 +427,9 @@ void Player::Attack() {
 
             player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
 
-            cout << "\nIt is " << *defender->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_DEFENDER << ") dice: ";
+
+            msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
+            Notify(this, GamePhase::Attack, msg, false);
 
             //if the player is human then they select their own number of dice otherwise it is randomly generated
             if(defender->IsHuman()) {
@@ -432,21 +442,24 @@ void Player::Attack() {
                 defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER + 1);
             }
 
-            cout << endl << *player_name_ << " has chosen to roll " << attacker_num_dice << " dice" << endl;
-            cout << *defender->GetPlayerName() << " has chosen to roll " << defender_num_dice << " dice" << endl;
+            msg = "\n" + *player_name_ + " has chosen to roll " + to_string(attacker_num_dice) + " dice\n";
+            msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
+            Notify(this, GamePhase::Attack, msg, false);
 
             vector<int> attacker_dice_rolls = dice_roll_->Roll(attacker_num_dice);
-            cout << "Attacker dice rolled:\n";
+            msg = "Attacker dice rolled:\n";
+
             for(int i : attacker_dice_rolls) {
-                cout << i << endl;
+                msg.append(to_string(i) + "\n");
             }
             vector<int> defender_dice_rolls = defender->GetPlayerDice()->Roll(defender_num_dice);
-            cout << "Defender dice rolled:\n";
+            msg.append("Defender dice rolled:\n");
             for(int i : defender_dice_rolls) {
-                cout << i << endl;
+                msg.append(to_string(i) + "\n");
             }
-            cout << endl;
+            msg.append("\n");
 
+            Notify(this, GamePhase::Attack, msg, false);
             //sort the rolls from highest value to lowest value
             sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
             reverse(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
@@ -455,25 +468,26 @@ void Player::Attack() {
 
             int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
 
-            cout << "Carrying out attacks...." << endl;
+            msg = "Carrying out attacks....\n";
 
             for(int i = 0; i < num_of_iterations; ++i) {
                 //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
                 if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
-                    cout << "Attacker has lost this roll. Loosing an army\n";
+                    msg.append("Attacker has lost this roll. Loosing an army\n");
                     attacking_country->RemoveArmiesFromCountry(1);
                     if(attacking_country->GetNumberOfArmies() == 0) {
-                        cout << "Attacking country " << *attacking_country->GetCountryName() << " has run out of armies. Attack phase has ended\n";
+                        msg.append("Attacking country " + *attacking_country->GetCountryName() + " has run out of armies. Attack phase has ended\n");
+                        Notify(this, GamePhase::Attack, msg, true);
                         return;
                     }
                     //defender lose an army if attacker's dice has a greater value
                 } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
-                    cout << "Defender has lost this roll. Loosing an army\n";
+                    msg.append("Defender has lost this roll. Loosing an army\n");
 
                     defending_country->RemoveArmiesFromCountry(1);
 
                     if(defending_country->GetNumberOfArmies() == 0) {
-                        cout << "Defending country " << *defending_country->GetCountryName() << " has run out of armies and has been defeated\n";
+                        msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
 
                         //defender has lost. Its country will now be transferred to the attacker
                         //store the id and name of country before we transfer ownership
@@ -487,17 +501,21 @@ void Player::Attack() {
                 }
             }
 
-            cout << "\nResult:" << endl;
+            msg.append("\nResult:\n");
 
-            cout << *player_name_ << endl;
-            attacking_country->DisplayInfo();
+            msg.append(*player_name_ = "\n");
+            msg.append(attacking_country->GetDisplayInfo());
 
-            cout << endl << *defender->GetPlayerName() << endl;
-            defending_country->DisplayInfo();
+            msg.append("\n" +  *defender->GetPlayerName() + "\n");
+            msg.append(defending_country->GetDisplayInfo() + "\n");
+
+            Notify(this, GamePhase::Attack, msg, false);
         }
     }
 
-    //cout << *player_name_ << "'s Attack phase is over, going to next phase";
+    string msg =  *player_name_ + "'s Attack phase is over, going to next phase";
+
+    Notify(this, GamePhase::Attack, msg, true);
 }
 
 void Player::Fortify() {

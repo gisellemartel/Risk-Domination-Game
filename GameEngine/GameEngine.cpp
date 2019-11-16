@@ -805,7 +805,7 @@ void GameEngine::StartGameLoop() {
         if(!current_player->GetPlayersCountries()->empty()){
 
             current_player->Reinforce();
-//            current_player->Attack();
+            current_player->Attack();
 //            current_player->Fortify();
 
             ++num_iterations;

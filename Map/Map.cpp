@@ -236,6 +236,13 @@ void Country::DisplayInfo() const{
             << "Continent: " << GetContinentID() << endl << endl;
 }
 
+string Country::GetDisplayInfo() const {
+    return "Country ID: " + to_string(GetCountryID()) + "\n"
+            + "Country Name: " + *GetCountryName() + "\n"
+            + "Occupying Army Value: " + to_string(GetNumberOfArmies()) + "\n"
+            + "Continent: " + to_string(GetContinentID()) + "\n\n";
+}
+
 // END OF COUNTRY CLASS ----------------------------------------------------------------------------------------
 
 //START OF MAP CLASS FUNCTIONS ---------------------------------------------------------------------------------
