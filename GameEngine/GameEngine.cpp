@@ -831,8 +831,8 @@ void GameEngine::Unregister(Observer *observer) {
     }
 }
 
-void GameEngine::Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_over) {
+void GameEngine::Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) {
     for(Observer* observer : *observers_) {
-        observer->Update(current_player, current_phase, current_phase_action_description, phase_over);
+        observer->Update(current_player, current_phase, current_phase_action_description, phase_start, phase_over);
     }
 }
