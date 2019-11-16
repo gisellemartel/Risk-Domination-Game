@@ -15,14 +15,24 @@ using namespace std;
 
 // HUMAN PLAYER STRATEGIES #############################################################################################
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void HumanPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
 
+    int num_bonus_army = reinforce_phase->TotalReinforceArmy();
     int country_index = 0;
     int reinforce_value = 0;
+    vector<Country*>* countries = player->GetPlayersCountries();
+
+    if(!countries || countries->empty()) {
+        return;
+    }
 
     while(num_bonus_army > 0) {
 
-        Country* current_country = countries.at(country_index);
+        Country* current_country = countries->at(country_index);
 
         if(!current_country) {
             ++country_index;
@@ -44,15 +54,16 @@ void HumanPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, m
 
         int country_id = current_country->GetCountryID();
 
-        if(!country_num_army_to_add_pairs[country_id]) {
-            country_num_army_to_add_pairs.insert({country_id, reinforce_value});
+        if(!(*reinforce_phase->GetReinforcementMap())[country_id]) {
+            reinforce_phase->GetReinforcementMap()->insert({country_id, reinforce_value});
         }
 
         cout << reinforce_value << " armies added to current country" << endl;
 
         num_bonus_army -= reinforce_value;
+        reinforce_phase->SetTotalReinforcementArmy(num_bonus_army);
         ++country_index;
-        country_index = country_index % (int)countries.size();
+        country_index = country_index % (int)countries->size();
     }
 }
 
@@ -263,12 +274,17 @@ void HumanPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
 // AGGRESSIVE PLAYER STRATEGIES ########################################################################################
 
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
-
+void AggressiveComputerPlayerStrategy::ReinforceStrategy(Player* player) {
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
+    vector<Country*>* countries = player->GetPlayersCountries();
+    int num_bonus_army = reinforce_phase->TotalReinforceArmy();
     int max_num_armies = 0;
     int country_id_with_most_armies = 1;
 
-    for(Country* country : countries) {
+    for(Country* country : *countries) {
         int num_armies = country->GetNumberOfArmies();
 
         if(num_armies > max_num_armies) {
@@ -277,8 +293,9 @@ void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
         }
     }
 
-    country_num_army_to_add_pairs.insert({country_id_with_most_armies, num_bonus_army});
-    num_bonus_army = 0;
+    //aggressive player will reinforce the strongest country will all the available reinforcements
+    reinforce_phase->GetReinforcementMap()->insert({country_id_with_most_armies, num_bonus_army});
+    reinforce_phase->SetTotalReinforcementArmy(0);
 }
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
@@ -487,13 +504,19 @@ void AggressiveComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
 //BENEVOLANT PLAYER STRATEGIES #########################################################################################
 
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+void BenevolantComputerPlayerStrategy::ReinforceStrategy(Player* player) {
+
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
+    vector<Country*>* countries = player->GetPlayersCountries();
 
     //use a sorted map to arrange the countries from weakest to strongest
     multimap<int, int> country_num_army_pairs;
 
     //populate the map in order of weakest to strongest
-    for(Country* country : countries) {
+    for(Country* country : *countries) {
         int num_armies = country->GetNumberOfArmies();
         country_num_army_pairs.insert({num_armies, country->GetCountryID()});
     }
@@ -501,10 +524,10 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
     //give 1 army to each of the weakest countries (number of weakest countries == num_bonus_army)
     int counter = 0;
     for(auto& entry : country_num_army_pairs) {
-        if(counter == num_bonus_army) {
+        if(counter == reinforce_phase->TotalReinforceArmy()) {
             break;
         }
-        country_num_army_to_add_pairs.insert({entry.second, 1});
+        reinforce_phase->GetReinforcementMap()->insert({entry.second, 1});
         ++counter;
     }
 }

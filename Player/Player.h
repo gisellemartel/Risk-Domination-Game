@@ -11,10 +11,11 @@
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
-
+#include "../GameEngine/GameEngine.h"
 
 #include <iostream>
 #include <vector>
+#include <map>
 using namespace std;
 
 //forward declarations
@@ -25,6 +26,7 @@ class Hand;
 class Map;
 class Continent;
 class ConcreteStrategies;
+class ReinforcePhase;
 class AttackPhase;
 class FortifyPhase;
 class GameEngine;
@@ -43,6 +45,7 @@ private:
     Dice* dice_roll_;
     Map* game_map_;
 
+    ReinforcePhase* reinforce_phase_;
     AttackPhase* attack_phase_;
     FortifyPhase* fortify_phase_;
 
@@ -70,6 +73,7 @@ public:
     void SetAsHuman();
 
     vector<Country*>* GetPlayersCountries() const;
+    ReinforcePhase* GetReinforcePhase() const;
     AttackPhase* GetAttackPhase() const;
     FortifyPhase* GetFortifyPhase() const;
     Country* GetCountryById(int id) const;
@@ -96,11 +100,6 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
-
-    vector<Country*>* GetCountriesReinforced();
-    vector<int>* GetNumberOfArmiesReinforced();
-    bool GetHasAttacked();
-    int GetGamePhase();
 };
 
 // ReinforcePhase --------------------------------------
@@ -111,6 +110,7 @@ private:
     int num_of_swaps_;
     int divider_;
     int reinforcement_army_;
+    map<int, int>* reinforcement_map_;
 
 public:
     explicit ReinforcePhase();
@@ -119,6 +119,10 @@ public:
     ~ReinforcePhase();
 
     ReinforcePhase& operator = (const ReinforcePhase& reinforce);
+
+    void SetTotalReinforcementArmy(int num_reinforcements);
+
+    map<int,int>* GetReinforcementMap() const;
 
     int TotalReinforceArmy();
     int PerCountryReinforceArmy();
@@ -183,9 +187,6 @@ public:
     Country* GetSourceCountry() const;
     Country* GetTargetCountry() const;
     vector<Country*>* GetNeighboursToFortify() const;
-
-    //what is this used for?
-    int GetFortificationArmiesMoved();
 
     void SetSourceCountry(Country* source);
     void SetTargetCountry(Country* target);

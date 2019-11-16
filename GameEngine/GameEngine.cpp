@@ -17,6 +17,7 @@ using namespace std;
 #include "GameEngine.h"
 
 
+
 // STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
 // generic function which randomized order of passed vector.
@@ -802,17 +803,15 @@ void GameEngine::StartGameLoop() {
        // cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
-
             current_phase_ = GamePhase ::Reinforce;
             current_player->Reinforce();
 
-
-            current_phase_ = GamePhase ::Attack;
-            current_player->Attack();
-
-
-            current_phase_ = GamePhase ::Fortify;
-            current_player->Fortify();
+//            current_phase_ = GamePhase ::Attack;
+//            current_player->Attack();
+//
+//
+//            current_phase_ = GamePhase ::Fortify;
+//            current_player->Fortify();
 
 
             ++num_iterations;

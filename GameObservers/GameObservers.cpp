@@ -25,6 +25,7 @@ void PhaseObserver::Update(const GameEngine& game_data){
 }
 
 void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int current_phase) {
+    cout << string( 100, '\n' );
     cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
     cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 
@@ -47,19 +48,44 @@ void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int curren
 }
 
 void PhaseObserver::ReinforceDisplay(const Player* current_player) {
-    cout << *current_player->GetPlayerName() << ": Reinforce\n";
-//    if(GameEngine::current_player_turn_ == GamePhase::Reinforce) {
-//        cout << "Player has " << current_player->GetReinforcementPhase()->Get << " armies available for reinforcement." << endl;
-//    } else if(GameEngine::current_player_turn_  == GamePhase::Attack) {
-//        for (size_t i = 0; i < player_subject_->GetCountriesReinforced()->size(); i++) {
-//            cout << "Player has reinforced " << player_subject_->GetCountriesReinforced()->at(i)->GetCountryName()
-//                 << " with " << player_subject_->GetNumberOfArmiesReinforced()->at(i) << " armies." << endl;
-//        }
-//    }
+
+    string name = *current_player->GetPlayerName();
+    ReinforcePhase* phase = current_player->GetReinforcePhase();
+
+    if(!phase) {
+        cout << name << ": Reinforce\n";
+        return;
+    }
+
+    cout << "Total armies avaiable to reinforce with: " << phase->TotalReinforceArmy() << endl;
+
+    if(phase->TotalReinforceArmy() < 1) {
+        cout << name << " currently has to armies to reinforce a country with. Please try again next round" << endl;
+        return;
+    }
+
+    if(!phase->GetReinforcementMap() || phase->GetReinforcementMap()->empty()) {
+        return;
+    }
+
+    for(auto& entry : *phase->GetReinforcementMap()) {
+        Country* country= current_player->GetCountryById(entry.first);
+        string country_name = *country->GetCountryName();
+        cout << name << " reinforcing " << country_name << " with " << entry.second << " armies" << endl;
+        cout << "Result: " << country_name << " | #armies: " << country->GetNumberOfArmies() << endl;
+    }
 }
 
 void PhaseObserver::AttackDisplay(const Player* current_player) {
     cout << *current_player->GetPlayerName() << ": Attack\n";
+    string name = *current_player->GetPlayerName();
+    AttackPhase* phase = current_player->GetAttackPhase();
+
+    if(!phase) {
+        cout << name << ": Attack\n";
+        return;
+    }
+
 //    if(current_player_index_ == GamePhase::Attack) {
 //        if (current_player->GetAttackPhase()) {
 //            AttackPhase* attack_phase = current_player->GetAttackPhase();

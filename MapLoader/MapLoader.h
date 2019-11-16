@@ -15,6 +15,8 @@
 #include <fstream>
 #include <iostream>
 
+class Map;
+
 using namespace std;
 
 class MapLoader {

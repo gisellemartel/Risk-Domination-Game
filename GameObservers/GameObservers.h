@@ -11,6 +11,7 @@
 
 #include "../Player/Player.h"
 class GameEngine;
+class Player;
 
 //Observer interface ---------------------------------------------------------------------------------------------------
 class Observer {

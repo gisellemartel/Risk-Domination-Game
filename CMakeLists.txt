@@ -46,7 +46,6 @@ add_executable(Player
         Player/Player.cpp
         Player/PlayerStrategies.cpp
         Utility/Utility.cpp
-        GameEngine/GameEngine.cpp
         )
 add_executable(Cards
         Cards/CardsDriver.cpp

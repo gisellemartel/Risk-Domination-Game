@@ -15,7 +15,7 @@ using namespace std;
 
 #include "../Utility/Utility.h"
 #include "Player.h"
-#include "../GameEngine/GameEngine.h"
+
 
 // Player class implementation ----------------------------------------------------------------------------
 
@@ -29,6 +29,8 @@ Player::Player(string player_name) {
     game_map_ = nullptr;
     player_strategy_ = nullptr;
     attack_phase_ = nullptr;
+    reinforce_phase_ = nullptr;
+    fortify_phase_ = nullptr;
 }
 
 Player::Player(string player_name, Map *game_map, GameEngine* game_data) {
@@ -41,7 +43,9 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_data) {
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
     player_strategy_ = nullptr;
+    reinforce_phase_ = nullptr;
     attack_phase_ = nullptr;
+    fortify_phase_ = nullptr;
 }
 
 Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
@@ -54,7 +58,9 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     dice_roll_ = nullptr;
     game_map_ = nullptr;
     player_strategy_ = nullptr;
+    fortify_phase_ = nullptr;
     attack_phase_ = nullptr;
+    reinforce_phase_ = nullptr;
     game_data_ = nullptr;
 }
 
@@ -71,7 +77,9 @@ Player::Player(const Player &player) {
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
     player_strategy_ = player.player_strategy_;
+    reinforce_phase_ = player.reinforce_phase_;
     attack_phase_ = player.attack_phase_;
+    fortify_phase_ = player.fortify_phase_;
     game_data_ = player.game_data_;
 }
 
@@ -95,6 +103,8 @@ Player::~Player() {
     delete game_map_;
     delete player_strategy_;
     delete attack_phase_;
+    delete reinforce_phase_;
+    delete fortify_phase_;
     delete game_map_;
 }
 
@@ -112,7 +122,9 @@ Player& Player::operator=(const Player &player) {
     dice_roll_ = player.dice_roll_;
     game_map_ = player.game_map_;
     player_strategy_ = player.player_strategy_;
+    reinforce_phase_ = player.reinforce_phase_;
     attack_phase_ = player.attack_phase_;
+    fortify_phase_ = player.fortify_phase_;
     return *this;
 }
 
@@ -185,6 +197,10 @@ Country* Player::PromptPlayerToSelectCountry() const {
         cout << "Invalid entry entered! Please try again: ";
     }
     return GetCountryById(country_id);
+}
+
+ReinforcePhase* Player::GetReinforcePhase() const {
+    return reinforce_phase_;
 }
 
 AttackPhase* Player::GetAttackPhase() const {
@@ -302,19 +318,18 @@ void Player::Reinforce() {
         return;
     }
 
-    ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
-    int num_bonus_army = reinforce->TotalReinforceArmy();
-
-    if(num_bonus_army < 1) {
-        cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
+    reinforce_phase_ = new ReinforcePhase(this, 0);
+    game_data_->Notify();
+    if(reinforce_phase_->TotalReinforceArmy() < 1) {
+        //cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
         return;
     }
 
-    map<int, int> country_army_map;
+    player_strategy_->ReinforceStrategy(this);
 
-    player_strategy_->ReinforceStrategy(*countries_, country_army_map, num_bonus_army);
+    game_data_->Notify();
 
-    for(auto& entry : country_army_map) {
+    for(auto& entry : *reinforce_phase_->GetReinforcementMap()) {
         Country* current_country = GetCountryById(entry.first);
 
         if(!current_country) {
@@ -324,12 +339,10 @@ void Player::Reinforce() {
         int num_armies_to_add = entry.second;
         int current_num_armies = current_country->GetNumberOfArmies();
 
-        game_data_->Notify();
-//        cout << *current_country->GetCountryName() << " | #armies: " << current_country->GetNumberOfArmies() << endl;
-//        cout << *player_name_  << " reinforcing " << *current_country->GetCountryName() << " with " << num_armies_to_add << " armies" << endl;
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
-//        cout << "Result: " << *current_country->GetCountryName() << " | #armies: " << current_country->GetNumberOfArmies() << endl;
     }
+
+    game_data_->Notify();
 }
 
 void Player::Attack() {
@@ -341,8 +354,10 @@ void Player::Attack() {
 
     attack_phase_ = new AttackPhase(this);
 
-    while (player_strategy_->PromptPlayerToAttack(this)) {
+    game_data_->Notify();
 
+    while (player_strategy_->PromptPlayerToAttack(this)) {
+        game_data_->Notify();
         if(!attack_phase_->DoesOpposingCountryExist()) {
             cout << "No opposing country exists that has enough armies to be attacked!" << endl;
             break;
@@ -465,6 +480,7 @@ void Player::Attack() {
         }
     }
 
+    game_data_->Notify();
     //cout << *player_name_ << "'s Attack phase is over, going to next phase";
 }
 
@@ -578,6 +594,7 @@ ReinforcePhase::ReinforcePhase() {
     num_of_swaps_ = 0;
     divider_ = 3;
     reinforcement_army_ = 0;
+    reinforcement_map_ = new map<int, int>;
 }
 
 ReinforcePhase::ReinforcePhase(Player* turn_player, int num_of_swaps){
@@ -585,10 +602,14 @@ ReinforcePhase::ReinforcePhase(Player* turn_player, int num_of_swaps){
     num_of_swaps_ = num_of_swaps;
     divider_ = 3;
     reinforcement_army_ = 0;
+    reinforcement_map_ = new map<int, int>;
 }
 
 ReinforcePhase::~ReinforcePhase(){
+    reinforcement_map_ = nullptr;
     turn_player_ = nullptr;
+
+    delete[] reinforcement_map_;
     delete turn_player_;
 
 }
@@ -598,6 +619,7 @@ ReinforcePhase::ReinforcePhase(const ReinforcePhase& reinforce){
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
+    reinforcement_map_ = reinforce.reinforcement_map_;
 }
 
 ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
@@ -605,6 +627,7 @@ ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
+    reinforcement_map_ = reinforce.reinforcement_map_;
     return *this;
 }
 
@@ -662,6 +685,13 @@ int ReinforcePhase::CardSwapReinforceArmy(){
         army_from_cards += turn_player_->GetPlayersCards()->Exchange();
         return army_from_cards;
     }
+}
+
+void ReinforcePhase::SetTotalReinforcementArmy(int num_reinforcements) {
+    reinforcement_army_= num_reinforcements;
+}
+map<int, int>* ReinforcePhase::GetReinforcementMap() const {
+    return reinforcement_map_;
 }
 
 

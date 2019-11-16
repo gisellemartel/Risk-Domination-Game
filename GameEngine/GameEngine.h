@@ -23,6 +23,8 @@ using namespace std;
 
 
 class GameEngine;
+class MapLoader;
+class Deck;
 
 enum GamePhase {
     Startup = 0,
