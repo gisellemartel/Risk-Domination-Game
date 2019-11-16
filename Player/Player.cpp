@@ -319,30 +319,28 @@ void Player::Reinforce() {
     }
 
     reinforce_phase_ = new ReinforcePhase(this, 0);
-    game_data_->Notify();
+
     if(reinforce_phase_->TotalReinforceArmy() < 1) {
-        //cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
+        cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
         return;
     }
 
     player_strategy_->ReinforceStrategy(this);
 
-    game_data_->Notify();
 
-    for(auto& entry : *reinforce_phase_->GetReinforcementMap()) {
-        Country* current_country = GetCountryById(entry.first);
+    for(int i = 0; i < reinforce_phase_->GetReinforceValues()->size(); ++i) {
+        Country* current_country = GetCountryById((*reinforce_phase_->GetCountriesToReinforce())[i]);
 
         if(!current_country) {
             continue;
         }
 
-        int num_armies_to_add = entry.second;
+        int num_armies_to_add = (*reinforce_phase_->GetReinforceValues())[i];
         int current_num_armies = current_country->GetNumberOfArmies();
-
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
     }
 
-    game_data_->Notify();
+
 }
 
 void Player::Attack() {
@@ -353,8 +351,6 @@ void Player::Attack() {
     }
 
     attack_phase_ = new AttackPhase(this);
-
-    game_data_->Notify();
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
         game_data_->Notify();
@@ -480,7 +476,6 @@ void Player::Attack() {
         }
     }
 
-    game_data_->Notify();
     //cout << *player_name_ << "'s Attack phase is over, going to next phase";
 }
 
@@ -594,7 +589,8 @@ ReinforcePhase::ReinforcePhase() {
     num_of_swaps_ = 0;
     divider_ = 3;
     reinforcement_army_ = 0;
-    reinforcement_map_ = new map<int, int>;
+    reinforce_values_ = new vector<int>;
+    countries_to_reinforce_ = new vector<int>;
 }
 
 ReinforcePhase::ReinforcePhase(Player* turn_player, int num_of_swaps){
@@ -602,14 +598,17 @@ ReinforcePhase::ReinforcePhase(Player* turn_player, int num_of_swaps){
     num_of_swaps_ = num_of_swaps;
     divider_ = 3;
     reinforcement_army_ = 0;
-    reinforcement_map_ = new map<int, int>;
+    reinforce_values_ = new vector<int>;
+    countries_to_reinforce_ = new vector<int>;
 }
 
 ReinforcePhase::~ReinforcePhase(){
-    reinforcement_map_ = nullptr;
+    reinforce_values_ = nullptr;
+    countries_to_reinforce_ = nullptr;
     turn_player_ = nullptr;
 
-    delete[] reinforcement_map_;
+    delete[] countries_to_reinforce_;
+    delete[] reinforce_values_;
     delete turn_player_;
 
 }
@@ -619,7 +618,8 @@ ReinforcePhase::ReinforcePhase(const ReinforcePhase& reinforce){
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
-    reinforcement_map_ = reinforce.reinforcement_map_;
+    reinforce_values_ = reinforce.reinforce_values_;
+    countries_to_reinforce_ =reinforce.countries_to_reinforce_;
 }
 
 ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
@@ -627,7 +627,8 @@ ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
-    reinforcement_map_ = reinforce.reinforcement_map_;
+    reinforce_values_ = reinforce.reinforce_values_;
+    countries_to_reinforce_ =reinforce.countries_to_reinforce_;
     return *this;
 }
 
@@ -687,13 +688,17 @@ int ReinforcePhase::CardSwapReinforceArmy(){
     }
 }
 
+vector<int>* ReinforcePhase::GetCountriesToReinforce() const {
+    return countries_to_reinforce_;
+}
+
+vector<int>* ReinforcePhase::GetReinforceValues() const {
+    return reinforce_values_;
+
+}
 void ReinforcePhase::SetTotalReinforcementArmy(int num_reinforcements) {
     reinforcement_army_= num_reinforcements;
 }
-map<int, int>* ReinforcePhase::GetReinforcementMap() const {
-    return reinforcement_map_;
-}
-
 
 
 // AttackPhase class implementation ------------------------------------------------------------------------------------

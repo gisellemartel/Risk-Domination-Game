@@ -803,17 +803,20 @@ void GameEngine::StartGameLoop() {
        // cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
+            Notify();
+
             current_phase_ = GamePhase ::Reinforce;
+            Notify();
             current_player->Reinforce();
+            Notify();
 
 //            current_phase_ = GamePhase ::Attack;
 //            current_player->Attack();
-//
+//            Notify();
 //
 //            current_phase_ = GamePhase ::Fortify;
 //            current_player->Fortify();
-
-
+//            Notify();
             ++num_iterations;
         }
 

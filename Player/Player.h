@@ -110,7 +110,8 @@ private:
     int num_of_swaps_;
     int divider_;
     int reinforcement_army_;
-    map<int, int>* reinforcement_map_;
+    vector<int>* countries_to_reinforce_;
+    vector<int>* reinforce_values_;
 
 public:
     explicit ReinforcePhase();
@@ -122,7 +123,8 @@ public:
 
     void SetTotalReinforcementArmy(int num_reinforcements);
 
-    map<int,int>* GetReinforcementMap() const;
+    vector<int>* GetCountriesToReinforce() const;
+    vector<int>* GetReinforceValues() const;
 
     int TotalReinforceArmy();
     int PerCountryReinforceArmy();

@@ -54,9 +54,10 @@ void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
 
         int country_id = current_country->GetCountryID();
 
-        if(!(*reinforce_phase->GetReinforcementMap())[country_id]) {
-            reinforce_phase->GetReinforcementMap()->insert({country_id, reinforce_value});
-        }
+
+        reinforce_phase->GetReinforceValues()->push_back(reinforce_value);
+        reinforce_phase->GetCountriesToReinforce()->push_back(country_id);
+
 
         cout << reinforce_value << " armies added to current country" << endl;
 
@@ -294,7 +295,8 @@ void AggressiveComputerPlayerStrategy::ReinforceStrategy(Player* player) {
     }
 
     //aggressive player will reinforce the strongest country will all the available reinforcements
-    reinforce_phase->GetReinforcementMap()->insert({country_id_with_most_armies, num_bonus_army});
+    reinforce_phase->GetReinforceValues()->push_back(num_bonus_army);
+    reinforce_phase->GetCountriesToReinforce()->push_back(country_id_with_most_armies);
     reinforce_phase->SetTotalReinforcementArmy(0);
 }
 
@@ -527,7 +529,8 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(Player* player) {
         if(counter == reinforce_phase->TotalReinforceArmy()) {
             break;
         }
-        reinforce_phase->GetReinforcementMap()->insert({entry.second, 1});
+        reinforce_phase->GetReinforceValues()->push_back(1);
+        reinforce_phase->GetCountriesToReinforce()->push_back(entry.second);
         ++counter;
     }
 }

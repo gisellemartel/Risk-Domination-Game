@@ -25,14 +25,8 @@ void PhaseObserver::Update(const GameEngine& game_data){
 }
 
 void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int current_phase) {
-    cout << string( 100, '\n' );
-    cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 
    switch(current_phase) {
-       case GamePhase::Startup:
-           cout << "Currently on startup phase\n";
-           break;
        case GamePhase::Reinforce:
            ReinforceDisplay(current_player);
            break;
@@ -42,38 +36,51 @@ void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int curren
        case GamePhase::Fortify:
            FortifyDisplay(current_player);
            break;
+       default:
+           break;
    }
-
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 void PhaseObserver::ReinforceDisplay(const Player* current_player) {
-
     string name = *current_player->GetPlayerName();
     ReinforcePhase* phase = current_player->GetReinforcePhase();
 
+
     if(!phase) {
-        cout << name << ": Reinforce\n";
+        cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
+        cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+        cout << name << ": Reinforce\n\n";
         return;
     }
-
-    cout << "Total armies avaiable to reinforce with: " << phase->TotalReinforceArmy() << endl;
 
     if(phase->TotalReinforceArmy() < 1) {
         cout << name << " currently has to armies to reinforce a country with. Please try again next round" << endl;
         return;
     }
 
-    if(!phase->GetReinforcementMap() || phase->GetReinforcementMap()->empty()) {
+    if(!phase->GetCountriesToReinforce() || phase->GetReinforceValues()->empty()) {
         return;
     }
 
-    for(auto& entry : *phase->GetReinforcementMap()) {
-        Country* country= current_player->GetCountryById(entry.first);
+    cout << "Total armies available to reinforce with: " << phase->TotalReinforceArmy() << endl;
+
+    for(int i = 0; i < phase->GetCountriesToReinforce()->size(); ++i) {
+        Country* country= current_player->GetCountryById((*phase->GetCountriesToReinforce())[i]);
+
+        if(!country) {
+            continue;
+        }
         string country_name = *country->GetCountryName();
-        cout << name << " reinforcing " << country_name << " with " << entry.second << " armies" << endl;
-        cout << "Result: " << country_name << " | #armies: " << country->GetNumberOfArmies() << endl;
+
+        if((*phase->GetReinforceValues())[i] > 0) {
+            cout << name << " reinforcing " << country_name << " with " << (*phase->GetReinforceValues())[i] << " armies" << endl;
+            cout << "Result: " << country_name << " | #armies: " << country->GetNumberOfArmies() << endl;
+        }
     }
+
+    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+
+    cout.clear();
 }
 
 void PhaseObserver::AttackDisplay(const Player* current_player) {
@@ -104,7 +111,13 @@ void PhaseObserver::AttackDisplay(const Player* current_player) {
 }
 
 void PhaseObserver::FortifyDisplay(const Player* current_player) {
-    cout << *current_player->GetPlayerName() << ": Fortify\n";
+    string name = *current_player->GetPlayerName();
+    FortifyPhase* phase = current_player->GetFortifyPhase();
+
+    if(!phase) {
+        cout << name << ": Fortify\n";
+        return;
+    }
 //    if(current_player_index_ == GamePhase::Reinforce) {
 //        FortifyPhase* fortify_phase = current_player->GetFortifyPhase();
 ////
