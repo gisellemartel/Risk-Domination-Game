@@ -800,13 +800,13 @@ void GameEngine::StartGameLoop() {
         if(!current_player) {
             break;
         }
-       // cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+        cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
         if(!current_player->GetPlayersCountries()->empty()){
 
             current_player->Reinforce();
             current_player->Attack();
-//            current_player->Fortify();
+            current_player->Fortify();
 
             ++num_iterations;
         }

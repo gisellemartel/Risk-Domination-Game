@@ -90,7 +90,7 @@ void PhaseObserver::DisplayPhaseData() {
     if(phase_over_) {
         current_phase_ = "";
         //put thread to sleep to allow smoother visual transition
-        std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
 
 }
