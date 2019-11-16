@@ -9,108 +9,85 @@
 
 using namespace std;
 
+#include "../GameEngine/GameEngine.h"
 #include "GameObservers.h"
-
 
 // PhaseObserver -------------------------------------------------------------------------------------------------------
 
-PhaseObserver::PhaseObserver(){
-    game_data_ = nullptr;
-}
-
-PhaseObserver::PhaseObserver(GameEngine* game_data) {
-    if(!game_data) {
-        cout << "Invalid value passed for subject. Aborting!" << endl;
+void PhaseObserver::Update(const GameEngine& game_data){
+    Player* current_player = (*game_data.GetPlayers())[current_player_index_];
+    if(!current_player) {
+        cout << "Something went wrong! Unable to update phase observer" << endl;
     }
 
-    game_data_ = game_data;
-    //player_subject_->Attach(this);//----------------------------------------------------------------------------------------Bug
+    int current_phase = game_data.GetCurrentPhase();
+    DisplayCurrentPhase(current_player, current_phase);
 }
 
-PhaseObserver::~PhaseObserver(){
-    //player_subject_->Detach(this);//----------------------------------------------------------------------------------------Bug
-    game_data_= nullptr;
-    delete game_data_;
+void PhaseObserver::DisplayCurrentPhase(const Player* current_player, int current_phase) {
+    cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
+    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+    cout << *current_player->GetPlayerName() << ":\n";
+
+   switch(current_phase) {
+       case GamePhase::Startup:
+           cout << "Currently on startup phase\n";
+           break;
+       case GamePhase::Reinforce:
+           ReinforceDisplay(current_player);
+           break;
+       case GamePhase ::Attack:
+           AttackDisplay(current_player);
+           break;
+       case GamePhase::Fortify:
+           FortifyDisplay(current_player);
+           break;
+   }
+
+    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
-void PhaseObserver::Update(){
-    //Display();
-}
-
-void PhaseObserver::Display() {
-//    cout << player_subject_->GetPlayerName() << ": ";
-//
-//    //TODO use enum for game phase
-//    if (player_subject_->GetGamePhase() == 1) {
-//        ReinforceDisplay();
-//    }else if(player_subject_->GetGamePhase() == 2) {
-//        AttackDisplay();
-//    }else if(player_subject_->GetGamePhase() == 3){
-//        FortifyDisplay();
-//    }
-}
-
-void PhaseObserver::ReinforceDisplay() {
-//    ReinforcePhase* reinforcement = new ReinforcePhase();
-//    cout << "Reinforcement Phase" << endl;
-//
-//    if(turn_ == 0) {
-//        cout << "Player has " << reinforcement->TotalReinforceArmy() << " armies available for reinforcement." << endl;
-//    } else if(turn_ == 1) {
+void PhaseObserver::ReinforceDisplay(const Player* current_player) {
+//    if(GameEngine::current_player_turn_ == GamePhase::Reinforce) {
+//        cout << "Player has " << current_player->GetReinforcementPhase()->Get << " armies available for reinforcement." << endl;
+//    } else if(GameEngine::current_player_turn_  == GamePhase::Attack) {
 //        for (size_t i = 0; i < player_subject_->GetCountriesReinforced()->size(); i++) {
 //            cout << "Player has reinforced " << player_subject_->GetCountriesReinforced()->at(i)->GetCountryName()
 //                 << " with " << player_subject_->GetNumberOfArmiesReinforced()->at(i) << " armies." << endl;
 //        }
 //    }
-//
-//    turn_++;
-//    turn_ %= 2;
-//    reinforcement = nullptr;
-//    delete reinforcement;
 }
 
-void PhaseObserver::AttackDisplay() {
-//    AttackPhase* attack_phase = new AttackPhase();
-//    cout << "Attack Phase" << endl;
-//
-//    if(turn_ == 1) {
-//        if (player_subject_->GetHasAttacked()) {
-//            if (attack_phase->GetDefendingCountry()->GetNumberOfArmies() == 0) {
-//                cout << "Player has won the battle" << endl;
-//            } else if (attack_phase->GetAttackingCountry()->GetNumberOfArmies() == 0) {
-//                cout << "Player has lost the battle" << endl;
-//            } else {
-//                cout << "Player stopped attacking." << endl;
-//            }
+void PhaseObserver::AttackDisplay(const Player* current_player) {
+
+    if(current_player_index_ == GamePhase::Attack) {
+        if (current_player->GetAttackPhase()) {
+            AttackPhase* attack_phase = current_player->GetAttackPhase();
+            if (attack_phase->GetDefendingCountry()->GetNumberOfArmies() == 0) {
+                cout << "Player has won the battle" << endl;
+            } else if (attack_phase->GetAttackingCountry()->GetNumberOfArmies() == 0) {
+                cout << "Player has lost the battle" << endl;
+            } else {
+                cout << "Player stopped attacking." << endl;
+            }
 //        } else if (!player_subject_->GetHasAttacked()) {
 //            cout << "Player did not attack." << endl;
 //        }
-//    }
-//
-//    turn_++;
-//    turn_ %= 2;
-//    attack_phase = nullptr;
-//    delete attack_phase;
+        }
+    }
 }
 
-void PhaseObserver::FortifyDisplay() {
-//    FortifyPhase* fortify_phase = new FortifyPhase();
-//    cout << "Fortification Phase" << endl;
+void PhaseObserver::FortifyDisplay(const Player* current_player) {
+    if(current_player_index_ == GamePhase::Reinforce) {
+        FortifyPhase* fortify_phase = current_player->GetFortifyPhase();
 //
-//    if(turn_ == 1) {
-//        if (fortify_phase->GetFortificationArmiesMoved() == 0) {
+//        if (fortify_phase && fortify_phase->GetFortificationArmiesMoved() == 0) {
 //            cout << "No fortifications were made." << endl;
-//        } else {
+//        } else if (fortify_phase && fortify_phase->GetFortificationArmiesMoved() > 0){
 //            cout << fortify_phase->GetTargetCountry()->GetCountryName() << " has been fortified with "
 //                 << fortify_phase->GetFortificationArmiesMoved() << " armies from "
 //                 << fortify_phase->GetSourceCountry()->GetCountryName()
 //                 << endl;//not sure if this returns country names--------------------------------
 //        }
-//    }
-//    turn_++;
-//    turn_ %= 2;
-//    fortify_phase = nullptr;
-//    delete fortify_phase;
+    }
 }
-
-

@@ -295,16 +295,12 @@ void Player::Reinforce() {
         cout << "Player strategy undefined! Cannot Reinforce!" << endl;
         return;
     }
-    cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
-    cout << "Beginning Reinforce phase for " << *player_name_ << endl << endl;
 
     ReinforcePhase* reinforce = new ReinforcePhase(this, 0);
     int num_bonus_army = reinforce->TotalReinforceArmy();
 
     if(num_bonus_army < 1) {
         cout << *player_name_ << " currently has to armies to reinforce a country with. Please try again next round" << endl;
-        cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
         return;
     }
 
@@ -327,8 +323,6 @@ void Player::Reinforce() {
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
         cout << "Result: " << *current_country->GetCountryName() << " | #armies: " << current_country->GetNumberOfArmies() << endl;
     }
-
-    cout << "-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 void Player::Attack() {
@@ -337,8 +331,7 @@ void Player::Attack() {
         cout << "Player strategy undefined! Cannot Attack!" << endl;
         return;
     }
-    cout << "# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ";
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+
     cout << "Beginning Attack phase for " << *player_name_ << endl << endl;
 
     attack_phase_ = new AttackPhase(this);
@@ -466,16 +459,14 @@ void Player::Attack() {
     }
 
     cout << *player_name_ << "'s Attack phase is over, going to next phase";
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
-
 
 void Player::Fortify() {
     if(!player_strategy_) {
         cout << "Player strategy undefined! Cannot Fortify!" << endl;
         return;
     }
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
+
     cout << "Beginning Fortify phase for " << *player_name_ << endl << endl;
 
     fortify_phase_ = new FortifyPhase(this);
@@ -493,7 +484,6 @@ void Player::Fortify() {
         if(count == countries_->size()) {
             cout << "No countries with enough armies to assign to another country!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-            cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
             return;
         }
 
@@ -501,7 +491,6 @@ void Player::Fortify() {
 
         if(!fortify_phase_->GetSourceCountry()) {
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-            cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
             return;
         }
 
@@ -515,7 +504,6 @@ void Player::Fortify() {
         if(!neighbours || neighbours->empty()) {
             cout << *source_country->GetCountryName() << " has no neighbours!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-            cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
             return;
         }
 
@@ -530,7 +518,6 @@ void Player::Fortify() {
         if(fortify_phase_->GetNeighboursToFortify()->empty()) {
             cout << *source_country->GetCountryName() << " has no neighbours to assign armies to!\n";
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-            cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
             return;
         }
 
@@ -547,7 +534,6 @@ void Player::Fortify() {
 
         if(!fortify_phase_->GetTargetCountry()) {
             cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-            cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
             return;
         }
 
@@ -574,7 +560,6 @@ void Player::Fortify() {
     }
 
     cout << "Ending Fortify phase\n" << *player_name_ << "'s turn end." << endl;
-    cout << "\n-------------------------------------------------------------------------------------------------------------------------------------------------------\n";
 }
 
 

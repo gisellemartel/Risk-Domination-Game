@@ -9,16 +9,18 @@
 
 #include <list>
 
-#include "../GameEngine/GameEngine.h"
+#include "../Player/Player.h"
+class GameEngine;
 
-//Observer interface
+//Observer interface ---------------------------------------------------------------------------------------------------
 class Observer {
 
 public:
-    virtual void Update() = 0;
+    virtual ~Observer() = default;
+    virtual void Update(const GameEngine& game_data) = 0;
 };
 
-//Subject interface
+//Subject interface ----------------------------------------------------------------------------------------------------
 class Subject {
 
 public:
@@ -27,24 +29,21 @@ public:
     virtual void Notify() = 0;
 };
 
+
+//Phase observer implements Observer interface -------------------------------------------------------------------------
 class PhaseObserver : public Observer {
+private:
+    void DisplayCurrentPhase(const Player* current_player, int current_phase);
+
+    void ReinforceDisplay(const Player* current_player);
+    void AttackDisplay(const Player* current_player);
+    void FortifyDisplay(const Player* current_player);
+
 
 public:
-    PhaseObserver();
-    PhaseObserver(GameEngine* game_data_);
-    PhaseObserver(const PhaseObserver& phase_observer);
-    ~PhaseObserver();
-
-    PhaseObserver& operator=(const Player& player);
-
-    void Display();
-    void ReinforceDisplay();
-    void AttackDisplay();
-    void FortifyDisplay();
-    void Update() override;
-
-private:
-    GameEngine* game_data_;
+    PhaseObserver() = default;
+    ~PhaseObserver() override = default;
+    void Update(const GameEngine& game_data) override;
 };
 
 #endif //GAMEOBSERVERS_H

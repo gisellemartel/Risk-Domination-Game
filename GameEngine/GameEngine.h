@@ -13,12 +13,14 @@
 
 using namespace std;
 
+#include "../GameObservers/GameObservers.h"
 #include "../Map/Map.h"
 #include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
+
 
 class GameEngine;
 
@@ -29,12 +31,12 @@ enum GamePhase {
     Fortify = 3
 };
 
+static int current_player_index_;
 
 class StartupPhase {
 
 private:
     map<Player*, int>* player_order_;
-    int current_turn_;
     int number_of_armies_;
 
     //private helper functions
@@ -52,7 +54,6 @@ public:
 
     //Getters
     inline map<Player*, int>* GetPlayerOrderMap() const;
-    inline int GetCurrentTurn() const;
 
     //Setters
     void SetNumberOfArmies(int number_of_players);
@@ -64,7 +65,7 @@ public:
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
-class GameEngine {
+class GameEngine : public Subject {
 
 private:
     vector<Player*>* players_;
@@ -79,6 +80,7 @@ private:
     int num_benevolant_players_;
     bool exit_game_;
 
+    vector<Observer*>* observers_;
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
     vector<filesystem::path>* file_paths_;
@@ -87,6 +89,7 @@ private:
     MapLoader* SelectFile();
 
 public:
+
     // Function to test Player functions within game
     void TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players);
 
@@ -125,6 +128,10 @@ public:
     void DisplayCurrentGame();
 
     void StartGameLoop();
+
+    void Register(Observer* observer) override;
+    void Unregister(Observer* observer) override;
+    void Notify() override;
 };
 
 
