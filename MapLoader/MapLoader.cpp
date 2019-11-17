@@ -321,8 +321,11 @@ bool MapLoader::ParseMap() {
 
 //ConquestMapLoader class (ADAPTEE)-------------------------------------------------------------------------------------
 ConquestMapLoader::ConquestMapLoader(string file_name) {
+
+    cout << "Creating ConquestMapLoader object for file: " << file_name << endl;
+    string map_name = Map::StripString(file_name, "/", ".");
     file_name_ = file_name;
-    parsed_map_ = nullptr;
+    parsed_map_ = new Map(map_name);
 }
 
 ConquestMapLoader::ConquestMapLoader(const ConquestMapLoader &conquest_map_loader) {
@@ -420,15 +423,18 @@ bool ConquestMapLoader::ParseConquestMap() {
                 int current_index = 1;
                 //get the next line
                 while (getline(file_to_load, line, line_delim)) {
-                    bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
+                    bool line_is_valid = line.find('[') == -1;
                     //we have reached the end of the continents section
                     if (!line_is_valid) {
                         break;
-                    } else if (line[0] == '\n' || line.length() == 0) {
+                    } else if (line[0] == '\r' || line[0] == '\n' || line.length() == 0) {
                         continue;
                     } else {
                         string country_data = line;
                         string delim = ",";
+
+                        // remove last char "\r" from the string
+                        country_data.erase(country_data.size() - 1);
 
 
                         int country_num = current_index;
@@ -495,6 +501,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                             return false;
                         }
 
+
                         country_data = country_data + delim;
 
                         while (true) {
@@ -520,15 +527,14 @@ bool ConquestMapLoader::ParseConquestMap() {
             }
 
 
-            for (int i = 0; i < neigbours.size(); i++) {
-                int id_1 = i+1;
-                int id_2 = parsed_map_->GetCountryByName(neigbours.at(i))->GetCountryID();
-                parsed_map_->SetTwoCountriesAsNeighbours(true, id_1, id_2);
-            }
-
         }
         file_to_load.close();
 
+        for (int i = 0; i < neigbours.size(); i++) {
+            int id_1 = i + 1;
+            int id_2 = parsed_map_->GetCountryByName(neigbours.at(i))->GetCountryID();
+            parsed_map_->SetTwoCountriesAsNeighbours(true, id_1, id_2);
+        }
 
         if (parsed_map_->GetNumCountries() == 0 && parsed_map_->GetNumContinents() == 0) {
             cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
