@@ -14,11 +14,10 @@
 
 using namespace std;
 
-#include "../Player/PlayerStrategies.h"
 #include "GameEngine.h"
 
-// STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
+// STARTUP PHASE CLASS ------------------------------------------------------------------------------------------------
 
 // generic function which randomized order of passed vector.
 // used to randomize both order of players, order in which countries are assigned
@@ -39,7 +38,7 @@ vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& v
 // class constructors
 StartupPhase::StartupPhase() {
     player_order_ = new map<Player*, int>;
-    current_turn_ = 0;
+    current_player_index_ = 0;
 }
 
 StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
@@ -48,12 +47,11 @@ StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
     for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
         player_order_->insert(*it);
     }
-
-    current_turn_ = startup_phase.current_turn_;
+    current_player_index_ = startup_phase.current_player_index_;
 }
 
 StartupPhase::~StartupPhase() {
-    delete player_order_;
+    delete [] player_order_;
 }
 
 
@@ -64,9 +62,7 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     for(const auto& it : *startup_phase.player_order_) {
         player_order_->insert(it);
     }
-
-    current_turn_ = startup_phase.current_turn_;
-
+    current_player_index_ = startup_phase.current_player_index_;
     return *this;
 }
 
@@ -76,14 +72,12 @@ map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
     return player_order_;
 }
 
-int StartupPhase::GetCurrentTurn() const {
-    return current_turn_;
-}
-
 
 //Setters
 void StartupPhase::SetNumberOfArmies(int number_of_players) {
     switch(number_of_players) {
+        case -1: number_of_armies_ = 5; //for testing only
+            break;
         case 2: number_of_armies_ = 40;
             break;
         case 3: number_of_armies_ = 35;
@@ -118,7 +112,7 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
         for(int i = 0; i < players->size(); ++i ) {
             if(player && player == (*players)[i]) {
                 //set the turn for the current player
-                (*players)[i]->SetPlayersTurn(it->second == current_turn_);
+                (*players)[i]->SetPlayersTurn(it->second == current_player_index_);
                 //display order for current player
                 cout << *player->GetPlayerName() << ": " << (it->second + 1) << "\n";
             }
@@ -145,11 +139,11 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
     while(num_countries > 0) {
 
         //debug string
-        cout << "Current turn: " << (current_turn_ + 1) << ".\n";
+        cout << "Current turn: " << (current_player_index_ + 1) << ".\n";
 
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
-            if (it.second == current_turn_) {
+            if (it.second == current_player_index_) {
                 it.first->SetPlayersTurn(true);
                 int current_random_index = random_order[current_index];
 
@@ -165,7 +159,7 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
         }
 
         //get the current players turn
-        current_turn_ = (int)((current_turn_ + 1) % players->size());
+        current_player_index_ = (int)((current_player_index_ + 1) % players->size());
     }
     cout << endl;
 }
@@ -188,9 +182,9 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
     while(!Utility::ContainsAllZeros(num_armies)) {
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
-            if (it.second == current_turn_) {
+            if (it.second == current_player_index_) {
                 //debug string
-                cout << "\nCurrent turn is " << (current_turn_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
+                cout << "\nCurrent turn is " << (current_player_index_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
 
                 vector<Country*>& players_countries = *it.first->GetPlayersCountries();
 
@@ -243,7 +237,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
         }
 
         //get the current players turn
-        current_turn_ = (int)((current_turn_ + 1) % players->size());
+        current_player_index_ = (int)((current_player_index_ + 1) % players->size());
     }
     cout << endl;
 }
@@ -266,9 +260,9 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
     while(!Utility::ContainsAllZeros(num_armies)) {
         for (auto &it : *player_order_) {
             //find the player whose is currently to be assigned countries
-            if (it.second == current_turn_) {
+            if (it.second == current_player_index_) {
                 //debug string
-                cout << "\nCurrent turn is " << (current_turn_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
+                cout << "\nCurrent turn is " << (current_player_index_ + 1) << ". " << *it.first->GetPlayerName() << " can proceed to assign their armies:\n";
 
                 vector<Country*>& players_countries = *it.first->GetPlayersCountries();
 
@@ -314,7 +308,7 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
         }
 
         //get the current players turn
-        current_turn_ = (int)((current_turn_ + 1) % players->size());
+        current_player_index_ = (int)((current_player_index_ + 1) % players->size());
     }
     cout << endl;
 
@@ -346,7 +340,6 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
 }
-
 
 //private helper methods
 MapLoader* GameEngine::SelectFile() {
@@ -381,6 +374,8 @@ GameEngine::GameEngine() {
     exit_game_ = false;
     file_paths_ = new vector<filesystem::path>;
     game_start_ = new StartupPhase;
+    current_phase_ = GamePhase::Startup;
+    observers_ = new vector<Observer*>;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
@@ -398,9 +393,16 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
         file_paths_[i] = game_engine.file_paths_[i];
     }
 
+    observers_ = game_engine.observers_;
+
+    for(int i = 0; i < game_engine.observers_->size(); ++i) {
+        observers_[i] = game_engine.observers_[i];
+    }
+
     game_start_ = game_engine.game_start_;
     num_of_players_ = game_engine.num_of_players_;
     exit_game_ = game_engine.exit_game_;
+    current_phase_ = game_engine.current_phase_;
 }
 
 GameEngine::~GameEngine() {
@@ -414,17 +416,24 @@ GameEngine::~GameEngine() {
         filepath = nullptr;
     }
 
+    for (Observer* observer : *observers_) {
+        observer = nullptr;
+        delete observer;
+    }
+
     loaded_map_ = nullptr;
     cards_deck_ = nullptr;
     players_ = nullptr;
     file_paths_ = nullptr;
     game_start_ = nullptr;
+    observers_ = nullptr;
 
     delete players_;
     delete file_paths_;
     delete cards_deck_;
     delete loaded_map_;
     delete game_start_;
+    delete observers_;
 }
 
 
@@ -444,9 +453,15 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
         file_paths_[i] = game_engine.file_paths_[i];
     }
 
+    observers_ = game_engine.observers_;
+    for(int i = 0; i < game_engine.observers_->size(); ++i) {
+        observers_[i] = game_engine.observers_[i];
+    }
+
     num_of_players_ = game_engine.num_of_players_;
     game_start_ = game_engine.game_start_;
     exit_game_ = game_engine.exit_game_;
+    current_phase_ = game_engine.current_phase_;
 
     return *this;
 }
@@ -475,6 +490,10 @@ StartupPhase* GameEngine::GetGameStart() const {
 
 bool GameEngine::ExitGameSelected() const {
     return exit_game_;
+}
+
+GamePhase GameEngine::GetCurrentPhase() const {
+    return current_phase_;
 }
 
 
@@ -550,6 +569,28 @@ bool GameEngine::LoadSelectedMap() {
     }
 }
 
+bool GameEngine::PlayerHasWon(Player *current_player) {
+
+    Map* game_map_ = current_player->GetGameMap();
+    vector<Country*>* all_countries;
+
+    if(game_map_) {
+        all_countries = game_map_->GetCountries();
+    }
+
+    for(Country* country : *all_countries){
+        int id = country->GetCountryID();
+        if(!current_player->DoesPlayerOwnCountry(id)) {
+            return false;
+        }
+    }
+    cout << "Game Over" << endl;
+    cout << "Winner: " << *current_player->GetPlayerName();
+
+    return true;
+}
+
+
 void GameEngine::SelectNumOfHumanPlayers() {
     int num_players = -1;
 
@@ -623,7 +664,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Human Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         player->SetAsHuman();
         players_->push_back(player);
@@ -633,7 +674,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Aggressive Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -642,7 +683,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Benevolant Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap());
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -732,91 +773,65 @@ void GameEngine::DisplayCurrentGame() {
     cout << endl;
 }
 
-// GAME LOOP CLASS --------------------------------------------------------------------------------------------------
-
-GameLoop::GameLoop(){
-    all_players_ = nullptr;
-    num_of_swaps_ = 0;
-}
-
-GameLoop::GameLoop(vector<Player*>* all_players){
-    all_players_ = all_players;
-}
-
-GameLoop::GameLoop(const GameLoop& game_loop){
-    all_players_ = game_loop.all_players_;
-    num_of_swaps_ = game_loop.num_of_swaps_;
-}
-
-GameLoop::~GameLoop(){
-    for(int i = 0; i < all_players_->size(); ++i){
-        all_players_->at(i) = nullptr;
-        delete all_players_->at(i);
+void GameEngine::StartGameLoop() {
+    if(!players_ || players_->empty() || num_of_players_ == 0){
+        cout << "Something went wrong! aborting game loop" << endl;
     }
-    delete[] all_players_;
-}
 
-GameLoop& GameLoop::operator=(const GameLoop& game_loop) {
-    all_players_ = game_loop.all_players_;
-    num_of_swaps_ = game_loop.num_of_swaps_;
-    return *this;
-}
-
-
-vector<Player*>* GameLoop::GetPlayers() const {
-    return all_players_;
-}
-
-//void GameLoop::Attach(){
-//
-//}
-//
-//void GameLoop::Detach(){
-//
-//}
-
-
-void GameLoop::StartLoop(){
-    int turn = 0;
-
+    for(Player* player : *players_) {
+        cout << *player->GetPlayerName() << endl;
+        player->DisplayCountries();
+    }
     cout << "############################################################################# GAME START #############################################################################" << endl;
 
-    while(!WinCondition(all_players_->at(turn))){
-        Player* current_player = all_players_->at(turn);
 
-        cout << endl << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+    int num_iterations = 0;
+    int current_index = game_start_->current_player_index_;
 
-        if(current_player && !current_player->GetPlayersCountries()->empty()){
+    Player* current_player = players_->at(current_index);
+
+    if(!current_player) {
+        return;
+    }
+
+    while(!PlayerHasWon(current_player) && num_iterations < 1000){
+        current_player = players_->at(current_index);
+        if(!current_player) {
+            break;
+        }
+        cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+
+        if(!current_player->GetPlayersCountries()->empty()){
+
             current_player->Reinforce();
             current_player->Attack();
             current_player->Fortify();
+
+            ++num_iterations;
         }
 
-        turn += 1;
+        current_index = (current_index + 1) % num_of_players_;
+        current_player = players_->at(game_start_->current_player_index_);
+    }
 
-        if(!all_players_->empty()) {
-            turn = turn % all_players_->size();
-        }
+    cout << "############################################################################# GAME OVER #############################################################################" << endl;
+}
+
+void GameEngine::Register(Observer *observer) {
+    observers_->push_back(observer);
+}
+
+void GameEngine::Unregister(Observer *observer) {
+    // find the observer
+    auto iterator = std::find(observers_->begin(), observers_->end(), observer);
+
+    if (iterator != observers_->end()) {
+        observers_->erase(iterator); // unregister the observer
     }
 }
 
-bool GameLoop::WinCondition(Player* cur_player){
-
-    Map* game_map_ = cur_player->GetGameMap();
-    vector<Country*>* all_countries;
-
-    if(game_map_) {
-        all_countries = game_map_->GetCountries();
+void GameEngine::Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) {
+    for(Observer* observer : *observers_) {
+        observer->Update(current_player, current_phase, current_phase_action_description, phase_start, phase_over);
     }
-
-    for(Country* country : *all_countries){
-        int id = country->GetCountryID();
-        if(cur_player->DoesPlayerOwnCountry(id)) {
-            return false;
-        }
-    }
-    cout << "Game Over" << endl;
-    cout << "Winner: " << cur_player->GetPlayerName();
-
-    return true;
 }

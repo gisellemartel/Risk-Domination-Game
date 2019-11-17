@@ -14,9 +14,10 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 using namespace std;
 
-//forward declaration
+//forward declarations
 class Country;
 class Dice;
 class Cards;
@@ -24,28 +25,34 @@ class Hand;
 class Map;
 class Continent;
 class ConcreteStrategies;
+class ReinforcePhase;
 class AttackPhase;
 class FortifyPhase;
+class GameEngine;
 
 class Player {
 
 private:
     bool is_player_turn_;
     bool is_human_;
-    int number_of_armies_;
     string* player_name_;
+
     vector<Country*>* countries_;
+
     Hand* risk_cards_;
     Dice* dice_roll_;
     Map* game_map_;
+
+    ReinforcePhase* reinforce_phase_;
     AttackPhase* attack_phase_;
     FortifyPhase* fortify_phase_;
 
     ConcreteStrategies* player_strategy_;
+    GameEngine* game_engine_;
 
 public:
     explicit Player(string player_name);
-    Player(string player_name, Map* game_map);
+    Player(string player_name, Map* game_map, GameEngine* game_engine);
     Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
     Player(const Player &player);
     ~Player();
@@ -57,13 +64,13 @@ public:
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
-    void SetNumberOfArmies(int number_of_armies);
     void SetGameMap(Map* map);
     void SetPlayerStrategy(ConcreteStrategies* player_strategy);
 
     void SetAsHuman();
 
     vector<Country*>* GetPlayersCountries() const;
+    ReinforcePhase* GetReinforcePhase() const;
     AttackPhase* GetAttackPhase() const;
     FortifyPhase* GetFortifyPhase() const;
     Country* GetCountryById(int id) const;
@@ -90,6 +97,9 @@ public:
     void Reinforce();
     void Attack();
     void Fortify();
+
+    //will be used to implicitly notify the game engine of phase changes
+    void Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over);
 };
 
 // ReinforcePhase --------------------------------------
@@ -100,6 +110,8 @@ private:
     int num_of_swaps_;
     int divider_;
     int reinforcement_army_;
+    vector<int>* countries_to_reinforce_;
+    vector<int>* reinforce_values_;
 
 public:
     explicit ReinforcePhase();
@@ -108,6 +120,11 @@ public:
     ~ReinforcePhase();
 
     ReinforcePhase& operator = (const ReinforcePhase& reinforce);
+
+    void SetTotalReinforcementArmy(int num_reinforcements);
+
+    vector<int>* GetCountriesToReinforce() const;
+    vector<int>* GetReinforceValues() const;
 
     int TotalReinforceArmy();
     int PerCountryReinforceArmy();
@@ -144,7 +161,7 @@ public:
     void SetDefendingCountry(Country* defending_country);
     void SetDefender(Player* defender);
 
-    bool DoesOpposingCountryExistWithArmies();
+    bool DoesOpposingCountryExist();
 
     void FindOpponentNeighboursToAttackingCountry();
 };
@@ -157,6 +174,7 @@ private:
     Map* game_map_;
     Country* source_country_;
     Country* target_country_;
+
     vector<Country*>* neighbours_to_fortify_;
 
 public:

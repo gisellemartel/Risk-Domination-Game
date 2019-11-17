@@ -13,6 +13,7 @@
 
 using namespace std;
 
+#include "../GameObservers/GameObservers.h"
 #include "../Map/Map.h"
 #include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
@@ -22,11 +23,21 @@ using namespace std;
 #include "../GameObservers/GameObservers.h"
 
 
+class GameEngine;
+class MapLoader;
+class Deck;
+
+enum GamePhase {
+    Startup = 0,
+    Reinforce = 1,
+    Attack = 2,
+    Fortify = 3
+};
+
 class StartupPhase {
 
 private:
     map<Player*, int>* player_order_;
-    int current_turn_;
     int number_of_armies_;
 
     //private helper functions
@@ -34,6 +45,7 @@ private:
     static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
 
 public:
+    int current_player_index_;
     //Constructors
     StartupPhase();
     StartupPhase(const StartupPhase& startup_phase);
@@ -44,7 +56,6 @@ public:
 
     //Getters
     inline map<Player*, int>* GetPlayerOrderMap() const;
-    inline int GetCurrentTurn() const;
 
     //Setters
     void SetNumberOfArmies(int number_of_players);
@@ -56,18 +67,22 @@ public:
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
-class GameEngine{
+class GameEngine : public PhaseSubject {
 
 private:
     vector<Player*>* players_;
     StartupPhase* game_start_;
     MapLoader* loaded_map_;
     Deck* cards_deck_;
+
+    GamePhase current_phase_;
     int num_of_players_;
     int num_of_human_players_;
     int num_aggressive_players_;
     int num_benevolant_players_;
     bool exit_game_;
+
+    vector<Observer*>* observers_;
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
     vector<filesystem::path>* file_paths_;
@@ -87,9 +102,13 @@ public:
     //operator overloader
     GameEngine& operator=(const GameEngine& game_engine);
 
+    //Setters
+    void SetCurrentPhase(GamePhase phase);
+
     //Getters
     MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
+    GamePhase GetCurrentPhase() const;
     vector<Player*>* GetPlayers() const;
     int GetNumPlayers() const;
     bool ExitGameSelected() const;
@@ -98,6 +117,8 @@ public:
     //Methods
     bool SelectMap();
     bool LoadSelectedMap();
+    bool PlayerHasWon(Player* current_player);
+
     void SelectNumOfHumanPlayers();
     void SelectNumOfAggressivePlayers();
     void SelectNumOfBenevolantPlayers();
@@ -106,28 +127,13 @@ public:
     void AssignHandOfCardsToPlayers();
     void CreateCardsDeck();
     void DisplayCurrentGame();
+
+    void StartGameLoop();
+
+    void Register(Observer* observer) override;
+    void Unregister(Observer* observer) override;
+    void Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) override;
 };
 
-class GameLoop : public Subject{
-private:
-    vector<Player*>* all_players_;
-    int num_of_swaps_;
-
-public:
-    explicit GameLoop();
-    explicit GameLoop(vector<Player*>* all_players);
-    GameLoop(const GameLoop& game_loop);
-    ~GameLoop();
-
-    GameLoop& operator=(const GameLoop& game_loop);
-
-    vector<Player*>* GetPlayers() const;
-    int GetNumberOfSwaps() const;
-
-    void StartLoop();
-    bool WinCondition(Player* cur_player);
-//    void Attach();
-//    void Detach();
-};
 
 #endif

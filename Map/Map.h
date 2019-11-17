@@ -90,6 +90,7 @@ public:
     int GetNumberOfArmies() const;
     int GetContinentID() const;
     Player* GetCountryOwner() const;
+    string GetDisplayInfo() const;
 
     //Methods -------------------------------------------------------
     void AddArmyToCountry();

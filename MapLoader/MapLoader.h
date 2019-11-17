@@ -15,8 +15,11 @@
 #include <fstream>
 #include <iostream>
 
+class Map;
+
 using namespace std;
 
+//MapLoader class (TARGET) ---------------------------------------------------------------------------------------------
 class MapLoader {
 
 private:
@@ -24,17 +27,57 @@ private:
     Map* parsed_map_;
 
 public:
-    explicit MapLoader(string file_name);
+    MapLoader();
+    MapLoader(string file_name);
     MapLoader(const MapLoader& map);
-    ~MapLoader();
+    virtual ~MapLoader();
 
     MapLoader& operator=(const MapLoader& map);
 
     Map* GetParsedMap() const;
 
-    bool ParseMap();
+    virtual bool ParseMap();
 
     static string StripString(string string_to_strip, const string& left_delim, const string& right_delim);
 };
+
+
+//ConquestMapLoader class (ADAPTEE)-------------------------------------------------------------------------------------
+class ConquestMapLoader {
+
+private:
+    string file_name_;
+    Map* parsed_map_;
+
+public:
+    ConquestMapLoader(string file_name);
+    ConquestMapLoader(const ConquestMapLoader& conquest_map_loader);
+    ~ConquestMapLoader();
+
+    ConquestMapLoader& operator=(const ConquestMapLoader& conquest_map_loader);
+
+    Map* GetParsedConquestMap() const;
+
+    bool ParseConquestMap();
+};
+
+
+//Adapter class --------------------------------------------------------------------------------------------------------
+class Adapter : public MapLoader {
+private:
+    ConquestMapLoader* conquest_map_loader_;
+
+public:
+    Adapter(ConquestMapLoader* conquest_map_loader);
+    Adapter(const Adapter& adapter);
+    ~Adapter();
+
+    Adapter& operator=(const Adapter& adapter);
+
+
+    bool ParseMap() override;
+};
+
+
 
 #endif //MAP_LOADER_H

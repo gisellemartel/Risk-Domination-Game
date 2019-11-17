@@ -1,5 +1,6 @@
 
 #include <random>
+#include <iostream>
 
 using namespace std;
 #include "Utility.h"
@@ -28,5 +29,9 @@ bool Utility::ContainsAllZeros(const vector<int> &vector_to_check) {
     });
 
     return result;
+}
+
+void Utility::ClearScreen() {
+    cout << string(100, '\n');
 }
 

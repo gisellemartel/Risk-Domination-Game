@@ -15,14 +15,24 @@ using namespace std;
 
 // HUMAN PLAYER STRATEGIES #############################################################################################
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void HumanPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
 
+    int num_bonus_army = reinforce_phase->TotalReinforceArmy();
     int country_index = 0;
     int reinforce_value = 0;
+    vector<Country*>* countries = player->GetPlayersCountries();
+
+    if(!countries || countries->empty()) {
+        return;
+    }
 
     while(num_bonus_army > 0) {
 
-        Country* current_country = countries.at(country_index);
+        Country* current_country = countries->at(country_index);
 
         if(!current_country) {
             ++country_index;
@@ -44,15 +54,15 @@ void HumanPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, m
 
         int country_id = current_country->GetCountryID();
 
-        if(!country_num_army_to_add_pairs[country_id]) {
-            country_num_army_to_add_pairs.insert({country_id, reinforce_value});
-        }
 
-        cout << reinforce_value << " armies added to current country" << endl;
+        reinforce_phase->GetReinforceValues()->push_back(reinforce_value);
+        reinforce_phase->GetCountriesToReinforce()->push_back(country_id);
+
 
         num_bonus_army -= reinforce_value;
+        reinforce_phase->SetTotalReinforcementArmy(num_bonus_army);
         ++country_index;
-        country_index = country_index % (int)countries.size();
+        country_index = country_index % (int)countries->size();
     }
 }
 
@@ -75,18 +85,21 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
     }
 
     Country* defending_country = attack_phase->GetDefendingCountry();
+
+
+    //Display neighboring countries
+    cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country);
+
+        cout << setw(25)  << left << country->GetCountryID() <<
+        setw(25) <<  *country->GetCountryName()
+        << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
+        cout << endl;
+    }
     //prompt player to select country to attack from list of neighbours
     while(!defending_country) {
-       // defending_country = PromptPlayerToSelectDefender(attack_phase->GetOpponentNeighbours());
-
-        //Display neighboring countries
-        cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
-        cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << endl;
-        for (const Country *country : *attack_phase->GetOpponentNeighbours()) {
-            cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << player->GetGameMap()->GenerateListOfNeighboringCountries(attack_phase->GetAttackingCountry()) << endl;
-            cout << endl;
-        }
-
         cout << "Please choose which country you would like to attack (enter by numerical id):\n";
         int defender_id = -1;
         Country* defender = nullptr;
@@ -98,10 +111,9 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         }
     }
 
-    if(defending_country) {
-        attack_phase->SetDefendingCountry(defending_country);
-        attack_phase->SetDefender(defending_country->GetCountryOwner());
-    }
+
+    attack_phase->SetDefendingCountry(defending_country);
+    attack_phase->SetDefender(defending_country->GetCountryOwner());
 
     return defending_country != nullptr;
 }
@@ -154,7 +166,7 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
 
 void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
     //prompt attacker if they would like to assign armies from their newly acquired country to their other countries
-    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise\n";
+    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise)\n";
 
     string user_response;
     while(!(cin >> user_response)) {
@@ -227,8 +239,6 @@ bool HumanPlayerStrategy::SelectTargetCountry(Player *player) {
     cout << "Please choose which country you would like to fortify (enter by numerical id):\n";
     int fortify_id;
 
-
-    //USE FORTIFY STRATEGY HERE
     Country* target = nullptr;
     while(!(cin >> fortify_id) || fortify_id < 1 || !(target = player->GetCountryInVectorById(fortify_phase->GetNeighboursToFortify(), fortify_id))) {
         cout << "Invalid entry entered! Please try again: ";
@@ -263,12 +273,17 @@ void HumanPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
 // AGGRESSIVE PLAYER STRATEGIES ########################################################################################
 
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
-
+void AggressiveComputerPlayerStrategy::ReinforceStrategy(Player* player) {
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
+    vector<Country*>* countries = player->GetPlayersCountries();
+    int num_bonus_army = reinforce_phase->TotalReinforceArmy();
     int max_num_armies = 0;
     int country_id_with_most_armies = 1;
 
-    for(Country* country : countries) {
+    for(Country* country : *countries) {
         int num_armies = country->GetNumberOfArmies();
 
         if(num_armies > max_num_armies) {
@@ -277,8 +292,10 @@ void AggressiveComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
         }
     }
 
-    country_num_army_to_add_pairs.insert({country_id_with_most_armies, num_bonus_army});
-    num_bonus_army = 0;
+    //aggressive player will reinforce the strongest country will all the available reinforcements
+    reinforce_phase->GetReinforceValues()->push_back(num_bonus_army);
+    reinforce_phase->GetCountriesToReinforce()->push_back(country_id_with_most_armies);
+    reinforce_phase->SetTotalReinforcementArmy(0);
 }
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
@@ -298,19 +315,20 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
 
     //Display neighboring countries
     cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
-    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << endl;
-    for (const Country *country : *attack_phase->GetOpponentNeighbours()) {
-        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << player->GetGameMap()->GenerateListOfNeighboringCountries(attack_phase->GetAttackingCountry()) << endl;
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
+        << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
     }
 
-    //iterate over all opponents until one is found with at least 2 armies
+    //iterate over all opponents until one is found
     for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
-        if(opponent->GetNumberOfArmies() > 2) {
-            defending_country = opponent;
-            cout << *player->GetPlayerName() << " chooses to attack " << *opponent->GetCountryName() << "\n";
-            break;
-        }
+        //TODO: not sure if we can attack armies with no countries
+        defending_country = opponent;
+        cout << *player->GetPlayerName() << " chooses to attack " << *opponent->GetCountryName() << "\n";
+        break;
     }
 
 
@@ -323,7 +341,6 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
 }
 
 bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
-    player->GetAttackPhase()->SetAttackingCountry(nullptr);
 
     //ask the player to select the country the wish to attack with
     AttackPhase* phase = player->GetAttackPhase();
@@ -333,33 +350,40 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
         return false;
     }
 
-    int country_id = -1;
-    int max_num_armies = 0;
+    multimap<int, Country*> countries_sorted_by_strength;
     vector<Country*>& countries = *player->GetPlayersCountries();
 
+    //sort countries by number of armies.
    for(Country* country : countries) {
+       if(country->GetNumberOfArmies() < 2) {
+           continue;
+       }
 
-       if(country->GetNumberOfArmies() > max_num_armies) {
-           vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountriesWithArmies(country);
-            for(int i = 0; i < neighbours->size(); ++i) {
-                if(player->DoesPlayerOwnCountry(country->GetCountryID())) {
-                    neighbours->erase(neighbours->begin() + i);
-                }
-            }
+       vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
 
-            if(!neighbours->empty()) {
-                max_num_armies = country->GetNumberOfArmies();
-                country_id = country->GetCountryID();
+       //make sure current country has at least one neighbour opponent to attack
+        for(int i = 0; i < neighbours->size(); ++i) {
+            if(player->DoesPlayerOwnCountry(country->GetCountryID())) {
+                neighbours->erase(neighbours->begin() + i);
             }
+        }
+
+        //as long as the current country has opposing countries with armies
+        if(!neighbours->empty()) {
+            countries_sorted_by_strength.insert({country->GetNumberOfArmies(), country});
+        }
+   }
+
+   for(auto attacker : countries_sorted_by_strength) {
+       if(!attacker.second) {
+           continue;
+       } else {
+           player->GetAttackPhase()->SetAttackingCountry(attacker.second);
+           break;
        }
    }
 
-   if(country_id > 0) {
-       Country* attacker = player->GetCountryById(country_id);
-       if(attacker) {
-           player->GetAttackPhase()->SetAttackingCountry(attacker);
-       }
-   }
+
 
    return player->GetAttackPhase()->GetAttackingCountry() != nullptr;
 }
@@ -480,13 +504,19 @@ void AggressiveComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
 //BENEVOLANT PLAYER STRATEGIES #########################################################################################
 
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
-void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) {
+void BenevolantComputerPlayerStrategy::ReinforceStrategy(Player* player) {
+
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
+    vector<Country*>* countries = player->GetPlayersCountries();
 
     //use a sorted map to arrange the countries from weakest to strongest
     multimap<int, int> country_num_army_pairs;
 
     //populate the map in order of weakest to strongest
-    for(Country* country : countries) {
+    for(Country* country : *countries) {
         int num_armies = country->GetNumberOfArmies();
         country_num_army_pairs.insert({num_armies, country->GetCountryID()});
     }
@@ -494,10 +524,11 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
     //give 1 army to each of the weakest countries (number of weakest countries == num_bonus_army)
     int counter = 0;
     for(auto& entry : country_num_army_pairs) {
-        if(counter == num_bonus_army) {
+        if(counter == reinforce_phase->TotalReinforceArmy()) {
             break;
         }
-        country_num_army_to_add_pairs.insert({entry.second, 1});
+        reinforce_phase->GetReinforceValues()->push_back(1);
+        reinforce_phase->GetCountriesToReinforce()->push_back(entry.second);
         ++counter;
     }
 }
@@ -505,32 +536,32 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(const vector<Country*>&
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 bool BenevolantComputerPlayerStrategy::PromptPlayerToAttack(Player* player) {
     //benevolant player never chooses to attack
-    cout << *player->GetPlayerName() << " never wants to attack! Aborting" << endl;
+    //cout << *player->GetPlayerName() << " never wants to attack! Aborting" << endl;
     return false;
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
-    cout << "benevolant players never attack! Aborting" << endl;
+   // cout << "benevolant players never attack! Aborting" << endl;
     return false;
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
-    cout << "benevolant players never attack! Aborting" << endl;
+   // cout << "benevolant players never attack! Aborting" << endl;
     return false;
 }
 
 void BenevolantComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
-    cout << "benevolant players never attack! Aborting" << endl;
+   // cout << "benevolant players never attack! Aborting" << endl;
 }
 
 void BenevolantComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
-    cout << "benevolant players never attack! Aborting" << endl;
+    //cout << "benevolant players never attack! Aborting" << endl;
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
 
 bool BenevolantComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
-    cout << "Benevolant player always wants to fortify" << endl;
+    // Benevolant player always wants to fortify
     return true;
 }
 

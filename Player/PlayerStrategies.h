@@ -22,7 +22,7 @@ class ConcreteStrategies {
 public:
     virtual ~ConcreteStrategies() = default;
 
-    virtual void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) = 0;
+    virtual void ReinforceStrategy(Player* player) = 0;
 
     virtual bool PromptPlayerToAttack(Player* player) = 0;
     virtual bool SelectCountryToAttack(Player* player) = 0;
@@ -44,7 +44,7 @@ public:
     HumanPlayerStrategy() {};
     ~HumanPlayerStrategy() {};
 
-    void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
+    void ReinforceStrategy(Player* player) override;
 
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
@@ -64,7 +64,7 @@ public:
     AggressiveComputerPlayerStrategy() {};
     ~AggressiveComputerPlayerStrategy() {};
 
-    void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
+    void ReinforceStrategy(Player* player) override;
 
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
@@ -84,7 +84,7 @@ public:
     BenevolantComputerPlayerStrategy() {};
     ~BenevolantComputerPlayerStrategy() {};
 
-    void ReinforceStrategy(const vector<Country*>& countries, map<int, int>& country_num_army_to_add_pairs, int& num_bonus_army) override;
+    void ReinforceStrategy(Player* player) override;
 
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
