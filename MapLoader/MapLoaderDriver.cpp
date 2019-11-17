@@ -99,13 +99,17 @@ int main()
 
 
     // create conquest map loader object (adaptee)
-    ConquestMapLoader* conquest_map_loader = new ConquestMapLoader("filename.map");
+    ConquestMapLoader* conquest_map_loader = new ConquestMapLoader("/Users/raniaAZ/Downloads/Alberta/Alberta.map");
+    cout << "\n loaded conquest map\n";
+
 
     // create an adapter object
-    MapLoader* adapter = new Adapter(conquest_map_loader);
+    //MapLoader* adapter = new Adapter(conquest_map_loader);
 
     // implicitly call ParseConquestMap from the adapter
-    adapter->ParseMap();
+    //adapter->ParseMap();
+    conquest_map_loader->ParseConquestMap();
+    cout << "\n parsed conquest map\n";
 
 
 

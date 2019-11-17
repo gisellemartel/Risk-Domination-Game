@@ -38,7 +38,7 @@ public:
 
     virtual bool ParseMap();
 
-    static string StripString(string string_to_strip, const string& left_delim, const string& right_delim);
+
 };
 
 
@@ -52,6 +52,7 @@ private:
 public:
     ConquestMapLoader(string file_name);
     ConquestMapLoader(const ConquestMapLoader& conquest_map_loader);
+
     ~ConquestMapLoader();
 
     ConquestMapLoader& operator=(const ConquestMapLoader& conquest_map_loader);
