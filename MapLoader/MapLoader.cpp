@@ -506,7 +506,8 @@ bool ConquestMapLoader::ParseConquestMap() {
 
                         while (true) {
                             string neighbour_name = Map::StripString(country_data, "", delim);
-                            neigbours.push_back(neighbour_name);
+                            string neigbour_data = to_string(country_num) + "," + neighbour_name;
+                            neigbours.push_back(neigbour_data);
                             country_data.erase(0, neighbour_name.length() + delim.length());
                             if (country_data.length() == 0) {
                                 break;
@@ -531,9 +532,22 @@ bool ConquestMapLoader::ParseConquestMap() {
         file_to_load.close();
 
         for (int i = 0; i < neigbours.size(); i++) {
-            int id_1 = i + 1;
-            int id_2 = parsed_map_->GetCountryByName(neigbours.at(i))->GetCountryID();
-            parsed_map_->SetTwoCountriesAsNeighbours(true, id_1, id_2);
+            int index_1;
+            string neigbour_data = neigbours.at(i);
+
+            string index_1_str = Map::StripString(neigbour_data, "", ",");
+
+            try {
+                index_1 = stoi(index_1_str);
+            } catch (const invalid_argument &e) {
+                cout << "error processing country index.\n\n";
+            }
+
+            neigbour_data.erase(0, index_1_str.length() + 1);
+
+
+            int index_2 = parsed_map_->GetCountryByName(neigbour_data)->GetCountryID();
+            parsed_map_->SetTwoCountriesAsNeighbours(true, (index_1 - 1), (index_2 - 1));
         }
 
         if (parsed_map_->GetNumCountries() == 0 && parsed_map_->GetNumContinents() == 0) {
