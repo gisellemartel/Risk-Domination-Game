@@ -1,0 +1,306 @@
+[Map]
+author=Sean O'Connor
+warn=yes
+image=Africa.bmp
+wrap=no
+scroll=horizontal
+
+[Continents]
+Northern Africa=4
+Southern Africa=3
+Western Africa=7
+Eastern Africa=3
+Central Africa=6
+The Horn=3
+The Congo=5
+Northern Alberta=4
+Grande Prairie=6
+Slave Lake=7
+Greater Edmonton=6
+Cold Lake=7
+Foothills=7
+Greater Calgary=4
+Badlands=5
+Crowsnest=7
+Prairies=6
+
+
+[Territories]
+Morocco,127,46,Northern Africa,Western Sahara,Algeria
+Algeria,193,85,Northern Africa,Morocco,Western Sahara,Mauritania,Mali,Niger,Libya,Tunisia
+Tunisia,252,33,Northern Africa,Algeria,Libya
+Libya,314,94,Northern Africa,North Sudan,Tunisia,Algeria,Niger,Chad,Egypt
+Egypt,415,99,Northern Africa,Libya,North Sudan
+
+Western Sahara,62,103,Western Africa,Morocco,Algeria,Mauritania
+Mauritania,84,147,Western Africa,Western Sahara,Algeria,Mali,Senegal
+Senegal,36,203,Western Africa,Mauritania,Mali,Guinea
+Mali,144,178,Western Africa,Senegal,Mauritania,Algeria,Niger,Burkina Faso,Ivory Coast,Guinea
+Guinea,65,236,Western Africa,Senegal,Mali,Ivory Coast,Sierra Leone,Liberia
+Sierra Leone,56,255,Western Africa,Guinea,Liberia
+Liberia,77,276,Western Africa,Sierra Leone,Guinea,Ivory Coast
+Ivory Coast,112,268,Western Africa,Liberia,Guinea,Mali,Burkina Faso,Ghana
+Burkina Faso,146,223,Western Africa,Mali,Niger,Benin,Ghana,Ivory Coast
+Benin,174,259,Western Africa,Burkina Faso,Niger,Nigeria,Ghana
+Ghana,150,266,Western Africa,Burkina Faso,Benin,Ivory Coast
+
+Niger,248,180,Central Africa,Mali,Algeria,Libya,Chad,Nigeria,Benin,Burkina Faso
+Nigeria,229,254,Central Africa,Niger,Chad,Cameroon,Benin
+Chad,325,197,Central Africa,Libya,North Sudan,South Sudan,Central African Rep.,Cameroon,Nigeria,Niger
+Cameroon,271,293,Central Africa,Nigeria,Chad,Central African Rep.,Rep. of the Congo,Gabon
+Central African Rep.,341,278,Central Africa,Chad,South Sudan,D.R.O.T. Congo,Rep. of the Congo,Cameroon
+
+North Sudan,427,179,The Horn,Egypt,Libya,Eritrea,Ethiopia,South Sudan,Chad
+South Sudan,421,253,The Horn,North Sudan,Ethiopia,Kenya,Uganda,D.R.O.T. Congo,Central African Rep.,Chad
+Eritrea,507,199,The Horn,North Sudan,Somalia,Ethiopia
+Ethiopia,510,256,The Horn,Eritrea,Somalia,Kenya,South Sudan,North Sudan
+Somalia,584,274,The Horn,Eritrea,Ethiopia,Kenya
+
+Gabon,264,339,The Congo,Cameroon,Rep. of the Congo
+Rep. of the Congo,299,345,The Congo,Cameroon,Central African Rep.,D.R.O.T. Congo,Gabon
+D.R.O.T. Congo,372,356,The Congo,Central African Rep.,South Sudan,Uganda,Tanzania,Zambia,Angola,Rep. of the Congo
+Angola,315,449,The Congo,D.R.O.T. Congo,Zambia,Namibia,Botswana
+Zambia,408,462,The Congo,D.R.O.T. Congo,Tanzania,Malawi,Mozambique,Zimbabwe,Botswana,Angola
+
+Uganda,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+Kenya,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+Tanzania,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+Malawi,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+
+Namibia,315,534,Southern Africa,Angola,Botswana,South Africa
+Botswana,373,529,Southern Africa,Angola,Zambia,Zimbabwe,South Africa,Namibia
+Zimbabwe,425,506,Southern Africa,Zambia,Mozambique,South Africa,Botswana
+Mozambique,482,496,Southern Africa,Tanzania,Malawi,Madagascar,Zambia,Zimbabwe,South Africa
+Madagascar,567,512,Southern Africa,Mozambique
+South Africa,385,596,Southern Africa,Namibia,Botswana,Zimbabwe,Mozambique
+
+Territory01,382,194,Northern Alberta,Territory1A,Territory02,Territory04,Territory05
+Territory1A,492,345,Northern Alberta,Territory01,Territory02,Territory04,Territory05,Territory06,Territory09,Territory10
+Territory02,689,187,Northern Alberta,Territory01,Territory1A,Territory03,Territory06
+Territory03,852,246,Northern Alberta,Territory02,Territory06,Territory07
+Territory04,278,365,Northern Alberta,Territory01,Territory1A,Territory05,Territory08,Territory09,Territory14
+Territory05,350,333,Northern Alberta,Territory01,Territory1A,Territory04
+Territory06,707,372,Northern Alberta,Territory1A,Territory02,Territory03,Territory07,Territory10,Territory11
+Territory07,848,449,Northern Alberta,Territory03,Territory06,Territory10,Territory20,Territory21
+Territory08,207,490,Grande Prairie,Territory04,Territory12,Territory13,Territory14
+Territory09,443,514,Northern Alberta,Territory1A,Territory04,Territory10,Territory14,Territory16,Territory17,Territory18,Territory19
+Territory10,619,521,Northern Alberta,Territory1A,Territory06,Territory07,Territory09,Territory11,Territory19,Territory20,Territory26
+Territory11,683,453,Northern Alberta,Territory06,Territory10
+Territory12,187,619,Grande Prairie,Territory08,Territory13,Territory15,Territory16,Territory22
+Territory13,265,595,Grande Prairie,Territory08,Territory12,Territory14,Territory16
+Territory14,316,584,Grande Prairie,Territory04,Territory08,Territory09,Territory13,Territory16
+Territory15,237,632,Grande Prairie,Territory12,Territory16
+Territory16,315,644,Grande Prairie,Territory09,Territory12,Territory13,Territory14,Territory15,Territory18,Territory22,Territory23
+Territory17,451,621,Slave Lake,Territory09,Territory18
+Territory18,455,717,Slave Lake,Territory09,Territory16,Territory17,Territory19,Territory23,Territory24
+Territory19,582,715,Slave Lake,Territory09,Territory10,Territory18,Territory24,Territory25,Territory26
+Territory20,763,696,Cold Lake,Territory07,Territory10,Territory21,Territory26,Territory27,Territory28
+Territory21,886,750,Cold Lake,Territory07,Territory20,Territory28
+Territory22,183,700,Grande Prairie,Territory12,Territory16,Territory23
+Territory23,265,815,Grande Prairie,Territory16,Territory18,Territory22,Territory24,Territory46
+Territory24,525,844,Slave Lake,Territory18,Territory19,Territory23,Territory25,Territory41,Territory46
+Territory25,626,855,Slave Lake,Territory19,Territory24,Territory26,Territory27,Territory40
+Territory26,670,796,Slave Lake,Territory10,Territory19,Territory20,Territory25,Territory27
+Territory27,704,852,Slave Lake,Territory20,Territory25,Territory26,Territory29,Territory36,Territory40
+Territory28,829,807,Cold Lake,Territory20,Territory21,Territory29,Territory30,Territory31
+Territory29,769,854,Cold Lake,Territory27,Territory28,Territory30,Territory34,Territory36
+Territory30,846,883,Cold Lake,Territory28,Territory29,Territory31,Territory32,Territory33,Territory34
+Territory31,898,836,Cold Lake,Territory28,Territory30,Territory32
+Territory32,921,885,Cold Lake,Territory30,Territory31,Territory33
+Territory33,904,988,Cold Lake,Territory30,Territory32,Territory34,Territory35,Territory37,Territory52,Territory53
+Territory34,813,918,Cold Lake,Territory29,Territory30,Territory33,Territory35,Territory36
+Territory35,805,961,Cold Lake,Territory33,Territory34,Territory36,Territory37
+Territory36,729,912,Cold Lake,Territory27,Territory29,Territory34,Territory35,Territory37,Territory38,Territory39,Territory40
+Territory37,772,995,Cold Lake,Territory33,Territory35,Territory36,Territory38,Territory39,Territory43,Territory51,Territory52
+Territory38,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory39,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory40,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory41,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory42,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory43,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+Edmonton,655,967,Greater Edmonton,Territory39,Territory40,Territory42,Territory43
+Territory45,509,1008,Foothills,Territory42,Territory43,Territory46,Territory48,Territory50
+Territory46,376,982,Grande Prairie,Territory23,Territory24,Territory41,Territory42,Territory45,Territory47,Territory48
+Territory47,278,1039,Grande Prairie,Territory46,Territory48,Territory58
+Territory48,483,1107,Foothills,Territory45,Territory46,Territory47,Territory49,Territory50,Territory56,Territory57,Territory58,Territory59
+Territory49,600,1060,Foothills,Territory48,Territory50,Territory56
+Territory50,664,1052,Foothills,Territory43,Territory45,Territory48,Territory49,Territory51,Territory52,Territory54,Territory55
+Territory51,723,1028,Foothills,Territory37,Territory43,Territory50,Territory52
+Territory52,799,1059,Badlands,Territory33,Territory37,Territory50,Territory51,Territory53,Territory54
+Territory53,907,1088,Badlands,Territory33,Territory52,Territory54,Territory62
+Territory54,813,1124,Badlands,Territory50,Territory52,Territory53,Territory55,Territory61,Territory62
+Territory55,696,1132,Foothills,Territory50,Territory54,Territory56,Territory57,Territory60,Territory61
+Territory56,605,1106,Foothills,Territory48,Territory49,Territory55,Territory57
+Territory57,604,1155,Foothills,Territory48,Territory55,Territory56,Territory59
+Territory58,478,1256,Foothills,Territory47,Territory48,Territory59,Territory71,Territory72,Territory73
+Territory59,596,1213,Greater Calgary,Territory48,Territory57,Territory58,Territory60,Territory71
+Territory60,703,1222,Greater Calgary,Territory55,Territory59,Territory61,Territory69,Calgary,Territory71
+Territory61,822,1251,Badlands,Territory54,Territory55,Territory60,Territory62,Territory63,Territory64,Territory65,Territory67,Territory68,Territory69
+Territory62,902,1159,Badlands,Territory53,Territory54,Territory61,Territory63
+Territory63,916,1216,Badlands,Territory61,Territory62,Territory64
+Territory64,914,1274,Badlands,Territory61,Territory63,Territory65
+Territory65,915,1318,Badlands,Territory61,Territory64,Territory66
+Territory66,922,1375,Prairies,Territory65,Territory67,Territory78,Territory79
+Territory67,862,1396,Prairies,Territory61,Territory66,Territory68,Territory77,Territory78
+Territory68,815,1375,Prairies,Territory61,Territory67,Territory69,Territory77
+Territory69,709,1348,Greater Calgary,Territory60,Territory61,Territory68,Calgary,Territory71,Territory72,Territory75,Territory76,Territory77
+Calgary,669,1255,Greater Calgary,Territory60,Territory69,Territory71
+Territory71,607,1279,Greater Calgary,Territory58,Territory59,Territory60,Territory69,Calgary,Territory72
+Territory72,618,1356,Crowsnest,Territory58,Territory69,Territory71,Territory73,Territory74,Territory75
+Territory73,558,1384,Crowsnest,Territory58,Territory72,Territory74
+Territory74,594,1437,Crowsnest,Territory72,Territory73,Territory75,Territory85,Territory86
+Territory75,653,1450,Crowsnest,Territory69,Territory72,Territory74,Territory76,Territory82,Territory83,Territory84,Territory85
+Territory76,734,1475,Crowsnest,Territory69,Territory75,Territory77,Territory80,Territory82
+Territory77,800,1462,Prairies,Territory67,Territory68,Territory69,Territory76,Territory78,Territory80
+Territory78,874,1510,Prairies,Territory66,Territory67,Territory77,Territory79,Territory80
+Territory79,956,1497,Prairies,Territory66,Territory78
+Territory80,791,1547,Prairies,Territory76,Territory77,Territory78,Territory81
+Territory81,714,1553,Prairies,Territory80,Territory82,Territory83,Territory88
+Territory82,704,1512,Crowsnest,Territory75,Territory76,Territory81,Territory83
+Territory83,647,1536,Crowsnest,Territory75,Territory81,Territory82,Territory84,Territory85,Territory86,Territory87,Territory88
+Territory84,646,1501,Crowsnest,Territory75,Territory83,Territory85
+Territory85,606,1492,Crowsnest,Territory74,Territory75,Territory83,Territory84,Territory86
+Territory86,573,1488,Crowsnest,Territory74,Territory83,Territory85,Territory87
+Territory87,589,1537,Crowsnest,Territory83,Territory86,Territory88
+Territory88,630,1576,Crowsnest,Territory81,Territory83,Territory87
+
+Territory89,704,1512,Crowsnest,Territory75,Territory76,Territory81,Territory83
+Territory90,647,1536,Crowsnest,Territory75,Territory81,Territory82,Territory84,Territory85,Territory86,Territory87,Territory88
+Territory91,646,1501,Crowsnest,Territory75,Territory83,Territory85
+Territory92,606,1492,Crowsnest,Territory74,Territory75,Territory83,Territory84,Territory86
+Territory93,573,1488,Crowsnest,Territory74,Territory83,Territory85,Territory87
+Territory94,589,1537,Crowsnest,Territory83,Territory86,Territory88
+Territory95,630,1576,Crowsnest,Territory81,Territory83,Territory87
+Territory96,704,1512,Crowsnest,Territory75,Territory76,Territory81,Territory83
+Territory97,647,1536,Crowsnest,Territory75,Territory81,Territory82,Territory84,Territory85,Territory86,Territory87,Territory88
+Territory98,646,1501,Crowsnest,Territory75,Territory83,Territory85
+Territory99,606,1492,Crowsnest,Territory74,Territory75,Territory83,Territory84,Territory86
+Territory100,573,1488,Crowsnest,Territory74,Territory83,Territory85,Territory87
+Territory101,589,1537,Crowsnest,Territory83,Territory86,Territory88
+Territory102,630,1576,Crowsnest,Territory81,Territory83,Territory87
+Territory103,704,1512,Crowsnest,Territory75,Territory76,Territory81,Territory83
+Territory104,647,1536,Crowsnest,Territory75,Territory81,Territory82,Territory84,Territory85,Territory86,Territory87,Territory88
+Territory105,646,1501,Crowsnest,Territory75,Territory83,Territory85
+Territory106,606,1492,Crowsnest,Territory74,Territory75,Territory83,Territory84,Territory86
+Territory107,573,1488,Crowsnest,Territory74,Territory83,Territory85,Territory87
+Territory108,589,1537,Crowsnest,Territory83,Territory86,Territory88
+Territory109,630,1576,Crowsnest,Territory81,Territory83,Territory87
+Territory110,704,1512,Crowsnest,Territory75,Territory76,Territory81,Territory83
+Territory111,647,1536,Crowsnest,Territory75,Territory81,Territory82,Territory84,Territory85,Territory86,Territory87,Territory88
+Territory112,646,1501,Crowsnest,Territory75,Territory83,Territory85
+Territory113,606,1492,Crowsnest,Territory74,Territory75,Territory83,Territory84,Territory86
+Territory114,573,1488,Crowsnest,Territory74,Territory83,Territory85,Territory87
+Territory115,589,1537,Crowsnest,Territory83,Territory86,Territory88
+Territory116,630,1576,Crowsnest,Territory81,Territory83,Territory87
+
+Territor117,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory118,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory119,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory120,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory121,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory122,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+Territory123,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory124,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory125,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory126,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory127,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory128,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+Territory129,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory130,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory131,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory132,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory133,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory134,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+Territory135,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory136,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory137,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory138,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory139,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory140,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+Territory141,708,941,Greater Edmonton,Territory36,Territory37,Territory39
+Territory142,685,941,Greater Edmonton,Territory36,Territory37,Territory38,Territory40,Territory43,Edmonton
+Territory143,648,913,Greater Edmonton,Territory25,Territory27,Territory36,Territory39,Territory41,Territory42,Edmonton
+Territory144,564,917,Greater Edmonton,Territory24,Territory40,Territory42,Territory46
+Territory145,593,963,Greater Edmonton,Territory40,Territory41,Territory43,Edmonton,Territory45,Territory46
+Territory146,632,992,Greater Edmonton,Territory37,Territory39,Territory42,Edmonton,Territory45,Territory50,Territory51
+
+A,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+B,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+C,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+D,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+E,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+F,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+G,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+H,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+I,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+J,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+K,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+L,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+M,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+N,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+O,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+P,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+Q,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+R,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+S,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+T,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+U,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+V,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+W,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+X,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+Y,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+Z,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+AA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+BA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+CA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+DA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+EA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+FA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+GA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+HA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+IA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+JA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+KA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+LA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+MA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+NA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+OA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+PA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+QA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+RA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+SA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+TA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+UA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+VA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+WA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+XA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+YA452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+ZA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+AAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+BAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+CAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+DAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+EAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+FAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+GAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+HAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+IAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+JAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+KAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+LAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+MAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+NAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+OAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+PAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+QAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+RAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+SAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+TAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+UAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+VAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+WAA,470,391,Eastern Africa,Uganda,Kenya,Mozambique,Malawi,D.R.O.T. Congo,Zambia
+XAA,460,454,Eastern Africa,Tanzania,Mozambique,Zambia
+YAA,452,323,Eastern Africa,South Sudan,Kenya,Tanzania,D.R.O.T. Congo
+ZAA,498,330,Eastern Africa,South Sudan,Ethiopia,Somalia,Tanzania,Uganda
+
+

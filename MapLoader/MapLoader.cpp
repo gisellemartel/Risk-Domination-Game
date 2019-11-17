@@ -344,7 +344,7 @@ ConquestMapLoader &ConquestMapLoader::operator=(const ConquestMapLoader &conques
     return *this;
 }
 
-Map *ConquestMapLoader::GetParsedConquestMap() const {
+Map* ConquestMapLoader::GetParsedConquestMap() const {
     return parsed_map_;
 }
 
@@ -531,10 +531,8 @@ bool ConquestMapLoader::ParseConquestMap() {
         }
         file_to_load.close();
 
-        for (int i = 0; i < neigbours.size(); i++) {
+        for (auto neigbour_data : neigbours) {
             int index_1;
-            string neigbour_data = neigbours.at(i);
-
             string index_1_str = Map::StripString(neigbour_data, "", ",");
 
             try {

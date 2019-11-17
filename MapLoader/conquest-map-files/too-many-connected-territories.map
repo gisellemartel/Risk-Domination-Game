@@ -1,0 +1,23 @@
+[Map]
+author=Giselle Martel
+warn=yes
+image=
+wrap=no
+scroll=horizontal
+
+[Continents]
+Europe=1
+
+
+[Territories]
+Portugal, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Netherlands, Greece, Germany, Belgium, Denmark, Croatia
+Denmark, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Netherlands, Greece, Germany, Belgium, Portugal, Croatia
+Belgium, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Netherlands, Greece, Germany, Denmark, Portugal, Croatia
+Germany, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Netherlands, Greece, Belgium, Denmark, Portugal, Croatia
+Greece, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Netherlands, Germany, Belgium, Denmark, Portugal, Croatia
+Netherlands, 1, 1, Europe, Italy, Spain, Austria, France, Romania, Greece, Germany, Belgium, Denmark, Portugal, Croatia
+Romania, 1, 1, Europe, Italy, Spain, Austria, France, Netherlands, Greece, Germany, Belgium, Denmark, Portugal, Croatia
+France, 1, 1, Europe, Italy, Spain, Austria, Romania, Netherlands, Greece, Germany, Belgium, Denmark, Portugal, Croatia
+Spain, 1, 1, Europe, Italy, France, Austria, Romania, Netherlands, Greece, Germany, Belgium, Denmark, Portugal, Croatia
+Italy, 1, 1, Europe, Spain, France, Austria, Romania, Netherlands, Greece, Germany, Belgium, Denmark, Portugal, Croatia
+Croatia, 1, 1, Europe, Spain, France, Austria, Romania, Netherlands, Greece, Germany, Belgium, Denmark, Portugal, Italy
