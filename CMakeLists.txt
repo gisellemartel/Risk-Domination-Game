@@ -45,3 +45,15 @@ add_executable(Cards
         Cards/CardsDriver.cpp
         Cards/Cards.cpp
         )
+add_executable(Test
+        Test/Tests.cpp
+        Map/Map.cpp
+        Player/Player.cpp
+        Player/PlayerStrategies.cpp
+        Dice/Dice.cpp
+        Cards/Cards.cpp
+        MapLoader/MapLoader.cpp
+        GameEngine/GameEngine.cpp
+        GameObservers/GameObservers.cpp
+        Utility/Utility.cpp
+        )

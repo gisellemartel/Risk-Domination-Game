@@ -11,6 +11,7 @@
 using namespace std;
 
 #include "PlayerStrategies.h"
+#include "../GameEngine/GameEngine.h"
 
 
 // HUMAN PLAYER STRATEGIES #############################################################################################
@@ -39,10 +40,10 @@ void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
             continue;
         }
 
-        cout << "Currently on Country " << endl;
-        current_country->DisplayInfo();
-
-        cout << "Armies to assign: " << num_bonus_army << "\nArmies to add to current country: ";
+        string msg = "Number of armies currently in " + *current_country->GetCountryName() + ": " + to_string(current_country->GetNumberOfArmies());
+        msg.append("\nArmies available to assign to " + *current_country->GetCountryName() + ": " + to_string(num_bonus_army));
+        msg.append("\nNumber armies you desire to reinforce " + *current_country->GetCountryName() + " with: ");
+        player->Notify(player, GamePhase::Reinforce, msg, false, false);
 
         cin >> reinforce_value;
         while (cin.fail() || reinforce_value > num_bonus_army || reinforce_value < 0) {
@@ -68,8 +69,11 @@ void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 bool HumanPlayerStrategy::PromptPlayerToAttack(Player* player) {
+
+    string msg = "Does " + *player->GetPlayerName() + " want attack an opponent's country ? (enter 'y' to attack and any other character otherwise)\n";
+    player->Notify(player, GamePhase::Attack, msg, false, false);
+
     string answer;
-    cout << "Does " << *player->GetPlayerName() << " want attack an opponent's country ? (enter 'y' to attack and any other character otherwise)" << endl;
     while(!(cin >> answer)) {
         cout << "Your answer is not correct, please choose a valid answer" << endl;
         cin.clear();
@@ -84,11 +88,11 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         return false;
     }
 
+    player->GetAttackPhase()->SetDefendingCountry(nullptr);
     Country* defending_country = attack_phase->GetDefendingCountry();
 
-
     //Display neighboring countries
-    cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+    cout << "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
     for (Country *country : *attack_phase->GetOpponentNeighbours()) {
         string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country);
@@ -98,9 +102,13 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
     }
+
+
     //prompt player to select country to attack from list of neighbours
     while(!defending_country) {
-        cout << "Please choose which country you would like to attack (enter by numerical id):\n";
+        string msg = "Please choose which country you would like to attack (enter by numerical id):\n";
+        player->Notify(player, GamePhase::Attack, msg, false, false);
+
         int defender_id = -1;
         Country* defender = nullptr;
 
@@ -111,7 +119,6 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         }
     }
 
-
     attack_phase->SetDefendingCountry(defending_country);
     attack_phase->SetDefender(defending_country->GetCountryOwner());
 
@@ -119,7 +126,7 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
 }
 
 bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
-    cout << "The Countries that you own are " << endl;
+    cout << "The Countries that you own are\n";
     player->DisplayCountries();
 
     player->GetAttackPhase()->SetAttackingCountry(nullptr);
@@ -130,22 +137,26 @@ bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
     AttackPhase* phase = player->GetAttackPhase();
 
     if(!phase) {
-        cout << "Something went wrong! Aborting" << endl;
+        string msg = "Something went wrong! Aborting\n";
+        player->Notify(player, GamePhase::Attack, msg, false, false);
         return false;
     }
 
     phase->SetAttackingCountry(player->PromptPlayerToSelectCountry());
 
-    if(phase->GetAttackingCountry()) {
-        //keep looping until select the country with 2 or more armies
-        while(phase->GetAttackingCountry()->GetNumberOfArmies() < 2) {
-            cout << "You do not have enough armies in country " << *phase->GetAttackingCountry()->GetCountryName() << ". Please Try Again." << endl;
-            phase->SetAttackingCountry(player->PromptPlayerToSelectCountry());
-        }
-        return true;
-    } else {
+
+    //if nothing was selected somehow fatal error return false
+    if(!phase->GetAttackingCountry()) {
         return false;
     }
+
+    //keep looping until select the country with 2 or more armies
+    while(phase->GetAttackingCountry()->GetNumberOfArmies() < 2) {
+        cout << "You do not have enough armies in country " + *phase->GetAttackingCountry()->GetCountryName() + ". Please Try Again.\n";
+        phase->SetAttackingCountry(player->PromptPlayerToSelectCountry());
+    }
+
+    return true;
 }
 
 void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) {
@@ -155,7 +166,8 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
     }
 
     //prompt each player to enter the num of dice they wish to roll
-    cout << "\nIt is " << *player->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << ") dice: ";
+    string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
+    player->Notify(player, GamePhase::Attack, msg, true, false);
 
     while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
         cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
@@ -166,8 +178,10 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
 
 void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
     //prompt attacker if they would like to assign armies from their newly acquired country to their other countries
-    cout << *player->GetPlayerName() << " would you like to move armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << "? (enter 'y' if so and any other character otherwise)\n";
 
+    string msg = *player->GetPlayerName() + " would you like to move armies from " + *attacking_country->GetCountryName() + " to " + *defending_country->GetCountryName() + "? (enter 'y' if so and any other character otherwise)\n";
+
+    player->GetGameEngine()->Notify(player, GamePhase::Attack, msg, false, false );
     string user_response;
     while(!(cin >> user_response)) {
         cout << "\nInvalid input given! Please try again: ";
@@ -176,7 +190,9 @@ void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacki
     }
 
     if(user_response == "y") {
-        cout << "How many armies would you like to assign to " << *defending_country->GetCountryName() << " from " << *attacking_country->GetCountryName() << "? (you can assign a max of " << attacking_country->GetNumberOfArmies() << "): ";
+        msg = "How many armies would you like to assign to " + *defending_country->GetCountryName() + " from " + *attacking_country->GetCountryName() + "? (you can assign a max of " + to_string(attacking_country->GetNumberOfArmies()) + "): ";
+        player->GetGameEngine()->Notify(player, GamePhase::Attack, msg, false, false );
+
         int num_armies_to_assign;
 
         while(!(cin >> num_armies_to_assign) || num_armies_to_assign < 1 || num_armies_to_assign > attacking_country->GetNumberOfArmies()) {
@@ -201,7 +217,10 @@ void HumanPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacki
 
 bool HumanPlayerStrategy::PromptPlayerToFortify(Player *player) {
     string answer;
-    cout << "Does " << *player->GetPlayerName() << " wish to fortify a country? (Enter y, any other char otherwise):" << endl;
+
+    string msg = "Does " + *player->GetPlayerName() + " wish to fortify a country? (Enter y, any other char otherwise):\n";
+    player->GetGameEngine()->Notify(player, GamePhase::Fortify, msg, false, false );
+
     while(!(cin >> answer)) {
         cout << "Your answer is not correct, please choose a valid answer" << endl;
         cin.clear();
@@ -217,7 +236,9 @@ bool HumanPlayerStrategy::SelectSourceCountry(Player *player) {
     }
 
     player->DisplayCountries();
-    cout << "Please choose your source country \n";
+
+    string msg = "Please choose your source country \n";
+    player->GetGameEngine()->Notify(player, GamePhase::Fortify, msg, false, false );
 
     Country* selected_country = player->PromptPlayerToSelectCountry();
 
@@ -236,7 +257,9 @@ bool HumanPlayerStrategy::SelectTargetCountry(Player *player) {
         return false;
     }
 
-    cout << "Please choose which country you would like to fortify (enter by numerical id):\n";
+    string msg = "Please choose which country you would like to fortify (enter by numerical id):\n";
+    player->GetGameEngine()->Notify(player, GamePhase::Fortify, msg, false, false );
+
     int fortify_id;
 
     Country* target = nullptr;
@@ -257,7 +280,9 @@ void HumanPlayerStrategy::FortifyStrategy(Player* player, int& num_of_armies) {
         return;
     }
 
-    cout << "How many armies do you wish to move.(Enter a number):" << endl;
+    string msg = "How many armies do you wish to move.(Enter a number):\n";
+    player->GetGameEngine()->Notify(player, GamePhase::Fortify, msg, false, false );
+
 
     while (!(cin >> num_of_armies) || num_of_armies < 1 || num_of_armies > fortify_phase->GetSourceCountry()->GetNumberOfArmies()) {
         cout << "Invalid number of armies selected! Please try again\n";
@@ -301,7 +326,6 @@ void AggressiveComputerPlayerStrategy::ReinforceStrategy(Player* player) {
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 bool AggressiveComputerPlayerStrategy::PromptPlayerToAttack(Player* player) {
     //aggressive player always chooses to attack
-    cout << *player->GetPlayerName() << " wants to attack " << endl;
     return true;
 }
 
@@ -314,7 +338,10 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
     Country* defending_country = nullptr;
 
     //Display neighboring countries
-    cout << "\n\nHere are the neighbouring opponent countries to " << *attack_phase->GetAttackingCountry()->GetCountryName() << endl;
+   string msg = "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
+
+   player->Notify(player, GamePhase::Attack, msg, false, false);
+
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
     for (Country *country : *attack_phase->GetOpponentNeighbours()) {
         string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
@@ -325,9 +352,9 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
 
     //iterate over all opponents until one is found
     for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
-        //TODO: not sure if we can attack armies with no countries
         defending_country = opponent;
-        cout << *player->GetPlayerName() << " chooses to attack " << *opponent->GetCountryName() << "\n";
+        msg = *player->GetPlayerName() + " chooses to attack " + *opponent->GetCountryName() + "\n";
+        player->Notify(player, GamePhase::Attack, msg, false, false);
         break;
     }
 
@@ -346,10 +373,12 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
     AttackPhase* phase = player->GetAttackPhase();
 
     if(!phase) {
-        cout << "Something went wrong! Aborting" << endl;
+        string msg = "Something went wrong! Aborting\n";
+        player->Notify(player, GamePhase::Attack, msg, false, false);
         return false;
     }
 
+    player->GetAttackPhase()->SetAttackingCountry(nullptr);
     multimap<int, Country*> countries_sorted_by_strength;
     vector<Country*>& countries = *player->GetPlayersCountries();
 
@@ -374,6 +403,12 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
         }
    }
 
+   if(countries_sorted_by_strength.empty()) {
+       string msg = "Currently no country exists that can attack right now\n";
+       player->Notify(player, GamePhase::Attack, msg, false, false);
+       return false;
+   }
+
    for(auto attacker : countries_sorted_by_strength) {
        if(!attacker.second) {
            continue;
@@ -382,8 +417,6 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
            break;
        }
    }
-
-
 
    return player->GetAttackPhase()->GetAttackingCountry() != nullptr;
 }
@@ -395,14 +428,16 @@ void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player
     }
 
     //prompt each player to enter the num of dice they wish to roll
-    cout << "\nIt is " << *player->GetPlayerName() << "'s turn to enter the number of dice they wish to roll (can roll max " << MAX_NUM_OF_DICE_ATTACKER << ") dice: ";
+    string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
+    player->Notify(player, GamePhase::Attack, msg, true, false);
 
     attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
 }
 
 void AggressiveComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
 
-    cout << *player->GetPlayerName() << " is moving armies from " << *attacking_country->GetCountryName() << " to " << *defending_country->GetCountryName() << endl;
+    string msg = *player->GetPlayerName() + " is moving armies from " + *attacking_country->GetCountryName() + " to " + *defending_country->GetCountryName() + "\n";
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 
     //Aggressive player will move all armies to their strongest country
     int num_armies_to_assign = attacking_country->GetNumberOfArmies();
@@ -418,7 +453,7 @@ void AggressiveComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Cou
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
 
 bool AggressiveComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
-    cout << "Aggressive player always wants to fortify" << endl;
+    // Aggressive player always wants to fortify
     return true;
 }
 
@@ -455,7 +490,8 @@ bool AggressiveComputerPlayerStrategy::SelectSourceCountry(Player *player) {
     }
 
     if(!fortify_phase->GetSourceCountry()) {
-        cout << "Only one country has armies right now. Aggressive player prefers to keep all their armies in strongest country" << endl;
+        string msg = "Only one country has armies right now. Aggressive player prefers to keep all their armies in strongest country\n";
+        player->Notify(player, GamePhase::Fortify, msg, false, false);
     }
 
     return fortify_phase->GetSourceCountry() != nullptr;
@@ -500,7 +536,6 @@ void AggressiveComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
 
 
 
-
 //BENEVOLANT PLAYER STRATEGIES #########################################################################################
 
 //Strategies for Reinforce ----------------------------------------------------------------------------------------------
@@ -535,27 +570,26 @@ void BenevolantComputerPlayerStrategy::ReinforceStrategy(Player* player) {
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 bool BenevolantComputerPlayerStrategy::PromptPlayerToAttack(Player* player) {
-    //benevolant player never chooses to attack
-    //cout << *player->GetPlayerName() << " never wants to attack! Aborting" << endl;
+// benevolant players never attack
     return false;
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
-   // cout << "benevolant players never attack! Aborting" << endl;
+   // benevolant players never attack
     return false;
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
-   // cout << "benevolant players never attack! Aborting" << endl;
+   //benevolant players never attack
     return false;
 }
 
 void BenevolantComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
-   // cout << "benevolant players never attack! Aborting" << endl;
+    // benevolant players never attack
 }
 
 void BenevolantComputerPlayerStrategy::MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) {
-    //cout << "benevolant players never attack! Aborting" << endl;
+    // benevolant players never attack
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
@@ -585,7 +619,8 @@ bool BenevolantComputerPlayerStrategy::SelectSourceCountry(Player *player) {
     }
 
     if(max_num_armies < 1) {
-        cout << "You have no countries with enough armies to fortify others" << endl;
+        string msg = "You have no countries with enough armies to fortify others\n";
+        player->Notify(player, GamePhase::Fortify, msg, false, false);
         return false;
     }
 

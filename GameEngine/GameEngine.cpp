@@ -795,7 +795,7 @@ void GameEngine::StartGameLoop() {
         return;
     }
 
-    while(!PlayerHasWon(current_player) && num_iterations < 1000){
+    while(!PlayerHasWon(current_player)){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -816,6 +816,13 @@ void GameEngine::StartGameLoop() {
     }
 
     cout << "############################################################################# GAME OVER #############################################################################" << endl;
+
+    cout << "\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n";
+
+    for(Player* player : *players_) {
+        cout << *player->GetPlayerName() << "'s countries: ";
+        player->DisplayCountries();
+    }
 }
 
 void GameEngine::Register(Observer *observer) {
