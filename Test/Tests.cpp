@@ -8,15 +8,27 @@ using namespace std;
 #include "../GameObservers/GameObservers.h"
 #include "../GameEngine/GameEngine.h"
 
-int main() {
+class Tester {
 
-    GameEngine* new_game = new GameEngine();
-    PhaseObserver* observer = new PhaseObserver();
-    new_game->Register(observer);
+public:
 
-    //test with 1 human players and an aggressive player
-    new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1 ,0);
-    new_game->StartGameLoop();
+    static void TestComputerPlayers() {
+
+        GameEngine* new_game = new GameEngine();
+        PhaseObserver* observer = new PhaseObserver();
+        new_game->Register(observer);
+
+        //test with 1 human players and an aggressive player
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1 ,0);
+
+        //repeat game 10 times
+        for(int i = 0; i < 10; ++i) {
+            for(Player* player : *new_game->GetPlayers()) {
+                player->Reinforce();
+                player->Attack();
+                player->Fortify();
+            }
+        }
 
 //    // test with 2 aggressive and 1 benevolant player
 
@@ -47,9 +59,38 @@ int main() {
 //    new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1,1);
 //    new_game->StartGameLoop();
 
-    new_game->Unregister(observer);
-    new_game = nullptr;
-    delete new_game;
+        new_game->Unregister(observer);
+        new_game = nullptr;
+        delete new_game;
+
+    }
+
+    static void TestPhaseObserver() {
+
+        GameEngine* new_game = new GameEngine();
+        PhaseObserver* observer = new PhaseObserver();
+        new_game->Register(observer);
+
+        //test with 1 human players and an aggressive player
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1 ,0);
+
+        //repeat game 10 times
+        for(int i = 0; i < 10; ++i) {
+            for(Player* player : *new_game->GetPlayers()) {
+                player->Reinforce();
+                player->Attack();
+                player->Fortify();
+            }
+        }
+
+        new_game->Unregister(observer);
+
+    }
+};
+
+int main() {
+
+    Tester::TestComputerPlayers();
 
     return 0;
 }
