@@ -349,16 +349,18 @@ Map* ConquestMapLoader::GetParsedConquestMap() const {
 }
 
 bool ConquestMapLoader::ParseConquestMap() {
-    cout << "\n started parsing conquest map\n";
+    cout << "Starting to parse conquest map file...\n";
 
     string line;
-    vector< string> neigbours;
+    vector< string> neighbours;
     char line_delim = '\n';
     ifstream file_to_load(file_name_);
     if (file_to_load.peek() == ifstream::traits_type::eof()) {
-        cout << "File is empty! Please load a another file\n\n";
+        cout << "File is empty! Please load a another file\n";
         return false;
     }
+
+    map<int, string> country_neighbours_map;
 
     if (file_to_load.is_open()) {
         int border_entry_count = 0;
@@ -372,7 +374,7 @@ bool ConquestMapLoader::ParseConquestMap() {
             //parse the data in the continents section
             if (line.find("[Continents]") == 0) {
                 //get the next line
-                int current_id = 0;
+                int current_id = 1;
                 while (getline(file_to_load, line, line_delim)) {
                     bool line_is_valid = line.find('[') == -1 && line[0] != '\r';
                     //we have reached the end of the continents section
@@ -408,7 +410,11 @@ bool ConquestMapLoader::ParseConquestMap() {
                         //debug string
                         //cout << continent_name << " " << army_value << endl;
 
-                        parsed_map_->AddContinentToMap(continent_name, army_value, current_id + 1);
+                        parsed_map_->AddContinentToMap(continent_name, army_value, current_id);
+                        if(parsed_map_->GetNumContinents() > 32) {
+                            cout << file_name_ << " contains too many continents! Please load a valid map file!\n";
+                            return false;
+                        }
                         ++current_id;
                     }
                 }
@@ -417,10 +423,12 @@ bool ConquestMapLoader::ParseConquestMap() {
             //parse the data in the countries  section
             if (line.find("[Territories]") == 0) {
                 if (parsed_map_->GetNumContinents() == 0) {
-                    cout << "Failed to generate map, file was missing continents!\n\n";
+                    cout << "Failed to generate map, file was missing continents!\n";
                     return false;
                 }
                 int current_index = 1;
+                map<int, string> country_neighbours_map;
+
                 //get the next line
                 while (getline(file_to_load, line, line_delim)) {
                     bool line_is_valid = line.find('[') == -1;
@@ -434,8 +442,9 @@ bool ConquestMapLoader::ParseConquestMap() {
                         string delim = ",";
 
                         // remove last char "\r" from the string
-                        country_data.erase(country_data.size() - 1);
-
+                        if(country_data.at(country_data.length() - 1) == '\r') {
+                            country_data.erase(country_data.size() - 1);
+                        }
 
                         int country_num = current_index;
 
@@ -444,7 +453,7 @@ bool ConquestMapLoader::ParseConquestMap() {
 
                         if (country_data.length() == 0) {
                             cout << "country " << country_num
-                                 << " Country Data is not complete. Please load a valid file\n\n";
+                                 << " Country Data is not complete. Please load a valid file\n";
                             return false;
                         }
 
@@ -456,7 +465,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                             x_coordinate = stoi(x_coordinate_str);
                         } catch (const invalid_argument &e) {
                             cout << "the X coordinate for country" << country_num
-                                 << " is invalid. Please load a valid file.\n\n";
+                                 << " is invalid. Please load a valid file.\n";
                             return false;
                         }
                         country_data.erase(0, x_coordinate_str.length() + delim.length());
@@ -464,7 +473,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                         if (country_data.length() == 0) {
                             //throw error
                             cout << "country " << country_num
-                                 << " is missing its Y coordinate. Please load a valid file\n\n";
+                                 << " is missing its Y coordinate. Please load a valid file\n";
                             return false;
                         }
 
@@ -475,88 +484,112 @@ bool ConquestMapLoader::ParseConquestMap() {
                             y_coordinate = stoi(y_coordinate_str);
                         } catch (const invalid_argument &e) {
                             cout << "the Y coordinate for country" << country_name
-                                 << " is invalid. Please load a valid file.\n\n";
+                                 << " is invalid. Please load a valid file.\n";
                             return false;
                         }
                         country_data.erase(0, y_coordinate_str.length() + delim.length());
 
-
                         string continent_name = Map::StripString(country_data, "", delim);
                         country_data.erase(0, continent_name.length() + delim.length());
 
-                        int continent_index;
+                        Continent* continent = parsed_map_->GetContinentByName(continent_name);
 
-                        try {
-                            continent_index = parsed_map_->GetContinentByName(continent_name)->GetContinentID();
-                        } catch (const exception &e) {
+                        if(!continent) {
                             cout << "the name given for continent " << continent_name << " for country " << country_name
-                                 << " is invalid. Please load a valid file.\n\n";
+                                 << " is invalid. Please load a valid file.\n";
                             return false;
                         }
 
+                        int continent_index = continent->GetContinentID();
 
                         if (country_data.length() == 0) {
                             cout << "country " << country_num
-                                 << " is missing its neighbours. Please load a valid file\n\n";
+                                 << " is missing its neighbours. Please load a valid file\n";
                             return false;
                         }
 
+                        country_data.append(delim);
 
-                        country_data = country_data + delim;
-
-                        while (true) {
-                            string neighbour_name = Map::StripString(country_data, "", delim);
-                            string neigbour_data = to_string(country_num) + "," + neighbour_name;
-                            neigbours.push_back(neigbour_data);
-                            country_data.erase(0, neighbour_name.length() + delim.length());
-                            if (country_data.length() == 0) {
-                                break;
-                            }
+                        if(country_data.length() > 0) {
+                            country_neighbours_map.insert({country_num, country_data});
                         }
+
                         //debug string
                         //cout << country_num << " " << continent_name << " " << continent_index << " " << x_coordinate << " " << y_coordinate << endl;
 
                         parsed_map_->AddCountryToMap(country_num, country_name, continent_index, x_coordinate,
                                                      y_coordinate);
+
+                        if(parsed_map_->GetNumCountries() > 255) {
+                            cout << file_name_ << " contains too many territories! Please load a valid map file!\n";
+                            return false;
+                        }
                         ++current_index;
                     }
                 }
 
                 if (parsed_map_->GetNumCountries() > 0) {
                     parsed_map_->CreateAdjacencyMatrix();
+                } else {
+                    cout << "File contains no territories!\n";
+                    return false;
                 }
+
+                for(auto& entry : country_neighbours_map) {
+                    Country* country = parsed_map_->GetCountryById(entry.first);
+
+                    if(!country) {
+                        return false;
+                    }
+
+                    string neighbours_list = entry.second;
+
+                    if(neighbours_list.empty()) {
+                        cout << "No neighbours found for " << *country->GetCountryName() << endl;
+                        return false;
+                    }
+
+                    int country_counter = 0;
+                    string delim = ",";
+                    auto start = 0U;
+                    auto end = neighbours_list.find(delim);
+                    while(end != string::npos) {
+                        string neighbour_name = neighbours_list.substr(start, end - start);
+                        Country* neighbour = parsed_map_->GetCountryByName(neighbour_name);
+
+                        if(!neighbour) {
+                            cout << "Invalid neighbour found in file!\n";
+                            return false;
+                        }
+
+                        int neighbour_index = neighbour->GetCountryID() - 1;
+                        parsed_map_->SetTwoCountriesAsNeighbours(true, (entry.first - 1), (neighbour_index));
+
+                        start = end + delim.length();
+                        end = neighbours_list.find(delim, start);
+
+                        ++country_counter;
+                        if(country_counter > 10) {
+                            cout << *parsed_map_->GetCountryById(entry.first)->GetCountryName() << " has more than 10 neighbours! Invalid file\n";
+                            return false;
+                        }
+                    }
+                }
+
             }
-
-
         }
+
         file_to_load.close();
 
-        for (auto neigbour_data : neigbours) {
-            int index_1;
-            string index_1_str = Map::StripString(neigbour_data, "", ",");
-
-            try {
-                index_1 = stoi(index_1_str);
-            } catch (const invalid_argument &e) {
-                cout << "error processing country index.\n\n";
-            }
-
-            neigbour_data.erase(0, index_1_str.length() + 1);
-
-
-            int index_2 = parsed_map_->GetCountryByName(neigbour_data)->GetCountryID();
-            parsed_map_->SetTwoCountriesAsNeighbours(true, (index_1 - 1), (index_2 - 1));
-        }
-
-        if (parsed_map_->GetNumCountries() == 0 && parsed_map_->GetNumContinents() == 0) {
-            cout << "Failed to generate map for file " << file_name_ << "! Please try again\n\n";
+        if (parsed_map_->GetNumCountries() == 0 || parsed_map_->GetNumContinents() == 0) {
+            cout << "Failed to generate map for file " << file_name_ << ". It is missing territories or continents.\n";
             return false;
         }
 
         return true;
 
     } else {
-        cout << "unable to open the file " << file_name_ << ". Please try again\n\n";
+        cout << "unable to open the file " << file_name_ << ". Please try again\n";
         return false;
     }
 }
