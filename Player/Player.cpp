@@ -208,6 +208,10 @@ Country* Player::PromptPlayerToSelectCountry() const {
     return GetCountryById(country_id);
 }
 
+GameEngine* Player::GetGameEngine() const {
+    return game_engine_;
+}
+
 ReinforcePhase* Player::GetReinforcePhase() const {
     return reinforce_phase_;
 }
@@ -376,12 +380,22 @@ void Player::Attack() {
     while (player_strategy_->PromptPlayerToAttack(this)) {
 
         string msg;
-        if(!attack_phase_->DoesOpposingCountryExist()) {
-            msg = "No opposing country exists that has enough armies to be attacked!\n";
+
+        //Check first if the player owns at least one country with enough armies to execute an attack
+        if(attack_phase_->PlayerHasCountryWithEnoughArmiesToAttack()) {
+            msg = "Player currently has no country with enough armes to attack!\n";
             Notify(this, GamePhase::Attack, msg, false, false);
             break;
         }
 
+        //check if there is at least one country that can be attacked
+        if(!attack_phase_->DoesOpposingCountryExist()) {
+            msg = "No opposing country exists that can be attacked!\n";
+            Notify(this, GamePhase::Attack, msg, false, false);
+            break;
+        }
+
+        //Prompt player to select an attacker
         if(!player_strategy_->SelectCountryToAttackFrom(this)) {
             msg = "Failed to Select valid country to attack from!\n";
             Notify(this, GamePhase::Attack, msg, false, false);
@@ -391,36 +405,34 @@ void Player::Attack() {
         msg =  *player_name_ + " has selected " + *attack_phase_->GetAttackingCountry()->GetCountryName() + " to attack with\n";
         Notify(this, GamePhase::Attack, msg, false, false);
 
+
+        //Get the neighbours to the attacking country owned by other players
         attack_phase_->FindOpponentNeighboursToAttackingCountry();
 
+        // if there are no opponent neighbours, the attacker cannot execute an attack
         bool can_attack = !attack_phase_->GetOpponentNeighbours()->empty();
 
         if(can_attack) {
+
+            //prompt player to select a defending country
             can_attack &= player_strategy_->SelectCountryToAttack(this);
+            can_attack &= !!attack_phase_->GetDefendingCountry();
 
             if(!can_attack){
-                string msg = *player_name_ + " cannot attack since no neighbouring countries have armies!\n";
+                msg = *player_name_ + " something went wrong when selecting a defending country. Cannot Attack!\n";
                 Notify(this, GamePhase::Attack, msg, false, false);
-
-                can_attack = player_strategy_->SelectCountryToAttackFrom(this);
-                can_attack &= player_strategy_->SelectCountryToAttack(this);
+                continue;
             }
-
-            if(!attack_phase_->GetDefendingCountry()) {
-                string msg = "Invalid country selected to attack!\n";
-                Notify(this, GamePhase::Attack, msg, false, false);
-                break;
-            }
-
 
             msg = *player_name_ + " has selected " + *attack_phase_->GetDefendingCountry()->GetCountryName() + " to attack\n";
             Notify(this, GamePhase::Attack, msg, false, false);
-
 
             Country* attacking_country = attack_phase_->GetAttackingCountry();
             Country* defending_country = attack_phase_->GetDefendingCountry();
             Player* defender = defending_country->GetCountryOwner();
 
+
+            // if the defending country has no armies, they are defeated automatically
             if(defending_country->GetNumberOfArmies() == 0) {
                 msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
                 Notify(this, GamePhase::Attack, msg, false, false);
@@ -435,7 +447,7 @@ void Player::Attack() {
 
                 player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
-            } else {
+            } else { //otherwise the players will roll their dice and the attack will occur
 
                 int attacker_num_dice = 0;
                 int defender_num_dice = 0;
@@ -445,13 +457,14 @@ void Player::Attack() {
                 const int MAX_NUM_OF_DICE_ATTACKER = (max_num_dice_attacker == 0) ? 1 : max_num_dice_attacker;
                 const int MAX_NUM_OF_DICE_DEFENDER = (defending_country->GetNumberOfArmies()) < 2 ? defending_country ->GetNumberOfArmies() : 2;
 
+                // prompt the attack to select the number of dice
                 player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
 
 
                 msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
                 Notify(this, GamePhase::Attack, msg, false, false);
 
-                //if the player is human then they select their own number of dice otherwise it is randomly generated
+                //if the player is human then they select their own number of dice otherwise it is randomly generated for computer players
                 if(defender->IsHuman()) {
                     while( !(cin >> defender_num_dice) || defender_num_dice < 1 || defender_num_dice > MAX_NUM_OF_DICE_DEFENDER) {
                         cout << "You have entered an invalid number of dice to roll. Please try again: ";
@@ -466,29 +479,34 @@ void Player::Attack() {
                 msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
                 Notify(this, GamePhase::Attack, msg, false, false);
 
+                msg = "Carrying out attacks....\n";
+                //Roll the dice!
                 vector<int> attacker_dice_rolls = dice_roll_->Roll(attacker_num_dice);
                 msg = "Attacker dice rolled:\n";
 
                 for(int i : attacker_dice_rolls) {
                     msg.append(to_string(i) + "\n");
                 }
+
                 vector<int> defender_dice_rolls = defender->GetPlayerDice()->Roll(defender_num_dice);
                 msg.append("Defender dice rolled:\n");
                 for(int i : defender_dice_rolls) {
                     msg.append(to_string(i) + "\n");
                 }
+
                 msg.append("\n");
 
                 Notify(this, GamePhase::Attack, msg, false, false);
+
                 //sort the rolls from highest value to lowest value
                 sort(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
                 reverse(attacker_dice_rolls.begin(), attacker_dice_rolls.end());
                 sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
                 reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
 
-                int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
 
-                msg = "Carrying out attacks....\n";
+                // Get the number of dice pairs we are evaluating
+                int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
 
                 for(int i = 0; i < num_of_iterations; ++i) {
                     //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
@@ -896,7 +914,7 @@ bool AttackPhase::DoesOpposingCountryExist() {
     //check here to see if there is not a single country that can attack
     bool country_that_can_be_attacked_exists = false;
     for(Country* country : *attacker_->GetPlayersCountries()) {
-        //Get all the neighbouring countries that have armies
+        //Get all the neighbouring countries
         vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(country);
 
         if(!neighbouring_countries->empty()) {
@@ -920,6 +938,19 @@ bool AttackPhase::DoesOpposingCountryExist() {
     } else {
         return true;
     }
+}
+
+bool AttackPhase::PlayerHasCountryWithEnoughArmiesToAttack() {
+
+    int countries_not_enough_armies_ctr = 0;
+
+    for(Country* country : *attacker_->GetPlayersCountries()) {
+        if(country->GetNumberOfArmies() < 2) {
+            ++countries_not_enough_armies_ctr;
+        }
+    }
+
+    return !(countries_not_enough_armies_ctr == attacker_->GetPlayersCountries()->size());
 }
 
 // FortifyPhase class implementation -----------------------------------------------------------------------------------

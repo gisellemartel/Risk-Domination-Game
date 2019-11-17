@@ -21,6 +21,7 @@ PhaseObserver::PhaseObserver() {
     current_phase_ = "";
     current_action_description_ = "";
     phase_over_ = false;
+    console_output_counter_ = 0;
 }
 
 PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
@@ -28,6 +29,7 @@ PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
+    console_output_counter_ = phase_observer.console_output_counter_;
 }
 
 PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
@@ -35,6 +37,8 @@ PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
+    console_output_counter_ = phase_observer.console_output_counter_;
+
     return *this;
 }
 
@@ -48,8 +52,9 @@ void PhaseObserver::Update(Player* current_player, int current_phase, string cur
     current_action_description_ = current_action_description;
     phase_over_ = phase_over;
 
-    //only print header once at start of phase
-    if(current_phase_.empty() && phase_start) {
+    //only print header once at start of phase or if we've filled the screen and need to clear it again
+    if(current_phase_.empty() || phase_start || console_output_counter_ > 12) {
+        console_output_counter_ = 0;
         switch(current_phase) {
             case GamePhase::Startup :
                 Utility::ClearScreen();
@@ -83,8 +88,10 @@ void PhaseObserver::Update(Player* current_player, int current_phase, string cur
 
 void PhaseObserver::DisplayPhaseData() {
     cout << current_action_description_ << endl;
+    ++console_output_counter_; //used to track how many lines of data we've printed to the screen
     if(phase_over_) {
         current_phase_ = "";
+        console_output_counter_ = 0;
         //put thread to sleep to allow smoother visual transition
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
