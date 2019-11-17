@@ -23,7 +23,7 @@ int main() {
     game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/generaltest.map", 2, 0, 0);
 
     Observer* phase_observer = new PhaseObserver;
-    Observer* game_stats_observer = new GameStatisticObserver;
+    Observer* game_stats_observer = new GameStatisticObserver(game_engine);
 
     game_engine->Register(phase_observer);
     game_engine->Register(game_stats_observer);
