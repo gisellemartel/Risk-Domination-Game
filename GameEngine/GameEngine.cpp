@@ -803,10 +803,13 @@ void GameEngine::StartGameLoop() {
 
         if(!current_player->GetPlayersCountries()->empty()){
 
+            Notify();
             current_player->Reinforce();
+            Notify();
             current_player->Attack();
+            Notify();
             current_player->Fortify();
-
+            Notify();
             ++num_iterations;
         }
 

@@ -67,7 +67,7 @@ public:
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
-class GameEngine : public PhaseSubject, public GameStatisticObserver {
+class GameEngine : public PhaseSubject, public StatisticsSubject {
 
 private:
     vector<Player*>* players_;

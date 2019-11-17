@@ -425,7 +425,8 @@ void Player::Attack() {
                 msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
                 Notify(this, GamePhase::Attack, msg, false, false);
                 msg = "";
-
+//GameStatisticObserver's notify
+            Notify();
                 //defender has lost. Its country will now be transferred to the attacker
                 //store the id and name of country before we transfer ownership
                 string defender_country_name = *defending_country->GetCountryName();
@@ -508,7 +509,8 @@ void Player::Attack() {
 
                         if(defending_country->GetNumberOfArmies() == 0) {
                             msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
-
+//GameStatisticObserver's notify
+                            Notify();
                             //defender has lost. Its country will now be transferred to the attacker
                             //store the id and name of country before we transfer ownership
                             string defender_country_name = *defending_country->GetCountryName();
@@ -651,6 +653,11 @@ void Player::Fortify() {
 //will be used to implicitly notify the game engine of phase changes
 void Player::Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over) {
     game_engine_->Notify(current_player, current_phase, current_action_description, phase_start, phase_over);
+}
+
+//notify of statistic subject for GameStatisticObserver
+void Player::Notify(){
+    game_engine_->Notify();
 }
 
 

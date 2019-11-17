@@ -159,7 +159,6 @@ GameStatisticObserver::~GameStatisticObserver(){
 }
 
 void GameStatisticObserver::Update(){
-
     DisplayStats();
 }
 
@@ -173,18 +172,6 @@ void GameStatisticObserver::DisplayStats(){
     <<"Active Players: "<<endl;
     DisplayActivePlayerStats();
 
-
-
-
-//    for(int i= 0; i< Players_->size() ; i++){
-//        playerCountries = Players_->at(i)->GetPlayersCountries()->size();
-//        ownedRatio = playerCountries / totalCountries;
-//
-//        cout<<"Player: "<<Players_->at(i)->GetPlayerName()
-//            <<"\t"
-//            <<"% Map Owned: "<<ownedRatio<<"%"
-//            <<endl;
-//    }
 }
 
 int GameStatisticObserver::CardExchangesCompleted(){
@@ -218,12 +205,13 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
             <<"% Map Conquered: "
             <<game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() /
             game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size()
+            <<"%"
             <<endl;
         }
         //Display winning message if a player owns the same amount of countries the map has
         if(game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() ==
         game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size())
-            cout<<"Congrulations "
+            cout<<"Congratulations "
             <<game_engine_->GetPlayers()->at(i)->GetPlayerName()
             <<" has won the game!"
             <<endl;
@@ -257,57 +245,3 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
 //    for (; i!= observers_->end(); ++i)
 //        (*i)->Update();
 //}
-
-
-//Observable class -----------------------------------------------------------------------------------------------------
-
-Observable::Observable() {
-    observers_ = new vector<Observer*>;
-}
-
-Observable::Observable(const Observable &observable) {
-    observers_ = observable.observers_;
-
-    for(int i = 0; i < observable.observers_->size(); ++i) {
-        observers_[i] = observable.observers_[i];
-    }
-}
-
-Observable::~Observable() {
-    for(Observer* observer : *observers_) {
-        observer = nullptr;
-        delete observer;
-    }
-
-    observers_ = nullptr;
-    delete[] observers_;
-}
-
-Observable& Observable::operator=(const Observable& observable){
-    observers_ = observable.observers_;
-
-    for(int i = 0; i < observable.observers_->size(); ++i) {
-        observers_[i] = observable.observers_[i];
-    }
-
-    return *this;
-}
-
-void Observable::Register(Observer *o) {
-    observers_->push_back(o);
-    //TODO: implementation
-}
-void Observable::Unregister(Observer *o) {
-    auto iterator = std::find(observers_->begin(), observers_->end(), o);
-
-    if(iterator != observers_->end()){
-        observers_->erase(iterator);
-    }
-    //TODO: implementation
-}
-
-//You may need to add parameters to this as needed
-void Observable::Notify() {
-
-    //TODO: implementation
-};

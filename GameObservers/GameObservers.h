@@ -69,40 +69,15 @@ public:
     void Update() override {};
 };
 
-//------------------------------------Observable-----------------------------
-
-//Game Engine Should probably be the Observable object. I would pass a pointer to the whole game engine to this class
-// Inside Game Engine class when creating new game:
-// i.e. Observable* observable = new Observable(this);
-class Observable : public StatisticsSubject {
-
-private:
-    vector<Observer*>* observers_;
-
-public:
-    Observable();
-    Observable(const Observable& observable);
-    ~Observable();
-
-    Observable& operator=(const Observable& observable);
-
-    void Register(Observer *) override;
-    void Unregister(Observer *) override;
-
-    //You may need to add parameters to this as needed
-    void Notify() override;
-};
-
 //------------------------------------GameStatisticObserver-----------------------------
 class GameStatisticObserver: public Observer {
 
 private:
-    void DisplayStats(); //should be private since this method is only used by this class
-
-//    vector<Player*>* players_; //Not needed, the game_engine_ has a pointer with all the players already
     GameEngine *game_engine_;
-//    int totalCountries; // Not needed, the game_engine_ has a pointer to the map which has an attribute for the number of countries
-    int total_card_swaps_; //incorrect naming conventions
+    void DisplayStats();
+    int CardExchangesCompleted();
+    void DisplayActivePlayerStats();
+
 
 public:
     // Dont forget everytime you have one or more pointer data member you absolutely need to also make your own copy constructor and assignment operator
@@ -115,10 +90,6 @@ public:
     GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
 
     void Update() override;
-    int CardExchangesCompleted();
-    void DisplayActivePlayerStats();
 
 };
-
-
 #endif //GAMEOBSERVERS_H
