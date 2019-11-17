@@ -144,8 +144,6 @@ GameStatisticObserver::GameStatisticObserver(GameEngine* game_engine){
      */
 
 
-
-
     // Registering should be done by the Client i.e. in the driver. Please see GameEngineDriver.cpp for example
     //game_engine_->Register(); // remove
 }
@@ -166,8 +164,15 @@ void GameStatisticObserver::Update(){
 }
 
 void GameStatisticObserver::DisplayStats(){
-    int playerCountries; // not following name conventins
-    float ownedRatio;  // not following name conventins
+
+    cout
+    <<"Current Game Statistics"<<endl
+    <<"Current Number of Card Swaps: "
+    <<CardExchangesCompleted()
+    <<endl
+    <<"Active Players: "<<endl;
+    DisplayActivePlayerStats();
+
 
 
 
@@ -180,10 +185,51 @@ void GameStatisticObserver::DisplayStats(){
 //            <<"% Map Owned: "<<ownedRatio<<"%"
 //            <<endl;
 //    }
-//    cout<<"Number of Card Swaps: "<<totalCardSwaps;
 }
 
+int GameStatisticObserver::CardExchangesCompleted(){
+    //check for nullptr
+    vector<Player*>* players = game_engine_->GetPlayers();
+    if(!players)
+        return 0;
 
+    Player* current = players->at(0);
+    if(!current)
+        return 0;
+
+    Hand* a_hand = current->GetPlayersCards();
+    if(a_hand)
+        return a_hand->exchanges_done;
+
+    return 0;
+}
+
+void GameStatisticObserver::DisplayActivePlayerStats(){
+
+    for(int i= 0; i<game_engine_->GetPlayers()->size();++i){
+        //Display the stats of players with at least 1 country
+        if(!game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->empty()){
+            cout<<"Player: "
+            <<game_engine_->GetPlayers()->at(i)->GetPlayerName()
+            <<endl
+            <<"Countries owned: "
+            <<game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size()
+            <<endl
+            <<"% Map Conquered: "
+            <<game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() /
+            game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size()
+            <<endl;
+        }
+        //Display winning message if a player owns the same amount of countries the map has
+        if(game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() ==
+        game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size())
+            cout<<"Congrulations "
+            <<game_engine_->GetPlayers()->at(i)->GetPlayerName()
+            <<" has won the game!"
+            <<endl;
+
+    }
+}
 
 // TODO:
 //This is an incorrect implementation of the Observer patten. The Subject class should be an abstract interface.
@@ -247,15 +293,21 @@ Observable& Observable::operator=(const Observable& observable){
     return *this;
 }
 
-void Observable::Register(Observer *) {
-
+void Observable::Register(Observer *o) {
+    observers_->push_back(o);
     //TODO: implementation
 }
-void Observable::Unregister(Observer *) {
+void Observable::Unregister(Observer *o) {
+    auto iterator = std::find(observers_->begin(), observers_->end(), o);
+
+    if(iterator != observers_->end()){
+        observers_->erase(iterator);
+    }
     //TODO: implementation
 }
 
 //You may need to add parameters to this as needed
 void Observable::Notify() {
+
     //TODO: implementation
 };

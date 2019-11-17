@@ -67,7 +67,7 @@ public:
     void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
-class GameEngine : public PhaseSubject {
+class GameEngine : public PhaseSubject, public GameStatisticObserver {
 
 private:
     vector<Player*>* players_;
@@ -133,6 +133,7 @@ public:
     void Register(Observer* observer) override;
     void Unregister(Observer* observer) override;
     void Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) override;
+    void Notify() override;
 };
 
 

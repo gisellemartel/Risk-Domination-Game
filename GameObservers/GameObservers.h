@@ -102,7 +102,7 @@ private:
 //    vector<Player*>* players_; //Not needed, the game_engine_ has a pointer with all the players already
     GameEngine *game_engine_;
 //    int totalCountries; // Not needed, the game_engine_ has a pointer to the map which has an attribute for the number of countries
-    int totalCardSwaps; //incorrect naming conventions
+    int total_card_swaps_; //incorrect naming conventions
 
 public:
     // Dont forget everytime you have one or more pointer data member you absolutely need to also make your own copy constructor and assignment operator
@@ -115,6 +115,9 @@ public:
     GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
 
     void Update() override;
+    int CardExchangesCompleted();
+    void DisplayActivePlayerStats();
+
 };
 
 
