@@ -40,7 +40,9 @@ void HumanPlayerStrategy::ReinforceStrategy(Player* player) {
             continue;
         }
 
-        string msg = "Currently on Country\n" + current_country->GetDisplayInfo() + "Armies to assign: " + to_string(num_bonus_army) + "\nArmies to add to current country: ";
+        string msg = "Number of armies currently in " + *current_country->GetCountryName() + ": " + to_string(current_country->GetNumberOfArmies());
+        msg.append("\nArmies available to assign to " + *current_country->GetCountryName() + ": " + to_string(num_bonus_army));
+        msg.append("\nNumber armies you desire to reinforce " + *current_country->GetCountryName() + " with: ");
         player->Notify(player, GamePhase::Reinforce, msg, false, false);
 
         cin >> reinforce_value;
@@ -165,7 +167,7 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
 
     //prompt each player to enter the num of dice they wish to roll
     string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
-    player->Notify(player, GamePhase::Attack, msg, false, false);
+    player->Notify(player, GamePhase::Attack, msg, true, false);
 
     while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
         cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
@@ -427,7 +429,7 @@ void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player
 
     //prompt each player to enter the num of dice they wish to roll
     string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
-    player->Notify(player, GamePhase::Attack, msg, false, false);
+    player->Notify(player, GamePhase::Attack, msg, true, false);
 
     attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
 }

@@ -351,18 +351,20 @@ void Player::Reinforce() {
         int num_armies_to_add = (*reinforce_phase_->GetReinforceValues())[i];
         int current_num_armies = current_country->GetNumberOfArmies();
 
-        msg = *current_country->GetCountryName();
-        msg.append(" | #armies: " + to_string(current_country->GetNumberOfArmies()));
-        msg.append("\n" + *player_name_ + " reinforcing " + *current_country->GetCountryName() + " with " + to_string(num_armies_to_add) + " armies\n\n");
-
-        Notify(this, GamePhase::Reinforce, msg, false,false);
+        if(num_armies_to_add > 0) {
+            msg = *player_name_ + " reinforcing " + *current_country->GetCountryName() + " with " + to_string(num_armies_to_add) + " armies";
+            Notify(this, GamePhase::Reinforce, msg, false,false);
+        }
 
         current_country->SetNumberOfArmies(current_num_armies + num_armies_to_add);
 
-        msg.append("Result: ");
-        msg.append(*current_country->GetCountryName() + " | #armies: " + to_string(current_country->GetNumberOfArmies()) + "\n\n");
+        if(num_armies_to_add > 0) {
+            msg = "Number of armies currently in " + *current_country->GetCountryName() + ": " + to_string(current_country->GetNumberOfArmies()) + "\n\n";
+            Notify(this, GamePhase::Reinforce, msg, false,false);
+        }
+
     }
-    msg.append("Reinforce Phase is now over\n");
+    msg = "Reinforce Phase is now over\n";
     Notify(this, GamePhase::Reinforce, msg, false, true);
 }
 
@@ -375,15 +377,14 @@ void Player::Attack() {
 
     attack_phase_ = new AttackPhase(this);
 
-    Notify(this, GamePhase::Attack, "", true, false);
-
     while (player_strategy_->PromptPlayerToAttack(this)) {
+        Notify(this, GamePhase::Attack, "", true, false);
 
         string msg;
 
         //Check first if the player owns at least one country with enough armies to execute an attack
-        if(attack_phase_->PlayerHasCountryWithEnoughArmiesToAttack()) {
-            msg = "Player currently has no country with enough armes to attack!\n";
+        if(!attack_phase_->PlayerHasCountryWithEnoughArmiesToAttack()) {
+            msg = "Player currently has no country with enough armies to attack!\n";
             Notify(this, GamePhase::Attack, msg, false, false);
             break;
         }
@@ -416,11 +417,11 @@ void Player::Attack() {
 
             //prompt player to select a defending country
             can_attack &= player_strategy_->SelectCountryToAttack(this);
-            can_attack &= !!attack_phase_->GetDefendingCountry();
+            can_attack &= attack_phase_->GetDefendingCountry() != nullptr;
 
             if(!can_attack){
                 msg = *player_name_ + " something went wrong when selecting a defending country. Cannot Attack!\n";
-                Notify(this, GamePhase::Attack, msg, false, false);
+                Notify(this, GamePhase::Attack, msg, false, true);
                 continue;
             }
 
@@ -435,13 +436,10 @@ void Player::Attack() {
             // if the defending country has no armies, they are defeated automatically
             if(defending_country->GetNumberOfArmies() == 0) {
                 msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
-                Notify(this, GamePhase::Attack, msg, false, false);
+                Notify(this, GamePhase::Attack, msg, false, true);
                 msg = "";
 
                 //defender has lost. Its country will now be transferred to the attacker
-                //store the id and name of country before we transfer ownership
-                string defender_country_name = *defending_country->GetCountryName();
-                int defender_country_id = defending_country->GetCountryID();
                 AddCountryToCollection(defending_country);
                 defender->RemoveCountryFromCollection(defending_country);
 
@@ -457,7 +455,7 @@ void Player::Attack() {
                 const int MAX_NUM_OF_DICE_ATTACKER = (max_num_dice_attacker == 0) ? 1 : max_num_dice_attacker;
                 const int MAX_NUM_OF_DICE_DEFENDER = (defending_country->GetNumberOfArmies()) < 2 ? defending_country ->GetNumberOfArmies() : 2;
 
-                // prompt the attack to select the number of dice
+                // prompt the attacker to select the number of dice
                 player_strategy_->AttackerSelectNumberOfDice(this, MAX_NUM_OF_DICE_ATTACKER, attacker_num_dice);
 
 
@@ -477,7 +475,7 @@ void Player::Attack() {
 
                 msg = "\n" + *player_name_ + " has chosen to roll " + to_string(attacker_num_dice) + " dice\n";
                 msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
-                Notify(this, GamePhase::Attack, msg, false, false);
+                Notify(this, GamePhase::Attack, msg, true, false);
 
                 msg = "Carrying out attacks....\n";
                 //Roll the dice!
@@ -507,16 +505,16 @@ void Player::Attack() {
 
                 // Get the number of dice pairs we are evaluating
                 int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
-
+                msg = "";
                 for(int i = 0; i < num_of_iterations; ++i) {
                     //attacker lose an army if the value on the dice is less than or equal to value on the dice of the defender
                     if(attacker_dice_rolls[i] <= defender_dice_rolls[i]) {
                         msg.append("Attacker has lost this roll. Loosing an army\n");
                         attacking_country->RemoveArmiesFromCountry(1);
                         if(attacking_country->GetNumberOfArmies() == 0) {
-                            msg.append("Attacking country " + *attacking_country->GetCountryName() + " has run out of armies. Attack phase has ended\n");
+                            msg.append("Attacking country " + *attacking_country->GetCountryName() + " has run out of armies.\n");
                             Notify(this, GamePhase::Attack, msg, false, true);
-                            return;
+                            break;
                         }
                         //defender lose an army if attacker's dice has a greater value
                     } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
@@ -526,11 +524,8 @@ void Player::Attack() {
 
                         if(defending_country->GetNumberOfArmies() == 0) {
                             msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
-
+                            Notify(this, GamePhase::Attack, msg, false, false);
                             //defender has lost. Its country will now be transferred to the attacker
-                            //store the id and name of country before we transfer ownership
-                            string defender_country_name = *defending_country->GetCountryName();
-                            int defender_country_id = defending_country->GetCountryID();
                             AddCountryToCollection(defending_country);
                             defender->RemoveCountryFromCollection(defending_country);
 
@@ -540,7 +535,7 @@ void Player::Attack() {
                 }
             }
 
-            msg.append("\nResult:\n");
+            msg.append("Result:\n\n");
 
             msg.append(*player_name_ + "\n");
             msg.append(attacking_country->GetDisplayInfo());

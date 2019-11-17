@@ -38,7 +38,6 @@ private:
     string current_phase_;
     string current_action_description_;
     bool phase_over_;
-    int console_output_counter_;
 
 
     void DisplayPhaseData();
