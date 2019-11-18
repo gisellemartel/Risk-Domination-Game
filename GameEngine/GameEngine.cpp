@@ -252,6 +252,8 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
 
     //create vector to track number of armies left to assign for each player
     vector<int> num_armies;
+    num_armies.reserve(players->size());
+
     for(int i = 0; i < players->size(); ++i) {
         num_armies.push_back(number_of_armies_);
     }
@@ -276,9 +278,9 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
 
                 it.first->SetPlayersTurn(true);
 
-                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size() + 1);
                 while(!it.first->DoesPlayerOwnCountry(country_id)) {
-                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
+                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size() + 1);
                 }
 
                 Country* current_country = it.first->GetCountryById(country_id);
@@ -340,7 +342,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
 
-    Notify("Starting New Game...\n", false, false, false);
+    Notify("Starting New Game...\n");
 }
 
 //private helper methods
@@ -823,7 +825,7 @@ void GameEngine::StartGameLoop() {
         game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
     }
 
-    Notify(game_over, false, false, true);
+    Notify(game_over);
 
     for(Player* player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
@@ -852,9 +854,9 @@ void GameEngine::Notify(Player* current_player, int current_phase, string curren
     }
 }
 //GameStatisticObserver
-void GameEngine::Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
+void GameEngine::Notify(string msg){
     for(Observer* observer : *observers_){
-        observer->Update(msg, country_is_defeated, player_eliminated, game_won);
+        observer->Update(msg);
     }
 }
 

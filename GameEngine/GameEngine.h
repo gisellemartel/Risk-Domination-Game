@@ -13,7 +13,6 @@
 
 using namespace std;
 
-#include "../GameObservers/GameObservers.h"
 #include "../Map/Map.h"
 #include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
@@ -25,13 +24,6 @@ using namespace std;
 class GameEngine;
 class MapLoader;
 class Deck;
-
-enum GamePhase {
-    Startup = 0,
-    Reinforce = 1,
-    Attack = 2,
-    Fortify = 3
-};
 
 class StartupPhase {
 
@@ -132,7 +124,7 @@ public:
     void Register(Observer* observer) override;
     void Unregister(Observer* observer) override;
     void Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) override;
-    void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override;
+    void Notify(string msg) override;
 
     void RemovePlayer(Player* player);
 };

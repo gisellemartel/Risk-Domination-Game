@@ -12,6 +12,7 @@
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
 
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -101,7 +102,7 @@ public:
 
     //will be used to implicitly notify the game engine of phase changes
     void Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over);
-    void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won);
+    void Notify(string msg);
 };
 
 // ReinforcePhase --------------------------------------
@@ -162,6 +163,8 @@ public:
     void SetAttackingCountry(Country* attacking_country);
     void SetDefendingCountry(Country* defending_country);
     void SetDefender(Player* defender);
+
+    void RemoveDefeatedCountryFromOpponents(Country* defeated_country);
 
     bool DoesOpposingCountryExist();
     bool PlayerHasCountryWithEnoughArmiesToAttack();

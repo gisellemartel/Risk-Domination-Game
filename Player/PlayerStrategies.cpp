@@ -91,11 +91,18 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
     player->GetAttackPhase()->SetDefendingCountry(nullptr);
     Country* defending_country = attack_phase->GetDefendingCountry();
 
+    attack_phase->FindOpponentNeighboursToAttackingCountry();
+
     //Display neighboring countries
     cout << "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
     for (Country *country : *attack_phase->GetOpponentNeighbours()) {
         string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country);
+
+        //just to be safe to ensure player doesnt attack their own country
+        if(player->DoesPlayerOwnCountry(country->GetCountryID())){
+            continue;
+        }
 
         cout << setw(25)  << left << country->GetCountryID() <<
         setw(25) <<  *country->GetCountryName()
@@ -350,9 +357,14 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
         cout << endl;
     }
 
+    attack_phase->FindOpponentNeighboursToAttackingCountry();
     //iterate over all opponents until one is found
     for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
         defending_country = opponent;
+
+        if(player->DoesPlayerOwnCountry(defending_country->GetCountryID())) {
+            continue;
+        }
         msg = *player->GetPlayerName() + " chooses to attack " + *opponent->GetCountryName() + "\n";
         player->Notify(player, GamePhase::Attack, msg, false, false);
         break;

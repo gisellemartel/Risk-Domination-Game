@@ -11,7 +11,6 @@
 
 using namespace std;
 
-#include "../GameEngine/GameEngine.h"
 #include "GameObservers.h"
 
 // PhaseObserver -------------------------------------------------------------------------------------------------------
@@ -99,42 +98,54 @@ void PhaseObserver::DisplayPhaseHeader() {
 }
 
 
+
 // GameStatisticObserver -----------------------------------------------------------------------------------------------
 GameStatisticObserver::GameStatisticObserver() {
-    game_engine_ = nullptr;
+   players_= nullptr;
 }
 
 GameStatisticObserver::GameStatisticObserver(const GameStatisticObserver &game_statistic_observer) {
-    game_engine_ = game_statistic_observer.game_engine_;
+    players_ = game_statistic_observer.players_;
+
+    for(int i = 0; i < game_statistic_observer.players_->size(); ++i) {
+        players_[i] = game_statistic_observer.players_[i];
+    }
 }
 
 GameStatisticObserver& GameStatisticObserver::operator=(const GameStatisticObserver &game_statistic_observer) {
-    game_engine_ = game_statistic_observer.game_engine_;
+    players_ = game_statistic_observer.players_;
+
+    for(int i = 0; i < game_statistic_observer.players_->size(); ++i) {
+        players_[i] = game_statistic_observer.players_[i];
+    }
     return *this;
 }
 
-GameStatisticObserver::GameStatisticObserver(GameEngine* game_engine){
-    game_engine_ = game_engine;
+GameStatisticObserver::GameStatisticObserver(vector<Player*>* players){
+    players_ = players;
+
+    for(int i = 0; i < players->size(); ++i) {
+        players_[i] = players[i];
+    }
 }
 
 GameStatisticObserver::~GameStatisticObserver(){
-    game_engine_ = nullptr;
-    delete game_engine_;
+
+    for(Player* player : *players_) {
+        player = nullptr;
+        delete player;
+    }
+    players_ = nullptr;
+    delete players_;
 }
 
-void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) {
+void GameStatisticObserver::Update(string msg) {
+    Utility::ClearScreen();
+    cout << msg << endl;
+    DisplayStats();
 
-    if(country_is_defeated || player_eliminated || game_won) {
-        Utility::ClearScreen();
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        cout << msg << endl;
-        DisplayStats();
-    } else {
-        Utility::ClearScreen();
-        cout << msg << endl;
-        DisplayStats();
-    }
-
+    //put thread to sleep to allow smoother visual transition
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
 
 void GameStatisticObserver::DisplayStats(){
@@ -142,22 +153,18 @@ void GameStatisticObserver::DisplayStats(){
     << "Current Number of Card Swaps: "
     << CardExchangesCompleted()
     << endl << endl
-    << "List of Active Players: " << endl<<endl;
+    << "List of Active Players: " << endl << endl;
 
     DisplayActivePlayerStats();
-    //put thread to sleep to allow smoother visual transition
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 int GameStatisticObserver::CardExchangesCompleted(){
-    //check for nullptr
-    vector<Player*>* players = game_engine_->GetPlayers();
 
-    if(!players) {
+    if(!players_) {
         return 0;
     }
 
-    Player* current = players->at(0);
+    Player* current = players_->at(0);
     if(!current) {
         return 0;
     }
@@ -173,14 +180,12 @@ int GameStatisticObserver::CardExchangesCompleted(){
 
 void GameStatisticObserver::DisplayActivePlayerStats(){
 
-    vector<Player*>* game_players = game_engine_->GetPlayers();
-
-    if(!game_players || game_players->empty()) {
+    if(!players_ || players_->empty()) {
         cout << "game_players error" << endl;
         return;
     }
 
-    for(Player* player : *game_players) {
+    for(Player* player : *players_) {
 
         vector<Country*>* player_countries = player->GetPlayersCountries();
         if(!player_countries){
@@ -204,7 +209,7 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
             << "% Map Conquered: "
             << fixed << setprecision(0) <<((float)(player_countries->size()) / (float)(map_countries->size()))*100
             << "%"
-            << endl<<endl;
+            << endl << endl;
         }
         //Display winning message if a player owns the same amount of countries the map has
         if(player_countries->size() == map_countries->size()) {

@@ -587,7 +587,15 @@ vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) cons
                     //find the countries that are neighbours
                     if(adjacency_matrix_[row][col] && col != country_index) {
                         int id_of_neighbour = col + 1;
+                        if(id_of_neighbour == country->GetCountryID()) {
+                            continue;
+                        }
                         Country* neighbouring_country = GetCountryById(id_of_neighbour);
+
+                        if(neighbouring_country->GetCountryOwner() == country->GetCountryOwner()) {
+                            continue;
+                        }
+
                         if(neighbouring_country && neighbouring_country->GetNumberOfArmies() > 0) {
                             neighbouring_countries->push_back(neighbouring_country);
                         }
@@ -617,7 +625,16 @@ vector<Country*>* Map::GetNeighbouringCountries(Country* country) const {
                     //find the countries that are neighbours
                     if(adjacency_matrix_[row][col] && col != country_index) {
                         int id_of_neighbour = col + 1;
+
+                        if(id_of_neighbour == country->GetCountryID()) {
+                            continue;
+                        }
                         Country* neighbouring_country = GetCountryById(id_of_neighbour);
+
+                        if(neighbouring_country->GetCountryOwner() == country->GetCountryOwner()) {
+                            continue;
+                        }
+
                         neighbouring_countries->push_back(neighbouring_country);
                     }
                 }

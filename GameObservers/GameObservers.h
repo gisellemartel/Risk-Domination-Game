@@ -7,11 +7,19 @@
 #ifndef GAMEOBSERVERS_H
 #define GAMEOBSERVERS_H
 
-#include <list>
+#include <iomanip>
 
 #include "../Player/Player.h"
+
 class GameEngine;
 class Player;
+
+enum GamePhase {
+    Startup = 0,
+    Reinforce = 1,
+    Attack = 2,
+    Fortify = 3
+};
 
 //Observer interface ---------------------------------------------------------------------------------------------------
 class Observer {
@@ -21,7 +29,7 @@ public:
     virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;
 
     // to be overidden by GameStatistics Observer
-    virtual void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) = 0;
+    virtual void Update(string msg) = 0;
 };
 
 //StatisticsSubject interface ----------------------------------------------------------------------------------------------------
@@ -32,7 +40,7 @@ public:
     virtual void Unregister(Observer* observer) = 0;
 
     // you may need to add parameters to this function as needed (see PhaseSubject for example)
-    virtual void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) = 0;
+    virtual void Notify(string msg) = 0;
 };
 
 
@@ -66,14 +74,14 @@ public:
     PhaseObserver& operator=(const PhaseObserver& phase_observer);
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override;
-    void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override {};
+    void Update(string msg) override {};
 };
 
 //------------------------------------GameStatisticObserver-----------------------------
 class GameStatisticObserver: public Observer {
 
 private:
-    GameEngine *game_engine_;
+    vector<Player*>* players_;
     void DisplayStats();
     int CardExchangesCompleted();
     void DisplayActivePlayerStats();
@@ -83,14 +91,14 @@ public:
     // Dont forget everytime you have one or more pointer data member you absolutely need to also make your own copy constructor and assignment operator
     // I added them here for you
     GameStatisticObserver();
-    GameStatisticObserver(GameEngine* game_engine);
+    explicit GameStatisticObserver(vector<Player*>* players);
     GameStatisticObserver(const GameStatisticObserver& game_statistic_observer);
-    ~GameStatisticObserver();
+    ~GameStatisticObserver() override;
 
     GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override {}
-    void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override;
+    void Update(string msg) override;
 
 };
 #endif //GAMEOBSERVERS_H
