@@ -122,19 +122,13 @@ GameStatisticObserver::~GameStatisticObserver(){
     delete game_engine_;
 }
 
-void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
-
-    if(country_is_defeated || player_eliminated || game_won) {
-        Utility::ClearScreen();
-    }
-    cout<<msg<<endl;
+void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) {
+    Utility::ClearScreen();
+    cout << msg << endl;
     DisplayStats();
 }
 
 void GameStatisticObserver::DisplayStats(){
-
-    Utility::ClearScreen();
-
     cout << "+++++++++++ Current Game Statistics +++++++++++" << endl
     << "Current Number of Card Swaps: "
     << CardExchangesCompleted()
@@ -142,6 +136,8 @@ void GameStatisticObserver::DisplayStats(){
     << "List of Active Players: " << endl<<endl;
 
     DisplayActivePlayerStats();
+    //put thread to sleep to allow smoother visual transition
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 }
 
 int GameStatisticObserver::CardExchangesCompleted(){
@@ -171,7 +167,7 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
     vector<Player*>* game_players = game_engine_->GetPlayers();
 
     if(!game_players || game_players->empty()) {
-        cout<<"game_players error"<<endl;
+        cout << "game_players error" << endl;
         return;
     }
 
@@ -179,13 +175,13 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
 
         vector<Country*>* player_countries = player->GetPlayersCountries();
         if(!player_countries){
-            cout<<"player_countries"<<endl;
+            cout << "player_countries" << endl;
             return;
         }
 
         vector<Country*>* map_countries = player->GetGameMap()->GetCountries();
         //Display the stats of players with at least 1 country
-        if(player_countries && !player_countries->empty() && !map_countries->empty()){
+        if(!player_countries->empty() && !map_countries->empty()){
             cout << "Player: "
             << *player->GetPlayerName()
             << endl
@@ -198,7 +194,7 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
             << endl<<endl;
         }
         //Display winning message if a player owns the same amount of countries the map has
-        if(player_countries && map_countries && player_countries->size() == map_countries->size()) {
+        if(player_countries->size() == map_countries->size()) {
             cout << "Congratulations "
                  << *player->GetPlayerName()
                  << " has won the game!"

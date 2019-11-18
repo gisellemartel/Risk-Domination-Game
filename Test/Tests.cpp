@@ -157,26 +157,19 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 1, 1);
-
-        new_game->Notify("", false, false, false);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 2, 2);
 
         for(int i = 0; i < 2; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
                 player->Reinforce();
-                new_game->Notify("", false, false, false);   //Should pass message to notify: "Game over"
-
                 player->Attack();
-                new_game->Notify("", false, false, false);
-
                 player->Fortify();
-                new_game->Notify("", false, false, false);
             }
 
         }
 
         //Should pass message to notify: "as soon as a player owns all the countries, the game statistics view updates itself and displays a celebratory message"
-        new_game->Notify("", false, false, true);
+        new_game->Notify("Game Test Over", false, false, true);
 
         new_game->Unregister(observer);
 

@@ -339,6 +339,8 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
     for(Player* player : *players_) {
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
+
+    Notify("Starting New Game...\n", false, false, false);
 }
 
 //private helper methods
@@ -813,14 +815,22 @@ void GameEngine::StartGameLoop() {
         current_player = players_->at(game_start_->current_player_index_);
     }
 
-    cout << "############################################################################# GAME OVER #############################################################################" << endl;
+    string game_over = "############################################################################# GAME OVER #############################################################################\n";
 
-    cout << "\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n";
+    game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n");
+
+    if(current_player) {
+        game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
+    }
+
+    Notify(game_over, false, false, true);
 
     for(Player* player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
         player->DisplayCountries();
     }
+
+
 }
 
 void GameEngine::Register(Observer *observer) {

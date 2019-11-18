@@ -327,12 +327,21 @@ void Player::Reinforce() {
         return;
     }
 
-    Notify(this, GamePhase::Reinforce, "", true, false);
+
+    string msg =  "Beginning Reinforce phase for " + *player_name_ + "\n\n";
+
+    //PhaseObserver
+    Notify(this, GamePhase::Reinforce, msg, true, false);
+
+    // GameStatisicObserver
+    Notify(msg, false, false, false);
+
+
 
     reinforce_phase_ = new ReinforcePhase(this, 0);
 
     if(reinforce_phase_->TotalReinforceArmy() < 1) {
-        string msg = *player_name_;
+        msg = *player_name_;
         msg.append(" currently has to armies to reinforce a country with. Please try again next round\n\n");
         Notify(this, GamePhase::Reinforce, msg, false, true);
         return;
@@ -340,7 +349,6 @@ void Player::Reinforce() {
 
     player_strategy_->ReinforceStrategy(this);
 
-    string msg;
     for(int i = 0; i < reinforce_phase_->GetReinforceValues()->size(); ++i) {
         Country* current_country = GetCountryById((*reinforce_phase_->GetCountriesToReinforce())[i]);
 
@@ -365,7 +373,12 @@ void Player::Reinforce() {
 
     }
     msg = "Reinforce Phase is now over\n";
+
+    //PhaseObserver
     Notify(this, GamePhase::Reinforce, msg, false, true);
+
+    // GameStatisicObserver
+    Notify(msg, false, false, false);
 }
 
 void Player::Attack() {
@@ -376,6 +389,15 @@ void Player::Attack() {
     }
 
     attack_phase_ = new AttackPhase(this);
+
+
+    string msg =  "Beginning Attack phase for " + *player_name_ + "\n\n";
+
+    //PhaseObserver
+    Notify(this, GamePhase::Attack, msg, true, false);
+
+    // GameStatisicObserver
+    Notify(msg, false, false, false);
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
         Notify(this, GamePhase::Attack, "", true, false);
@@ -583,9 +605,14 @@ void Player::Attack() {
         }
     }
 
-    string msg =  *player_name_ + "'s Attack phase is over, going to next phase";
+    msg =  *player_name_ + "'s Attack phase is over, going to next phase";
 
+
+    //PhaseObserver
     Notify(this, GamePhase::Attack, msg, false, true);
+
+    //GameStatistic Observer
+    Notify(msg, false, false, false);
 }
 
 void Player::Fortify() {
@@ -596,7 +623,11 @@ void Player::Fortify() {
 
     string msg =  "Beginning Fortify phase for " + *player_name_ + "\n\n";
 
+    //PhaseObserver
     Notify(this, GamePhase::Fortify, msg, true, false);
+
+    // GameStatisicObserver
+    Notify(msg, false, false, false);
 
     fortify_phase_ = new FortifyPhase(this);
 
@@ -694,7 +725,12 @@ void Player::Fortify() {
     }
 
     msg = "Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
+
+    //PhaseObserver
     Notify(this, GamePhase::Fortify, msg, false, true);
+
+    // GameStatisicObserver
+    Notify(msg, false, false, false);
 }
 
 //will be used to implicitly notify the game engine of phase changes
