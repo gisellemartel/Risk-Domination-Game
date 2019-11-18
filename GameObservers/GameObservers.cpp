@@ -122,11 +122,18 @@ GameStatisticObserver::~GameStatisticObserver(){
     delete game_engine_;
 }
 
-void GameStatisticObserver::Update(){
+void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
+
+    if(country_is_defeated || player_eliminated || game_won) {
+        Utility::ClearScreen();
+    }
+
     DisplayStats();
 }
 
 void GameStatisticObserver::DisplayStats(){
+
+    Utility::ClearScreen();
 
     cout << "Current Game Statistics" << endl
     << "Current Number of Card Swaps: "

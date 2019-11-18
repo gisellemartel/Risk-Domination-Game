@@ -101,7 +101,7 @@ public:
 
     //will be used to implicitly notify the game engine of phase changes
     void Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over);
-    void Notify();
+    void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won);
 };
 
 // ReinforcePhase --------------------------------------

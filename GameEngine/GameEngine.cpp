@@ -803,13 +803,9 @@ void GameEngine::StartGameLoop() {
 
         if(!current_player->GetPlayersCountries()->empty()){
 
-            Notify();
             current_player->Reinforce();
-            Notify();
             current_player->Attack();
-            Notify();
             current_player->Fortify();
-            Notify();
             ++num_iterations;
         }
 
@@ -846,8 +842,8 @@ void GameEngine::Notify(Player* current_player, int current_phase, string curren
     }
 }
 //GameStatisticObserver
-void GameEngine::Notify(){
+void GameEngine::Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
         for(Observer* observer : *observers_){
-            observer->Update();
+            observer->Update(msg, country_is_defeated, player_eliminated, game_won);
         }
     }

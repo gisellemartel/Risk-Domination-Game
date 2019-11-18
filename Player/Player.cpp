@@ -438,8 +438,12 @@ void Player::Attack() {
                 msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
                 Notify(this, GamePhase::Attack, msg, false, true);
                 msg = "";
-//GameStatisticObserver's notify
-            Notify();
+
+
+                //GameStatisticObserver: notify that a player has lost an army
+                Notify("", true, false, false);
+
+
                 //defender has lost. Its country will now be transferred to the attacker
                 AddCountryToCollection(defending_country);
                 defender->RemoveCountryFromCollection(defending_country);
@@ -526,8 +530,10 @@ void Player::Attack() {
                         if(defending_country->GetNumberOfArmies() == 0) {
                             msg.append("Defending country " + *defending_country->GetCountryName() + " has run out of armies and has been defeated\n");
 
-                            //Game Statistic's Observer Notify();
-                            Notify();
+                            //GameStatisticObserver: notify that a player has lost an army
+                            Notify("", true, false, false);
+
+
                             Notify(this, GamePhase::Attack, msg, false, false);
 
                             //defender has lost. Its country will now be transferred to the attacker
@@ -672,8 +678,8 @@ void Player::Notify(Player* current_player, int current_phase, const string& cur
 }
 
 //notify of statistic subject for GameStatisticObserver
-void Player::Notify(){
-    game_engine_->Notify();
+void Player::Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
+    game_engine_->Notify(msg, country_is_defeated, player_eliminated, game_won);
 }
 
 

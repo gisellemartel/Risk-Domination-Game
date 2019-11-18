@@ -21,7 +21,7 @@ public:
     virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;
 
     // to be overidden by GameStatistics Observer
-    virtual void Update() = 0;
+    virtual void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) = 0;
 };
 
 //StatisticsSubject interface ----------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ public:
     virtual void Unregister(Observer* observer) = 0;
 
     // you may need to add parameters to this function as needed (see PhaseSubject for example)
-    virtual void Notify() = 0;
+    virtual void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) = 0;
 };
 
 
@@ -66,7 +66,7 @@ public:
     PhaseObserver& operator=(const PhaseObserver& phase_observer);
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override;
-    void Update() override {};
+    void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override {};
 };
 
 //------------------------------------GameStatisticObserver-----------------------------
@@ -90,7 +90,7 @@ public:
     GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override {}
-    void Update() override;
+    void Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override;
 
 };
 #endif //GAMEOBSERVERS_H
