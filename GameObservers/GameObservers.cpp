@@ -135,11 +135,11 @@ void GameStatisticObserver::DisplayStats(){
 
     Utility::ClearScreen();
 
-    cout << "Current Game Statistics" << endl
+    cout << "+++++++++++ Current Game Statistics +++++++++++" << endl
     << "Current Number of Card Swaps: "
     << CardExchangesCompleted()
-    << endl
-    << "Active Players: " << endl;
+    << endl << endl
+    << "List of Active Players: " << endl<<endl;
 
     DisplayActivePlayerStats();
 }
@@ -147,6 +147,7 @@ void GameStatisticObserver::DisplayStats(){
 int GameStatisticObserver::CardExchangesCompleted(){
     //check for nullptr
     vector<Player*>* players = game_engine_->GetPlayers();
+
     if(!players) {
         return 0;
     }
@@ -166,15 +167,22 @@ int GameStatisticObserver::CardExchangesCompleted(){
 }
 
 void GameStatisticObserver::DisplayActivePlayerStats(){
+
     vector<Player*>* game_players = game_engine_->GetPlayers();
 
     if(!game_players || game_players->empty()) {
+        cout<<"game_players error"<<endl;
         return;
     }
 
     for(Player* player : *game_players) {
 
         vector<Country*>* player_countries = player->GetPlayersCountries();
+        if(!player_countries){
+            cout<<"player_countries"<<endl;
+            return;
+        }
+
         vector<Country*>* map_countries = player->GetGameMap()->GetCountries();
         //Display the stats of players with at least 1 country
         if(player_countries && !player_countries->empty() && !map_countries->empty()){
@@ -185,9 +193,9 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
             << player_countries->size()
             << endl
             << "% Map Conquered: "
-            << (player_countries->size()) / (map_countries->size())
+            << fixed << setprecision(0) <<((float)(player_countries->size()) / (float)(map_countries->size()))*100
             << "%"
-            << endl;
+            << endl<<endl;
         }
         //Display winning message if a player owns the same amount of countries the map has
         if(player_countries && map_countries && player_countries->size() == map_countries->size()) {

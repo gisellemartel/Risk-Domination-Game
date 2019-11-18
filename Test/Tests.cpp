@@ -153,7 +153,7 @@ public:
 
         GameEngine* new_game = new GameEngine;
 
-        Observer* observer = new GameStatisticObserver;
+        Observer* observer = new GameStatisticObserver(new_game);
 
         new_game->Register(observer);
 

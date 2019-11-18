@@ -42,9 +42,11 @@ int main()
 
     cout << "\n\nAttempting to exchange card 0: " << hand->Exchange() << "\n\nHere is the resulting hand:\n\n";
     hand->DisplayHand();
+    cout << "Number of exchanges: "<<hand->exchanges_done <<endl;
 
     cout << "\n\nAttempting to exchange card 0: " << hand->Exchange() << "\n\nHere is the resulting hand:\n\n";
     hand->DisplayHand();
+    cout << "Number of exchanges: "<<hand->exchanges_done <<endl;
 
     return 0;
 }
