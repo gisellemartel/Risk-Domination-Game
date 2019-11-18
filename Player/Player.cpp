@@ -390,6 +390,7 @@ void Player::Attack() {
 
     attack_phase_ = new AttackPhase(this);
 
+    int countries_conquered = 0;
 
     string msg =  "Beginning Attack phase for " + *player_name_ + "\n\n";
 
@@ -461,6 +462,8 @@ void Player::Attack() {
                 Notify(this, GamePhase::Attack, msg, false, true);
                 msg = "";
 
+                //update countries conquered for card drawing
+                countries_conquered++;
 
                 //GameStatisticObserver: notify that a player has lost an army
                 Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName(), true, false, false);
@@ -581,7 +584,7 @@ void Player::Attack() {
                                 //Player has been defeated they have no more armies
 
                                // game_engine_->RemovePlayer(defender);
-
+                                countries_conquered++;
                                 //GameStatisticObserver: notify that a player has lost an army
                                 Notify("", false, true, false);
 
@@ -604,7 +607,13 @@ void Player::Attack() {
             Notify(this, GamePhase::Attack, msg, false, false);
         }
     }
+    for(int i=0; i<countries_conquered; i++){
+        Deck* game_deck_ = game_engine_->GetCardsDeck();
+        if(!game_deck_)
+            return;
+        risk_cards_->AddCardToHand(game_deck_->Draw());
 
+    }
     msg =  *player_name_ + "'s Attack phase is over, going to next phase";
 
 

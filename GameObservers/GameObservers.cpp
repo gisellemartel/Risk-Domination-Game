@@ -180,11 +180,15 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
         }
 
         vector<Country*>* map_countries = player->GetGameMap()->GetCountries();
+        Hand* player_hand = player->GetPlayersCards();
         //Display the stats of players with at least 1 country
         if(!player_countries->empty() && !map_countries->empty()){
             cout << "Player: "
             << *player->GetPlayerName()
             << endl
+            <<"Current Cards in hand: "
+            <<player_hand->GetNumberOfCardsInHand()
+            <<endl
             << "Countries owned: "
             << player_countries->size()
             << endl
