@@ -16,57 +16,57 @@ int main()
 //    TEST CASES ASSIGNMENT 1 ******************************************************************************************
 
 //    //various custom test cases
-//    MapLoader* testmap1 = new MapLoader("test-map-files/generaltest.map");
+//    MapLoader* testmap1 = new MapLoader("domination-map-files/generaltest.map");
 //    if(testmap1->ParseMap()) {
 //        cout << "Success! Generated map for file generaltest.map!" << endl << "\nHere is the resulting graph:\n";
 //        testmap1->GetParsedMap()->DisplayAdjacencyMatrix();
 //        cout << "**************************************************************************************************\n\n\n";
 //    }
 //
-//    MapLoader* testmap2 = new MapLoader("test-map-files/emptyfiletest.map");
+//    MapLoader* testmap2 = new MapLoader("domination-map-files/emptyfiletest.map");
 //    testmap2->ParseMap();
 //
-//    MapLoader* testmap3 = new MapLoader("test-map-files/invalidContinentFormat.map");
+//    MapLoader* testmap3 = new MapLoader("domination-map-files/invalidContinentFormat.map");
 //    testmap3->ParseMap();
 //
-//    MapLoader* testmap4 = new MapLoader("test-map-files/invalidCountryFormat.map");
+//    MapLoader* testmap4 = new MapLoader("domination-map-files/invalidCountryFormat.map");
 //    testmap4->ParseMap();
 //
-//    MapLoader* testmap5 = new MapLoader("test-map-files/invalidBorderFormat.map");
+//    MapLoader* testmap5 = new MapLoader("domination-map-files/invalidBorderFormat.map");
 //    testmap5->ParseMap();
 //
-//    MapLoader* testmap6 = new MapLoader("test-map-files/invalidHeaders.map");
+//    MapLoader* testmap6 = new MapLoader("domination-map-files/invalidHeaders.map");
 //    testmap6->ParseMap();
 //
-//    MapLoader* testmap7 = new MapLoader("test-map-files/missingborder.map");
+//    MapLoader* testmap7 = new MapLoader("domination-map-files/missingborder.map");
 //    testmap7->ParseMap();
 //
-//    MapLoader* testmap8 = new MapLoader("test-map-files/missingcontinents.map");
+//    MapLoader* testmap8 = new MapLoader("domination-map-files/missingcontinents.map");
 //    testmap8->ParseMap();
 //
-//    MapLoader* testmap9 = new MapLoader("test-map-files/missingcountries.map");
+//    MapLoader* testmap9 = new MapLoader("domination-map-files/missingcountries.map");
 //    testmap9->ParseMap();
 //
-//    MapLoader* testmap10 = new MapLoader("test-map-files/random.map");
+//    MapLoader* testmap10 = new MapLoader("domination-map-files/random.map");
 //    testmap10->ParseMap();
 //
-//    MapLoader* testmap11 = new MapLoader("test-map-files/countriesNotInOrder.map");
+//    MapLoader* testmap11 = new MapLoader("domination-map-files/countriesNotInOrder.map");
 //    testmap11->ParseMap();
 //
 //    //testing some of the provided maps from soundforge
-//    MapLoader* testmap12 = new MapLoader("test-map-files/bigeurope.map");
+//    MapLoader* testmap12 = new MapLoader("domination-map-files/bigeurope.map");
 //    testmap12->ParseMap();
 //
-//    MapLoader* testmap13 = new MapLoader("test-map-files/Falkland-Islands.map");
+//    MapLoader* testmap13 = new MapLoader("domination-map-files/Falkland-Islands.map");
 //    testmap13->ParseMap();
 //
-//    MapLoader* testmap14 = new MapLoader("test-map-files/google.map");
+//    MapLoader* testmap14 = new MapLoader("domination-map-files/google.map");
 //    testmap14->ParseMap();
 //
-//    MapLoader* testmap15 = new MapLoader("test-map-files/solar.map");
+//    MapLoader* testmap15 = new MapLoader("domination-map-files/solar.map");
 //    testmap15->ParseMap();
 //
-//    MapLoader* testmap16 = new MapLoader("test-map-files/kosova.map");
+//    MapLoader* testmap16 = new MapLoader("domination-map-files/kosova.map");
 //    testmap16->ParseMap();
 //
 //    cout << "\n----------------------------------------------------" << endl;
@@ -93,31 +93,6 @@ int main()
 //    delete testmap14;
 //    delete testmap15;
 //    delete testmap16;
-
-
-//    TEST CASES ASSIGNMENT 3 ******************************************************************************************
-
-
-    // create conquest map loader object (adaptee)
-    ConquestMapLoader* conquest_map_loader = new ConquestMapLoader("filename.map");
-
-    // create an adapter object
-    MapLoader* adapter = new Adapter(conquest_map_loader);
-
-    // implicitly call ParseConquestMap from the adapter
-    adapter->ParseMap();
-
-
-
-    Map* parsed_map = conquest_map_loader->GetParsedConquestMap();
-
-    if(parsed_map) {
-        cout << "Here is the result: " << endl;
-        cout << "Here is the result: " << endl;
-        parsed_map->DisplayAdjacencyMatrix();
-    }
-
-    cout <<  endl;
 
     return 0;
 }

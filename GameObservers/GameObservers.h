@@ -89,6 +89,7 @@ public:
 
     GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
 
+    void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override {}
     void Update() override;
 
 };

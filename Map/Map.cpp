@@ -272,6 +272,7 @@ Map::Map(const Map &map) {
     }
 }
 
+
 Map::~Map() {
     //delete all the country objects
     for (auto & i : (*countries_)) {
@@ -335,6 +336,22 @@ Country* Map::GetCountryById(int id) const {
     }
     return nullptr;
 }
+Country* Map::GetCountryByName(string name) const{
+
+    if(name.length()==0) {
+        cout << "Invalid name given. " << endl;
+        return nullptr;
+    }
+
+    for(int i = 0; i < countries_->size(); ++i) {
+        if(*(*countries_)[i]->GetCountryName()==name)  {
+            return (*countries_)[i];
+        }
+    }
+    return nullptr;
+}
+
+
 
 Continent* Map::GetContinentById(int id) const {
     if(id < 1 || id > continents_->size() + 1) {
@@ -349,12 +366,56 @@ Continent* Map::GetContinentById(int id) const {
     return nullptr;
 }
 
+Continent* Map::GetContinentByName(string name) const {
+    if(name.length()==0 ) {
+        cout << "Invalid Name given. " << endl;
+        return nullptr;
+    }
+    for(int i = 0; i < continents_->size(); ++i) {
+        if(*((*continents_)[i]->GetContinentName()) == name)  {
+            return (*continents_)[i];
+        }
+    }
+    return nullptr;
+}
+
 vector<Country*>* Map::GetCountries() const {
     return countries_;
 }
 
 vector<Continent*>* Map::GetContinents() const {
     return continents_;
+}
+
+string Map::StripString(string string_to_strip, const string &left_delim, const string &right_delim) {
+    if (
+            (left_delim.length() == 0 && right_delim.length() == 0)
+            || (string_to_strip.length() < 2)
+            || (!string_to_strip.find(left_delim) && !string_to_strip.find(right_delim))
+            ) {
+        return string_to_strip;
+    }
+
+    if (left_delim.length() == 0) {
+        return string_to_strip.substr(0, string_to_strip.find(right_delim));
+    }
+
+    if (right_delim.length() == 0) {
+        return string_to_strip.substr(string_to_strip.find(left_delim) + 1, string_to_strip.length() - 1);
+    }
+
+    if (string_to_strip.length() > 2) {
+        int left_index = string_to_strip.find(left_delim);
+        if (left_index > -1 && left_index < string_to_strip.length()) {
+            string_to_strip = string_to_strip.substr(left_index);
+        }
+
+        int right_index = string_to_strip.find(right_delim) - 1;
+        if (right_index > -1 && right_index < string_to_strip.length() - 1) {
+            return string_to_strip.substr(1, right_index);
+        }
+    }
+    return string_to_strip;
 }
 
 void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index) {
@@ -397,17 +458,21 @@ void Map::AddContinentToMap(const string& continent_name, int army_value, int id
     Continent* continent_to_add = new Continent(new string(continent_name), army_value, id);
 
     //check for continent duplicate
-    if(!continents_->empty()) {
-        for(auto continent_to_check : *continents_){
-            if(!continent_to_check) {
-                continue;
-            }
+    try {
+        if (!continents_->empty()) {
+            for (auto continent_to_check : *continents_) {
+                if (!continent_to_check) {
+                    continue;
+                }
 
-            if(IsContinentDuplicate(continent_to_add, continent_to_check)){
-                cout << "duplicate continent name found" << endl;
-                continue;
+                if (IsContinentDuplicate(continent_to_add, continent_to_check)) {
+                    cout << "duplicate continent name found" << endl;
+                    continue;
+                }
             }
         }
+    } catch (const exception&){
+        cout << "error" << endl;
     }
     continents_->push_back(continent_to_add);
     ++num_continents_;

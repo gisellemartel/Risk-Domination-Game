@@ -35,6 +35,7 @@ PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
+
     return *this;
 }
 
@@ -48,8 +49,8 @@ void PhaseObserver::Update(Player* current_player, int current_phase, string cur
     current_action_description_ = current_action_description;
     phase_over_ = phase_over;
 
-    //only print header once at start of phase
-    if(current_phase_.empty() && phase_start) {
+    //only print header once at start of phase or if we've filled the screen and need to clear it again
+    if(current_phase_.empty() || phase_start) {
         switch(current_phase) {
             case GamePhase::Startup :
                 Utility::ClearScreen();
@@ -86,7 +87,7 @@ void PhaseObserver::DisplayPhaseData() {
     if(phase_over_) {
         current_phase_ = "";
         //put thread to sleep to allow smoother visual transition
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     }
 
 }
@@ -113,47 +114,10 @@ GameStatisticObserver& GameStatisticObserver::operator=(const GameStatisticObser
 }
 
 GameStatisticObserver::GameStatisticObserver(GameEngine* game_engine){
-
     game_engine_ = game_engine;
-
-    // be careful about using incorrect naming conventions
-    // also, this is a dangerous way of using pointers and getting a crash during runtime
-//    totalCardSwaps = liveGame->GetPlayers()->at(0)->GetPlayersCards()->exchanges_done;
-    //it is better to do it this way, where you check at each step for nullptr:
-
-    /*
-     * vector<Country*>* player = game_engine_->GetPlayers();
-     *
-     * if(!player) {
-     *  return;
-     * }
-     *
-     * Player* current_player = player->at(0);
-     *
-     * if(!player) {
-     *      return;
-     * }
-     *
-     * vector<Cards*>* card = player->GetPlayersCards();
-     *
-     * if(card ) {
-     *  total_card_swaps_ = card->exchanges_done;
-     * }
-     *
-     *
-     */
-
-
-    // Registering should be done by the Client i.e. in the driver. Please see GameEngineDriver.cpp for example
-    //game_engine_->Register(); // remove
 }
 
-
 GameStatisticObserver::~GameStatisticObserver(){
-    // This should be done by the Client i.e. in the driver. Please see GameEngineDriver.cpp for example
-//    game_engine_->Unregister(this); // remove
-// the destructor should only be used for destroying pointer data members
-
     game_engine_ = nullptr;
     delete game_engine_;
 }
@@ -164,84 +128,66 @@ void GameStatisticObserver::Update(){
 
 void GameStatisticObserver::DisplayStats(){
 
-    cout
-    <<"Current Game Statistics"<<endl
-    <<"Current Number of Card Swaps: "
-    <<CardExchangesCompleted()
-    <<endl
-    <<"Active Players: "<<endl;
-    DisplayActivePlayerStats();
+    cout << "Current Game Statistics" << endl
+    << "Current Number of Card Swaps: "
+    << CardExchangesCompleted()
+    << endl
+    << "Active Players: " << endl;
 
+    DisplayActivePlayerStats();
 }
 
 int GameStatisticObserver::CardExchangesCompleted(){
     //check for nullptr
     vector<Player*>* players = game_engine_->GetPlayers();
-    if(!players)
+    if(!players) {
         return 0;
+    }
 
     Player* current = players->at(0);
-    if(!current)
+    if(!current) {
         return 0;
+    }
 
     Hand* a_hand = current->GetPlayersCards();
-    if(a_hand)
-        return a_hand->exchanges_done;
+
+    if(a_hand) {
+        return Hand::exchanges_done;
+    }
 
     return 0;
 }
 
 void GameStatisticObserver::DisplayActivePlayerStats(){
+    vector<Player*>* game_players = game_engine_->GetPlayers();
 
-    for(int i= 0; i<game_engine_->GetPlayers()->size();++i){
+    if(!game_players || game_players->empty()) {
+        return;
+    }
+
+    for(Player* player : *game_players) {
+
+        vector<Country*>* player_countries = player->GetPlayersCountries();
+        vector<Country*>* map_countries = player->GetGameMap()->GetCountries();
         //Display the stats of players with at least 1 country
-        if(!game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->empty()){
-            cout<<"Player: "
-            <<game_engine_->GetPlayers()->at(i)->GetPlayerName()
-            <<endl
-            <<"Countries owned: "
-            <<game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size()
-            <<endl
-            <<"% Map Conquered: "
-            <<game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() /
-            game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size()
-            <<"%"
-            <<endl;
+        if(player_countries && !player_countries->empty() && !map_countries->empty()){
+            cout << "Player: "
+            << *player->GetPlayerName()
+            << endl
+            << "Countries owned: "
+            << player_countries->size()
+            << endl
+            << "% Map Conquered: "
+            << (player_countries->size()) / (map_countries->size())
+            << "%"
+            << endl;
         }
         //Display winning message if a player owns the same amount of countries the map has
-        if(game_engine_->GetPlayers()->at(i)->GetPlayersCountries()->size() ==
-        game_engine_->GetPlayers()->at(i)->GetGameMap()->GetCountries()->size())
-            cout<<"Congratulations "
-            <<game_engine_->GetPlayers()->at(i)->GetPlayerName()
-            <<" has won the game!"
-            <<endl;
-
+        if(player_countries && map_countries && player_countries->size() == map_countries->size()) {
+            cout << "Congratulations "
+                 << *player->GetPlayerName()
+                 << " has won the game!"
+                 << endl;
+        }
     }
 }
-
-// TODO:
-//This is an incorrect implementation of the Observer patten. The Subject class should be an abstract interface.
-// The Observable Class should have implementations here instead. I left this here so you could see but code should be removed
-
-//------------------------------------Subject-----------------------------
-//Subject::Subject(){
-//    observers_ = new vector<Observer*>;
-//}
-//
-//Subject::~Subject(){
-//    delete observers_;
-//}
-//
-//void Subject::Attach(Observer* o){
-//    observers_->push_back(o);
-//}
-//
-//void Subject::Detach(Observer* o){
-//
-//}
-//
-//void Subject::Notify(){
-//    vector<Observer*>::iterator i = observers_->begin();
-//    for (; i!= observers_->end(); ++i)
-//        (*i)->Update();
-//}

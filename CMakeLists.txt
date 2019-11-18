@@ -25,14 +25,8 @@ add_executable(Map
         )
 add_executable(MapLoader
         Map/Map.cpp
-        Player/Player.cpp
-        Player/PlayerStrategies.cpp
-        Dice/Dice.cpp
-        Cards/Cards.cpp
         MapLoader/MapLoaderDriver.cpp
         MapLoader/MapLoader.cpp
-        GameEngine/GameEngine.cpp
-        Utility/Utility.cpp
         )
 add_executable(Dice
         Dice/DiceDriver.cpp
@@ -50,4 +44,16 @@ add_executable(Player
 add_executable(Cards
         Cards/CardsDriver.cpp
         Cards/Cards.cpp
+        )
+add_executable(Test
+        Test/Tests.cpp
+        Map/Map.cpp
+        Player/Player.cpp
+        Player/PlayerStrategies.cpp
+        Dice/Dice.cpp
+        Cards/Cards.cpp
+        MapLoader/MapLoader.cpp
+        GameEngine/GameEngine.cpp
+        GameObservers/GameObservers.cpp
+        Utility/Utility.cpp
         )

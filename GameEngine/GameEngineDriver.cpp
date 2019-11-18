@@ -20,17 +20,17 @@ int main() {
 
     GameEngine* game_engine = new GameEngine;
     // test arguments: ( map to load, # human player, # aggressive  player, # benevolant player)
-    game_engine->TestAutoLoadMapAndCreateGame("maploader/test-map-files/generaltest.map", 2, 0, 0);
+    game_engine->TestAutoLoadMapAndCreateGame("maploader/domination-map-files/generaltest.map", 2, 0, 0);
 
-    Observer* phase_observer = new PhaseObserver;
+    //Observer* phase_observer = new PhaseObserver;
     Observer* game_stats_observer = new GameStatisticObserver(game_engine);
 
-    game_engine->Register(phase_observer);
+    //game_engine->Register(phase_observer);
     game_engine->Register(game_stats_observer);
     //Test game loop
     game_engine->StartGameLoop();
 
-    game_engine->Unregister(phase_observer);
+    //game_engine->Unregister(phase_observer);
     game_engine->Unregister(game_stats_observer);
 
 

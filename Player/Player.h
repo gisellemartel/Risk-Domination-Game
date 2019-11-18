@@ -70,6 +70,7 @@ public:
     void SetAsHuman();
 
     vector<Country*>* GetPlayersCountries() const;
+    GameEngine* GetGameEngine() const;
     ReinforcePhase* GetReinforcePhase() const;
     AttackPhase* GetAttackPhase() const;
     FortifyPhase* GetFortifyPhase() const;
@@ -163,6 +164,7 @@ public:
     void SetDefender(Player* defender);
 
     bool DoesOpposingCountryExist();
+    bool PlayerHasCountryWithEnoughArmiesToAttack();
 
     void FindOpponentNeighboursToAttackingCountry();
 };
