@@ -157,9 +157,9 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 0, 4, 2);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 3, 3);
 
-        for(int i = 0; i < 500; ++i) {
+        for(int i = 0; i < 1000; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
                 player->Reinforce();
                 player->Attack();
