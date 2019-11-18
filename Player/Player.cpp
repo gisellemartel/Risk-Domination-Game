@@ -441,7 +441,7 @@ void Player::Attack() {
 
 
                 //GameStatisticObserver: notify that a player has lost an army
-                Notify("", true, false, false);
+                Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName(), true, false, false);
 
 
                 //defender has lost. Its country will now be transferred to the attacker
@@ -456,7 +456,7 @@ void Player::Attack() {
                     //game_engine_->RemovePlayer(defender);
 
                     //GameStatisticObserver: notify that a player has lost an army
-                    Notify("", false, true, false);
+                    Notify(*defender->GetPlayerName()+" has been eliminated from the game!", false, true, false);
 
                     return;
                 }

@@ -127,7 +127,7 @@ void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool pl
     if(country_is_defeated || player_eliminated || game_won) {
         Utility::ClearScreen();
     }
-
+    cout<<msg<<endl;
     DisplayStats();
 }
 
