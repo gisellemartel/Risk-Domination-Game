@@ -450,6 +450,18 @@ void Player::Attack() {
 
                 player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
+                if(defender->GetPlayersCountries()->empty()) {
+                    //Player has been defeated they have no more armies
+
+                    //game_engine_->RemovePlayer(defender);
+
+                    //GameStatisticObserver: notify that a player has lost an army
+                    Notify("", false, true, false);
+
+                    return;
+                }
+
+
             } else { //otherwise the players will roll their dice and the attack will occur
 
                 int attacker_num_dice = 0;
@@ -534,6 +546,7 @@ void Player::Attack() {
                             Notify("", true, false, false);
 
 
+                            //PhaseObserver: Notify player has lost an army
                             Notify(this, GamePhase::Attack, msg, false, false);
 
                             //defender has lost. Its country will now be transferred to the attacker
@@ -541,6 +554,18 @@ void Player::Attack() {
                             defender->RemoveCountryFromCollection(defending_country);
 
                             player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
+
+                            if(defender->GetPlayersCountries()->empty()) {
+                                //Player has been defeated they have no more armies
+
+                               // game_engine_->RemovePlayer(defender);
+
+                                //GameStatisticObserver: notify that a player has lost an army
+                                Notify("", false, true, false);
+
+                                return;
+                            }
+
                         }
                     }
                 }
