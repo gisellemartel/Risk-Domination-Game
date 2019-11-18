@@ -123,9 +123,18 @@ GameStatisticObserver::~GameStatisticObserver(){
 }
 
 void GameStatisticObserver::Update(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) {
-    Utility::ClearScreen();
-    cout << msg << endl;
-    DisplayStats();
+
+    if(country_is_defeated || player_eliminated || game_won) {
+        Utility::ClearScreen();
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        cout << msg << endl;
+        DisplayStats();
+    } else {
+        Utility::ClearScreen();
+        cout << msg << endl;
+        DisplayStats();
+    }
+
 }
 
 void GameStatisticObserver::DisplayStats(){
@@ -137,7 +146,7 @@ void GameStatisticObserver::DisplayStats(){
 
     DisplayActivePlayerStats();
     //put thread to sleep to allow smoother visual transition
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 }
 
 int GameStatisticObserver::CardExchangesCompleted(){
