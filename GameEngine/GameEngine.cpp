@@ -843,7 +843,24 @@ void GameEngine::Notify(Player* current_player, int current_phase, string curren
 }
 //GameStatisticObserver
 void GameEngine::Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won){
-        for(Observer* observer : *observers_){
-            observer->Update(msg, country_is_defeated, player_eliminated, game_won);
+    for(Observer* observer : *observers_){
+        observer->Update(msg, country_is_defeated, player_eliminated, game_won);
+    }
+}
+
+void GameEngine::RemovePlayer(Player *player) {
+    int idx_to_remove = -1;
+    for(int i = 0; i < players_->size(); ++i) {
+        if((*players_)[i] == player) {
+            idx_to_remove = i;
+            break;
         }
     }
+
+    //remove the deleted player from the game
+    if(idx_to_remove > -1) {
+        players_->erase(players_->begin() + idx_to_remove);
+    }
+}
+
+

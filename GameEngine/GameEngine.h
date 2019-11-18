@@ -18,7 +18,6 @@ using namespace std;
 #include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Dice/Dice.h"
-#include "../Player/Player.h"
 #include "../Cards/Cards.h"
 #include "../GameObservers/GameObservers.h"
 
@@ -134,6 +133,8 @@ public:
     void Unregister(Observer* observer) override;
     void Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) override;
     void Notify(string msg, bool country_is_defeated, bool player_eliminated, bool game_won) override;
+
+    void RemovePlayer(Player* player);
 };
 
 
