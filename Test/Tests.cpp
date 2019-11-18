@@ -114,6 +114,9 @@ public:
         delete strategies2;
         delete observer;
         delete new_game;
+
+        cout << "\n\nFinished Testing dynamic behaviours...\n\n";
+        Utility::ClearScreen();
     }
 
     static void TestPlayerStrategiesWithPhaseObserver() {
@@ -121,12 +124,12 @@ public:
         GameEngine* new_game = new GameEngine();
         PhaseObserver* observer = new PhaseObserver;
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1 ,1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,1);
 
         new_game->Register(observer);
 
-        //repeat game loop 3 times
-        for(int i = 0; i < 3; ++i) {
+        //repeat game loop 2 times
+        for(int i = 0; i < 2; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
                 player->Reinforce();
                 player->Attack();
