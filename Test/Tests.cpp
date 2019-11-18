@@ -2,6 +2,8 @@
 // Created by Giselle Martel on 2019-11-17.
 //
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -12,11 +14,13 @@ class Tester {
 
 public:
 
-    static void TestComputerPlayers() {
+    static void TestDynamicBehaviours() {
+
+        cout << "\nTesting Dynamic Player Behaviour with Phase Observer...\n";
 
         GameEngine* new_game = new GameEngine();
-        //PhaseObserver* observer = new PhaseObserver();
-        //new_game->Register(observer);
+        PhaseObserver* observer = new PhaseObserver();
+        new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,0);
@@ -36,46 +40,93 @@ public:
             return;
         }
 
+        cout<< "\n\nTesting human player with reinforce...\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         human->Reinforce();
-        human->Attack();
-        human->Fortify();
-
-        cout << "Dynamically changing behaviour of " << *human->GetPlayerName() << endl;
-        ConcreteStrategies* strategies1 = new BenevolantComputerPlayerStrategy;
+        cout << "\n\n\nDynamically changing behaviour of "  << *human->GetPlayerName() << " to aggressive player. Will execute Reinforce phase again ... \n\n\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        ConcreteStrategies* strategies1 = new AggressiveComputerPlayerStrategy;
         human->SetPlayerStrategy(strategies1);
-
         human->Reinforce();
-        human->Attack();
-        human->Fortify();
 
+        cout<< "\n\nTesting aggressive player with reinforce...\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         bot->Reinforce();
-        bot->Attack();
-        bot->Fortify();
-
-        cout << "Dynamically changing behaviour of " << *bot->GetPlayerName() << endl;
+        cout << "\n\n\nDynamically changing behaviour of " << *bot->GetPlayerName() << " to human player, Will execute Reinforce phase again... \n\n\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         ConcreteStrategies* strategies2 = new HumanPlayerStrategy;
         bot->SetPlayerStrategy(strategies2);
-
         bot->Reinforce();
-        bot->Attack();
-        bot->Fortify();
 
-       // new_game->Unregister(observer);
-        new_game = nullptr;
-        delete new_game;
-    }
+        new_game->Unregister(observer);
 
-    static void TestPhaseObserver() {
 
-        GameEngine* new_game = new GameEngine();
-        PhaseObserver* observer = new PhaseObserver();
+        // test with human and benevolant player
+        new_game = new GameEngine();
+        observer = new PhaseObserver();
         new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 0 ,1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,1);
 
-        //repeat game 10 times
-        for(int i = 0; i < 10; ++i) {
+        human = nullptr;
+        Player* benevolant = nullptr;
+
+        for(Player* player : *new_game->GetPlayers()) {
+            if(player->IsHuman()) {
+                human = player;
+            } else {
+                bot = player;
+            }
+        }
+
+        if(!human || !bot) {
+            return;
+        }
+
+        cout<< "\n\nTesting human player with reinforce...\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        human->Reinforce();
+        cout << "\n\n\nDynamically changing behaviour of "  << *human->GetPlayerName() << " to benevolant player. cWill execute Reinforce phase again ...\n\n\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        strategies1 = new BenevolantComputerPlayerStrategy;
+        human->SetPlayerStrategy(strategies1);
+        human->Reinforce();
+
+
+        cout<< "\n\nTesting Benevolant player with reinforce...\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        bot->Reinforce();
+        cout << "\n\n\nDynamically changing behaviour of " << *bot->GetPlayerName() << " to aggressive player. Will execute Reinforce phase again ...\n\n\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        strategies2 = new AggressiveComputerPlayerStrategy;
+        bot->SetPlayerStrategy(strategies2);
+        bot->Reinforce();
+
+        new_game->Unregister(observer);
+
+        observer = nullptr;
+        strategies1 = nullptr;
+        strategies2 = nullptr;
+        new_game = nullptr;
+
+        delete strategies1;
+        delete strategies2;
+        delete observer;
+        delete new_game;
+    }
+
+    static void TestPlayerStrategiesWithPhaseObserver() {
+        cout << "\n\nTesting Player Strategies with Phase Observer...\n\n";
+        GameEngine* new_game = new GameEngine();
+        PhaseObserver* observer = new PhaseObserver;
+
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/test-map-files/generaltest.map", 1, 1 ,1);
+
+        new_game->Register(observer);
+
+        //repeat game loop 3 times
+        for(int i = 0; i < 3; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
                 player->Reinforce();
                 player->Attack();
@@ -85,6 +136,17 @@ public:
 
         new_game->Unregister(observer);
 
+        cout << "\n\nFinished Testing player strategies...\n\n";
+
+        new_game = nullptr;
+        observer = nullptr;
+
+        delete observer;
+        delete new_game;
+    }
+
+    static void TestGameStatisticsObserver() {
+        cout << "\nTesting GameStatistics Observer...\n";
     }
 
     static void TestConquestMapLoader(string file_name, bool display_adjacency_matrix) {
@@ -151,10 +213,10 @@ int main() {
         Utility::ClearScreen();
         int user_response;
         cout << endl;
-        cout << "Test Player Strategies       |  1\n";
-        cout << "Test Phase Observer          |  2\n";
-        cout << "Test Game Statistic Observer |  3\n";
-        cout << "Test Conquest Map Loader     |  4\n\n";
+        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
+        cout << "Test Different Strategies w/ Phase Observer |  2\n";
+        cout << "Test Game Statistic Observer                |  3\n";
+        cout << "Test Conquest Map Loader                    |  4\n\n";
 
 
         cout << "Please Select what you would like to test (enter the corresponding number):\n";
@@ -167,12 +229,13 @@ int main() {
 
         switch (user_response) {
             case 1 :
-                Tester::TestComputerPlayers();
+                Tester::TestDynamicBehaviours();
                 break;
             case 2:
-                Tester::TestPhaseObserver();
+                Tester::TestPlayerStrategiesWithPhaseObserver();
                 break;
             case 3:
+                Tester::TestGameStatisticsObserver();
                 break;
             case 4:
                 Tester::TestMapFiles();
