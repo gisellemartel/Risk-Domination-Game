@@ -15,16 +15,22 @@ Continent::Continent(string* continent_name, int army_value, int continent_id){
     countries_in_continent_ = new vector<Country*>;
 }
 
-
 Continent::Continent(const Continent &continent) {
-    continent_name_ = continent.continent_name_;
+    *continent_name_ = *continent.continent_name_;
     continent_ID_ = continent.continent_ID_;
     army_value_ = continent.army_value_;
-    color_ = continent.color_;
+    *color_ = *continent.color_;
+
+    *countries_in_continent_ = *continent.countries_in_continent_;
     for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
-        countries_in_continent_[i] = continent.countries_in_continent_[i];
+        (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
+        (*continent.countries_in_continent_)[i] = nullptr;
+        delete (*continent.countries_in_continent_)[i];
     }
-    countries_in_continent_ = continent.countries_in_continent_;
+
+    delete continent.continent_name_;
+    delete continent.color_;
+    delete[] continent.countries_in_continent_;
 }
 
 Continent::~Continent() {
@@ -32,18 +38,26 @@ Continent::~Continent() {
         delete (&countries_in_continent_[i]);
     }
 
-    delete countries_in_continent_;
+    delete[] countries_in_continent_;
 }
 
 Continent& Continent::operator=(const Continent &continent) {
-    continent_name_ = continent.continent_name_;
+    *continent_name_ = *continent.continent_name_;
     continent_ID_ = continent.continent_ID_;
     army_value_ = continent.army_value_;
-    color_ = continent.color_;
+    *color_ = *continent.color_;
+
+    *countries_in_continent_ = *continent.countries_in_continent_;
     for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
-        countries_in_continent_[i] = continent.countries_in_continent_[i];
+        (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
+        (*continent.countries_in_continent_)[i] = nullptr;
+        delete (*continent.countries_in_continent_)[i];
     }
-    countries_in_continent_ = continent.countries_in_continent_;
+
+    delete continent.continent_name_;
+    delete continent.color_;
+    delete[] continent.countries_in_continent_;
+
     return *this;
 }
 

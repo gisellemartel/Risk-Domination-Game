@@ -34,22 +34,49 @@ ReinforcePhase::~ReinforcePhase(){
 
 }
 
+
 ReinforcePhase::ReinforcePhase(const ReinforcePhase& reinforce){
-    turn_player_ = reinforce.turn_player_;
+    *turn_player_ = *reinforce.turn_player_;
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
-    reinforce_values_ = reinforce.reinforce_values_;
-    countries_to_reinforce_ =reinforce.countries_to_reinforce_;
+
+    *reinforce_values_ = *reinforce.reinforce_values_;
+    for(int i = 0; i < reinforce.reinforce_values_->size(); ++i) {
+        reinforce_values_[i] = reinforce.reinforce_values_[i];
+    }
+
+    *countries_to_reinforce_ = *reinforce.countries_to_reinforce_;
+    for(int i = 0; i < reinforce.countries_to_reinforce_->size(); ++i) {
+        countries_to_reinforce_[i] = reinforce.countries_to_reinforce_[i];
+    }
+
+    delete reinforce.turn_player_;
+    delete[] reinforce.reinforce_values_;
+    delete[] reinforce.countries_to_reinforce_;
+
 }
 
 ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
-    turn_player_ = reinforce.turn_player_;
+    *turn_player_ = *reinforce.turn_player_;
     num_of_swaps_ = reinforce.num_of_swaps_;
     divider_ = reinforce.divider_;
     reinforcement_army_ = reinforce.reinforcement_army_;
-    reinforce_values_ = reinforce.reinforce_values_;
-    countries_to_reinforce_ =reinforce.countries_to_reinforce_;
+
+    *reinforce_values_ = *reinforce.reinforce_values_;
+    for(int i = 0; i < reinforce.reinforce_values_->size(); ++i) {
+        reinforce_values_[i] = reinforce.reinforce_values_[i];
+    }
+
+    *countries_to_reinforce_ = *reinforce.countries_to_reinforce_;
+    for(int i = 0; i < reinforce.countries_to_reinforce_->size(); ++i) {
+        countries_to_reinforce_[i] = reinforce.countries_to_reinforce_[i];
+    }
+
+    delete reinforce.turn_player_;
+    delete[] reinforce.reinforce_values_;
+    delete[] reinforce.countries_to_reinforce_;
+
     return *this;
 }
 
@@ -169,28 +196,47 @@ AttackPhase::~AttackPhase() {
 }
 
 AttackPhase::AttackPhase(const AttackPhase& attack) {
-    attacking_country_ = attack.attacking_country_;
-    defending_country_ = attack.defending_country_;
-    defender_ = attack.defender_;
-    attacker_ = attack.attacker_;
-    game_map_ = attack.game_map_;
+    *attacking_country_ = *attack.attacking_country_;
+    *defending_country_ = *attack.defending_country_;
+    *defender_ = *attack.defender_;
+    *attacker_ = *attack.attacker_;
+    *game_map_ = *attack.game_map_;
 
-    opponent_neighbours_ = attack.opponent_neighbours_;
+    *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
-        opponent_neighbours_[i] = attack.opponent_neighbours_[i];
+        (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
+        (*attack.opponent_neighbours_)[i] = nullptr;
+        delete (*attack.opponent_neighbours_)[i];
     }
+
+    delete attack.attacking_country_;
+    delete attack.defending_country_;
+    delete attack.attacker_;
+    delete attack.defender_;
+    delete attack.game_map_;
+    delete[] attack.opponent_neighbours_;
 }
 
 AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
-    attacking_country_ = attack.attacking_country_;
-    defending_country_ = attack.defending_country_;
-    defender_ = attack.defender_;
-    attacker_ = attack.attacker_;
-    game_map_ = attack.game_map_;
-    opponent_neighbours_ = attack.opponent_neighbours_;
+    *attacking_country_ = *attack.attacking_country_;
+    *defending_country_ = *attack.defending_country_;
+    *defender_ = *attack.defender_;
+    *attacker_ = *attack.attacker_;
+    *game_map_ = *attack.game_map_;
+
+    *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
-        opponent_neighbours_[i] = attack.opponent_neighbours_[i];
+        (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
+        (*attack.opponent_neighbours_)[i] = nullptr;
+        delete (*attack.opponent_neighbours_)[i];
     }
+
+    delete attack.attacking_country_;
+    delete attack.defending_country_;
+    delete attack.attacker_;
+    delete attack.defender_;
+    delete attack.game_map_;
+    delete[] attack.opponent_neighbours_;
 
     return *this;
 }
@@ -322,16 +368,24 @@ FortifyPhase::FortifyPhase(Player* player) {
 }
 
 FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
-    player_ = fortify.player_;
-    game_map_ = fortify.game_map_;
-    source_country_ = fortify.source_country_;
-    target_country_ = fortify.target_country_;
-    neighbours_to_fortify_ = fortify.neighbours_to_fortify_;
+    *player_ = *fortify.player_;
+    *game_map_ = *fortify.game_map_;
+    *source_country_ = *fortify.source_country_;
+    *target_country_ = *fortify.target_country_;
+
+    *neighbours_to_fortify_ = *fortify.neighbours_to_fortify_;
 
     for(int i = 0; i < fortify.neighbours_to_fortify_->size(); ++i) {
-        neighbours_to_fortify_[i] = fortify.neighbours_to_fortify_[i];
+        (*neighbours_to_fortify_)[i] = (*fortify.neighbours_to_fortify_)[i];
+        (*fortify.neighbours_to_fortify_)[i] = nullptr;
+        delete (*fortify.neighbours_to_fortify_)[i];
     }
 
+    delete fortify.player_;
+    delete fortify.game_map_;
+    delete fortify.source_country_;
+    delete fortify.target_country_;
+    delete[] fortify.neighbours_to_fortify_;
 }
 
 FortifyPhase::~FortifyPhase() {
@@ -355,14 +409,24 @@ FortifyPhase::~FortifyPhase() {
 }
 
 FortifyPhase& FortifyPhase::operator=(const FortifyPhase &fortify) {
-    player_ = fortify.player_;
-    game_map_ = fortify.game_map_;
-    source_country_ = fortify.source_country_;
-    target_country_ = fortify.target_country_;
-    neighbours_to_fortify_ = fortify.neighbours_to_fortify_;
+    *player_ = *fortify.player_;
+    *game_map_ = *fortify.game_map_;
+    *source_country_ = *fortify.source_country_;
+    *target_country_ = *fortify.target_country_;
+
+    *neighbours_to_fortify_ = *fortify.neighbours_to_fortify_;
+
     for(int i = 0; i < fortify.neighbours_to_fortify_->size(); ++i) {
-        neighbours_to_fortify_[i] = fortify.neighbours_to_fortify_[i];
+        (*neighbours_to_fortify_)[i] = (*fortify.neighbours_to_fortify_)[i];
+        (*fortify.neighbours_to_fortify_)[i] = nullptr;
+        delete (*fortify.neighbours_to_fortify_)[i];
     }
+
+    delete fortify.player_;
+    delete fortify.game_map_;
+    delete fortify.source_country_;
+    delete fortify.target_country_;
+    delete[] fortify.neighbours_to_fortify_;
 
     return *this;
 }

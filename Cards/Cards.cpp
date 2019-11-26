@@ -8,21 +8,9 @@
 
 // CARDS class ---------------------------------------------------------------------------------------------------------
 
-//Constructors
-Cards::Cards(const Cards& cards) {
-    type_ = cards.type_;
-}
 
 Cards::Cards(const string& type) {
     type_ = type;
-}
-
-Cards::~Cards() = default;
-
-Cards& Cards::operator=(const Cards& cards) = default;
-
-void Cards::SetCardType(string& card_type) {
-    type_ = card_type;
 }
 
 string Cards::GetCardType() const {
@@ -40,7 +28,15 @@ void Cards::DisplayCard() {
 Deck::Deck(const Deck& deck) {
     num_exchanges = deck.num_exchanges;
     num_cards_deck_ = deck.num_cards_deck_;
-    cards_ = deck.cards_;
+    *cards_ = *deck.cards_;
+
+    for(int i = 0; i < deck.cards_->size(); ++i) {
+        (*cards_)[i] = (*deck.cards_)[i];
+        (*deck.cards_)[i] = nullptr;
+        delete (*deck.cards_)[i];
+    }
+
+    delete[] deck.cards_;
 }
 
 Deck::Deck() {
@@ -49,10 +45,30 @@ Deck::Deck() {
     num_cards_deck_ = 0;
 }
 
-Deck::~Deck() = default;
+Deck::~Deck() {
+    for(Cards* card : *cards_) {
+        card = nullptr;
+        delete card;
+    }
 
-int Deck::GetNumExchanges() const {
-    return num_exchanges;
+    cards_ = nullptr;
+    delete[] cards_;
+}
+
+Deck& Deck::operator=(const Deck &deck) {
+    num_exchanges = deck.num_exchanges;
+    num_cards_deck_ = deck.num_cards_deck_;
+    *cards_ = *deck.cards_;
+
+    for(int i = 0; i < deck.cards_->size(); ++i) {
+        (*cards_)[i] = (*deck.cards_)[i];
+        (*deck.cards_)[i] = nullptr;
+        delete (*deck.cards_)[i];
+    }
+
+    delete[] deck.cards_;
+
+    return *this;
 }
 
 size_t Deck::GetNumberOfCardsInDeck() const {
@@ -115,14 +131,46 @@ void Deck::DisplayDeck() {
 // HAND class ----------------------------------------------------------------------------------------------------------
 Hand::Hand(){
     cards_in_hand_ = new vector<Cards*>;
-
 }
+
 
 Hand::Hand(const Hand &hand) {
-    cards_in_hand_ = hand.cards_in_hand_;
+    *cards_in_hand_ = *hand.cards_in_hand_;
+
+    for(int i = 0; i < hand.cards_in_hand_->size(); ++i) {
+        (*cards_in_hand_)[i] = (*hand.cards_in_hand_)[i];
+
+        (*hand.cards_in_hand_)[i] = nullptr;
+        delete (*hand.cards_in_hand_)[i];
+    }
+
+    delete[] hand.cards_in_hand_;
 }
 
-Hand::~Hand()= default;
+Hand::~Hand() {
+
+    for(Cards* card : *cards_in_hand_) {
+        card = nullptr;
+        delete card;
+    }
+
+    cards_in_hand_ = nullptr;
+    delete[] cards_in_hand_;
+}
+
+Hand& Hand::operator=(const Hand &hand) {
+    *cards_in_hand_ = *hand.cards_in_hand_;
+
+    for(int i = 0; i < hand.cards_in_hand_->size(); ++i) {
+        (*cards_in_hand_)[i] = (*hand.cards_in_hand_)[i];
+
+        (*hand.cards_in_hand_)[i] = nullptr;
+        delete (*hand.cards_in_hand_)[i];
+    }
+
+    delete[] hand.cards_in_hand_;
+    return *this;
+}
 
 size_t Hand::GetNumberOfCardsInHand() const {
     return cards_in_hand_->size();

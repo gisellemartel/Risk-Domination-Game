@@ -12,7 +12,8 @@ Adapter::Adapter(ConquestMapLoader *conquest_map_loader) : MapLoader() {
 }
 
 Adapter::Adapter(const Adapter &adapter) : MapLoader(adapter) {
-    conquest_map_loader_ = adapter.conquest_map_loader_;
+    *conquest_map_loader_ = *adapter.conquest_map_loader_;
+    delete adapter.conquest_map_loader_;
 }
 
 Adapter::~Adapter() {
@@ -21,7 +22,8 @@ Adapter::~Adapter() {
 }
 
 Adapter &Adapter::operator=(const Adapter &adapter) {
-    conquest_map_loader_ = adapter.conquest_map_loader_;
+    *conquest_map_loader_ = *adapter.conquest_map_loader_;
+    delete adapter.conquest_map_loader_;
     return *this;
 }
 

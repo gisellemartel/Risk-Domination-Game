@@ -57,22 +57,37 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
 }
 
 Player::Player(const Player &player) {
-    player_name_ = player.player_name_;
+    *player_name_ = *player.player_name_;
     is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
 
+    *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
-        countries_[i] = player.countries_[i];
+        (*countries_)[i] = (*player.countries_)[i];
+        (*player.countries_)[i] = nullptr;
+        delete (*player.countries_)[i];
     }
-    countries_ = player.countries_;
-    risk_cards_ = player.risk_cards_;
-    dice_roll_ = player.dice_roll_;
-    game_map_ = player.game_map_;
-    player_strategy_ = player.player_strategy_;
-    reinforce_phase_ = player.reinforce_phase_;
-    attack_phase_ = player.attack_phase_;
-    fortify_phase_ = player.fortify_phase_;
-    game_engine_ = player.game_engine_;
+
+    *risk_cards_ = *player.risk_cards_;
+    *dice_roll_ = *player.dice_roll_;
+    *game_map_ = *player.game_map_;
+    *player_strategy_ = *player.player_strategy_;
+    *reinforce_phase_ = *player.reinforce_phase_;
+    *attack_phase_ = *player.attack_phase_;
+    *fortify_phase_ = *player.fortify_phase_;
+    *game_engine_ = *player.game_engine_;
+
+
+    delete player.player_name_;
+    delete player.risk_cards_;
+    delete player.dice_roll_;
+    delete player.game_map_;
+    delete player.player_strategy_;
+    delete player.reinforce_phase_;
+    delete player.attack_phase_;
+    delete player.fortify_phase_;
+    delete player.game_engine_;
+    delete[] player.countries_;
 }
 
 Player::~Player() {
@@ -101,24 +116,40 @@ Player::~Player() {
     delete fortify_phase_;
 }
 
+//TODO: DEEP COPY / SHOULD DELETE OLD VALUES
 Player& Player::operator=(const Player &player) {
-    player_name_ = player.player_name_;
+    *player_name_ = *player.player_name_;
     is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
 
+    *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
-        countries_[i] = player.countries_[i];
+        (*countries_)[i] = (*player.countries_)[i];
+        (*player.countries_)[i] = nullptr;
+        delete (*player.countries_)[i];
     }
 
-    risk_cards_ = player.risk_cards_;
-    countries_ = player.countries_;
-    dice_roll_ = player.dice_roll_;
-    game_map_ = player.game_map_;
-    game_engine_ = player.game_engine_;
-    player_strategy_ = player.player_strategy_;
-    reinforce_phase_ = player.reinforce_phase_;
-    attack_phase_ = player.attack_phase_;
-    fortify_phase_ = player.fortify_phase_;
+    *risk_cards_ = *player.risk_cards_;
+    *dice_roll_ = *player.dice_roll_;
+    *game_map_ = *player.game_map_;
+    *player_strategy_ = *player.player_strategy_;
+    *reinforce_phase_ = *player.reinforce_phase_;
+    *attack_phase_ = *player.attack_phase_;
+    *fortify_phase_ = *player.fortify_phase_;
+    *game_engine_ = *player.game_engine_;
+
+
+    delete player.player_name_;
+    delete player.risk_cards_;
+    delete player.dice_roll_;
+    delete player.game_map_;
+    delete player.player_strategy_;
+    delete player.reinforce_phase_;
+    delete player.attack_phase_;
+    delete player.fortify_phase_;
+    delete player.game_engine_;
+    delete[] player.countries_;
+
     return *this;
 }
 

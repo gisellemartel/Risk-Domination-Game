@@ -30,12 +30,13 @@ StartupPhase::StartupPhase() {
 }
 
 StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
-    player_order_ = startup_phase.player_order_;
+    *player_order_ = *startup_phase.player_order_;
 
-    for(map<Player*, int>::iterator it = startup_phase.player_order_->begin(); it != startup_phase.player_order_->end(); ++it) {
-        player_order_->insert(*it);
+    for(const auto& it : *startup_phase.player_order_) {
+        player_order_->insert(it);
     }
     current_player_index_ = startup_phase.current_player_index_;
+    delete startup_phase.player_order_;
 }
 
 StartupPhase::~StartupPhase() {
@@ -45,12 +46,14 @@ StartupPhase::~StartupPhase() {
 
 //operator overloader
 StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
-    player_order_ = startup_phase.player_order_;
+    *player_order_ = *startup_phase.player_order_;
 
     for(const auto& it : *startup_phase.player_order_) {
         player_order_->insert(it);
     }
     current_player_index_ = startup_phase.current_player_index_;
+
+    delete startup_phase.player_order_;
     return *this;
 }
 

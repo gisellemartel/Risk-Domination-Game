@@ -12,27 +12,37 @@ Dice::Dice() {
 }
 
 Dice::Dice(const Dice &dice) {
+
+    *roll_num_stats_ = *dice.roll_num_stats_;
     for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
-        roll_num_stats_[i] = dice.roll_num_stats_[i];
+        (*roll_num_stats_)[i] = (*dice.roll_num_stats_)[i];
     }
 
-    roll_num_stats_ = dice.roll_num_stats_;
-    total_rolls_ = dice.total_rolls_;
+    *total_rolls_ = *dice.total_rolls_;
+
+    delete dice.total_rolls_;
+    delete[] dice.roll_num_stats_;
 }
 
 Dice::~Dice() {
+    roll_num_stats_ = nullptr;
+    total_rolls_ = nullptr;
+
     delete roll_num_stats_;
     delete[] total_rolls_;
 }
 
-
 Dice& Dice::operator=(const Dice &dice) {
+    *roll_num_stats_ = *dice.roll_num_stats_;
     for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
-        roll_num_stats_[i] = dice.roll_num_stats_[i];
+        (*roll_num_stats_)[i] = (*dice.roll_num_stats_)[i];
     }
 
-    roll_num_stats_ = dice.roll_num_stats_;
-    total_rolls_ = dice.total_rolls_;
+    *total_rolls_ = *dice.total_rolls_;
+
+    delete dice.total_rolls_;
+    delete[] dice.roll_num_stats_;
+
     return *this;
 }
 

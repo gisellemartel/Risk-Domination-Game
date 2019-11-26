@@ -76,27 +76,39 @@ GameEngine::GameEngine() {
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
-    loaded_map_ = game_engine.loaded_map_;
+    *loaded_map_ = *game_engine.loaded_map_;
 
-    cards_deck_ = game_engine.cards_deck_;
+    *cards_deck_ = *game_engine.cards_deck_;
 
-    players_ = game_engine.players_;
+    *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
-        players_[i] = game_engine.players_[i];
+        (*players_)[i] = (*game_engine.players_)[i];
+        (*game_engine.players_)[i] = nullptr;
+        delete (*game_engine.players_)[i];
     }
 
-    file_paths_ = game_engine.file_paths_;
+    *file_paths_ = *game_engine.file_paths_;
     for (size_t i = 0; i < game_engine.file_paths_->size(); ++i) {
-        file_paths_[i] = game_engine.file_paths_[i];
+        (*file_paths_)[i] = (*game_engine.file_paths_)[i];
+        (*game_engine.file_paths_)[i] = nullptr;
     }
 
-    observers_ = game_engine.observers_;
-
+    *observers_ = *game_engine.observers_;
     for(int i = 0; i < game_engine.observers_->size(); ++i) {
-        observers_[i] = game_engine.observers_[i];
+        (*observers_)[i] = (*game_engine.observers_)[i];
+        (*game_engine.observers_)[i] = nullptr;
+        delete (*game_engine.observers_)[i];
     }
 
-    game_start_ = game_engine.game_start_;
+    *game_start_ = *game_engine.game_start_;
+
+    delete game_engine.loaded_map_;
+    delete game_engine.cards_deck_;
+    delete game_engine.game_start_;
+    delete[] game_engine.players_;
+    delete[] game_engine.file_paths_;
+    delete[] game_engine.observers_;
+
     num_of_players_ = game_engine.num_of_players_;
     num_of_human_players_ = game_engine.num_of_human_players_;
     num_aggressive_players_ = game_engine.num_aggressive_players_;
@@ -141,24 +153,38 @@ GameEngine::~GameEngine() {
 
 //operator overloader
 GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
-    loaded_map_ = game_engine.loaded_map_;
+    *loaded_map_ = *game_engine.loaded_map_;
 
-    cards_deck_ = game_engine.cards_deck_;
+    *cards_deck_ = *game_engine.cards_deck_;
 
-    players_ = game_engine.players_;
+    *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
-        players_[i] = game_engine.players_[i];
+        (*players_)[i] = (*game_engine.players_)[i];
+        (*game_engine.players_)[i] = nullptr;
+        delete (*game_engine.players_)[i];
     }
 
-    file_paths_ = game_engine.file_paths_;
+    *file_paths_ = *game_engine.file_paths_;
     for (size_t i = 0; i < game_engine.file_paths_->size(); ++i) {
-        file_paths_[i] = game_engine.file_paths_[i];
+        (*file_paths_)[i] = (*game_engine.file_paths_)[i];
+        (*game_engine.file_paths_)[i] = nullptr;
     }
 
-    observers_ = game_engine.observers_;
+    *observers_ = *game_engine.observers_;
     for(int i = 0; i < game_engine.observers_->size(); ++i) {
-        observers_[i] = game_engine.observers_[i];
+        (*observers_)[i] = (*game_engine.observers_)[i];
+        (*game_engine.observers_)[i] = nullptr;
+        delete (*game_engine.observers_)[i];
     }
+
+    *game_start_ = *game_engine.game_start_;
+
+    delete game_engine.loaded_map_;
+    delete game_engine.cards_deck_;
+    delete game_engine.game_start_;
+    delete[] game_engine.players_;
+    delete[] game_engine.file_paths_;
+    delete[] game_engine.observers_;
 
     num_of_players_ = game_engine.num_of_players_;
     num_of_human_players_ = game_engine.num_of_human_players_;
@@ -166,7 +192,6 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     num_benevolant_players_ = game_engine.num_benevolant_players_;
     num_random_players_ = game_engine.num_random_players_;
     num_cheater_players_ = game_engine.num_cheater_players_;
-    game_start_ = game_engine.game_start_;
     exit_game_ = game_engine.exit_game_;
     current_phase_ = game_engine.current_phase_;
 

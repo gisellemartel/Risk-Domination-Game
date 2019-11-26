@@ -24,16 +24,9 @@ private:
 
 public:
     explicit Cards(const string& type);
-    Cards(const Cards& cards);
-    ~Cards();
-
-    //operator overloader
-    Cards& operator=(const Cards& cards);
-
-    void SetCardType(string& card_type);
+    ~Cards() = default;
 
     string GetCardType() const;
-
     void DisplayCard();
 };
 // END OF CARDS class --------------------------------------------------------------------------------------------------
@@ -51,8 +44,9 @@ public:
     Deck();
     Deck(const Deck& deck);
     ~Deck();
-    
-    int GetNumExchanges() const;
+
+    Deck& operator=(const Deck& deck);
+
     size_t GetNumberOfCardsInDeck() const;
 
     void CreateDeck(int num_cards);
@@ -74,6 +68,8 @@ public:
     Hand();
     Hand(const Hand& hand);
     ~Hand();
+
+    Hand& operator=(const Hand& hand);
 
 
     size_t GetNumberOfCardsInHand() const;

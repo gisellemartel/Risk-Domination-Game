@@ -21,14 +21,21 @@ MapLoader::MapLoader(string file_name) {
 
 MapLoader::MapLoader(const MapLoader &map) {
     file_name_ = map.file_name_;
-    parsed_map_ = map.parsed_map_;
+    *parsed_map_ = *map.parsed_map_;
+    delete map.parsed_map_;
 }
 
 MapLoader::~MapLoader() {
     delete parsed_map_;
 }
 
-MapLoader &MapLoader::operator=(const MapLoader &map) = default;
+MapLoader &MapLoader::operator=(const MapLoader &map) {
+    file_name_ = map.file_name_;
+    *parsed_map_ = *map.parsed_map_;
+    delete map.parsed_map_;
+
+    return *this;
+};
 
 Map *MapLoader::GetParsedMap() const {
     return parsed_map_;

@@ -20,19 +20,38 @@ Map::Map(const string& name) {
 }
 
 Map::Map(const Map &map) {
-    map_name_ = map.map_name_;
+    *map_name_ = *map.map_name_;
     num_countries_ = map.num_countries_;
     num_continents_ = map.num_continents_;
-    continents_ = map.continents_;
-    countries_ = map.countries_;
 
-    adjacency_matrix_ = map.adjacency_matrix_;
+    *continents_ = *map.continents_;
+    for(int i = 0; i < map.continents_->size(); ++i) {
+        (*continents_)[i] = (*map.continents_)[i];
+        (*map.continents_)[i] = nullptr;
+        delete (*map.continents_)[i];
+    }
+
+
+    *countries_ = *map.countries_;
+    for(int i = 0; i < map.countries_->size(); ++i) {
+        (*countries_)[i] = (*map.countries_)[i];
+    }
+
+    *adjacency_matrix_ = *map.adjacency_matrix_;
     for(size_t i = 0; i < map.num_countries_; ++i) {
-        adjacency_matrix_[i] = map.adjacency_matrix_[i];
+        (*adjacency_matrix_)[i] = (*map.adjacency_matrix_)[i];
+
         for(size_t j = 0; j < map.num_countries_; ++j) {
             adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
         }
+
+        map.adjacency_matrix_[i] = nullptr;
+        delete[] map.adjacency_matrix_[i];
     }
+
+    delete[] map.continents_;
+    delete[] map.continents_;
+    delete map.map_name_;
 }
 
 
@@ -53,24 +72,46 @@ Map::~Map() {
     }
 
     delete[] adjacency_matrix_;
-    delete countries_;
-    delete continents_;
+    delete[]countries_;
+    delete[] continents_;
 }
 
+//TODO: deep copy & delete old values
 Map& Map::operator=(const Map &map)
 {
-    map_name_ = map.map_name_;
+    *map_name_ = *map.map_name_;
     num_countries_ = map.num_countries_;
     num_continents_ = map.num_continents_;
-    continents_ = map.continents_;
-    countries_ = map.countries_;
-    adjacency_matrix_ = map.adjacency_matrix_;
+
+    *continents_ = *map.continents_;
+    for(int i = 0; i < map.continents_->size(); ++i) {
+        (*continents_)[i] = (*map.continents_)[i];
+        (*map.continents_)[i] = nullptr;
+        delete (*map.continents_)[i];
+    }
+
+
+    *countries_ = *map.countries_;
+    for(int i = 0; i < map.countries_->size(); ++i) {
+        (*countries_)[i] = (*map.countries_)[i];
+    }
+
+    *adjacency_matrix_ = *map.adjacency_matrix_;
     for(size_t i = 0; i < map.num_countries_; ++i) {
-        adjacency_matrix_[i] = map.adjacency_matrix_[i];
+        (*adjacency_matrix_)[i] = (*map.adjacency_matrix_)[i];
+
         for(size_t j = 0; j < map.num_countries_; ++j) {
             adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
         }
+
+        map.adjacency_matrix_[i] = nullptr;
+        delete[] map.adjacency_matrix_[i];
     }
+
+    delete[] map.continents_;
+    delete[] map.continents_;
+    delete map.map_name_;
+
     return *this;
 }
 

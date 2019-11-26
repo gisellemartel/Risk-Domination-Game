@@ -31,29 +31,45 @@ Country::Country(int country_ID, string* country_name, int continent_ID, int coo
 }
 
 Country::Country(const Country &country) {
-    country_name_ = country.country_name_;
+    *country_name_ = *country.country_name_;
     continent_ID_ = country.continent_ID_;
     country_ID_ = country.country_ID_;
     number_of_armies_ = country.number_of_armies_;
     coordinate_x_ = country.coordinate_x_;
     coordinate_y_ = country.coordinate_y_;
-    country_owner_ = country.country_owner_;
-    continent_ = country.continent_;
+    *country_owner_ = *country.country_owner_;
+    *continent_ = *country.continent_;
+
+    delete country.continent_;
+    delete country.country_owner_;
+    delete country.country_name_;
 }
 
 Country::~Country() {
+
+    country_owner_ = nullptr;
+    country_name_ = nullptr;
+    continent_ = nullptr;
+
+    delete country_owner_;
+    delete country_name_;
     delete continent_;
 }
 
 Country& Country::operator=(const Country &country) {
-    country_name_ = country.country_name_;
+    *country_name_ = *country.country_name_;
     continent_ID_ = country.continent_ID_;
     country_ID_ = country.country_ID_;
     number_of_armies_ = country.number_of_armies_;
     coordinate_x_ = country.coordinate_x_;
     coordinate_y_ = country.coordinate_y_;
-    country_owner_ = country.country_owner_;
-    continent_ = country.continent_;
+    *country_owner_ = *country.country_owner_;
+    *continent_ = *country.continent_;
+
+    delete country.continent_;
+    delete country.country_owner_;
+    delete country.country_name_;
+
     return *this;
 }
 
