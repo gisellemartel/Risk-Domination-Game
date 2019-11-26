@@ -1,5 +1,5 @@
 /**
- * Assignment #3 COMP345, FALL 2019
+ * Assignment #4 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -375,6 +375,11 @@ GameEngine::GameEngine() {
     players_ = new vector<Player*>;
     //2 players by default
     num_of_players_ = 2;
+    num_of_human_players_ = 0;
+    num_aggressive_players_ = 0;
+    num_benevolant_players_ = 0;
+    num_random_players_ = 0;
+    num_cheater_players_ = 0;
     exit_game_ = false;
     file_paths_ = new vector<filesystem::path>;
     game_start_ = new StartupPhase;
@@ -405,6 +410,11 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
 
     game_start_ = game_engine.game_start_;
     num_of_players_ = game_engine.num_of_players_;
+    num_of_human_players_ = game_engine.num_of_human_players_;
+    num_aggressive_players_ = game_engine.num_aggressive_players_;
+    num_benevolant_players_ = game_engine.num_benevolant_players_;
+    num_random_players_ = game_engine.num_random_players_;
+    num_cheater_players_ = game_engine.num_cheater_players_;
     exit_game_ = game_engine.exit_game_;
     current_phase_ = game_engine.current_phase_;
 }
@@ -463,13 +473,17 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     }
 
     num_of_players_ = game_engine.num_of_players_;
+    num_of_human_players_ = game_engine.num_of_human_players_;
+    num_aggressive_players_ = game_engine.num_aggressive_players_;
+    num_benevolant_players_ = game_engine.num_benevolant_players_;
+    num_random_players_ = game_engine.num_random_players_;
+    num_cheater_players_ = game_engine.num_cheater_players_;
     game_start_ = game_engine.game_start_;
     exit_game_ = game_engine.exit_game_;
     current_phase_ = game_engine.current_phase_;
 
     return *this;
 }
-
 
 //getters
 MapLoader* GameEngine::GetLoadedMap() const {
@@ -830,6 +844,133 @@ void GameEngine::StartGameLoop() {
     for(Player* player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
         player->DisplayCountries();
+    }
+
+
+}
+
+void GameEngine::PromptUserToSelectNumPlayers(PlayerType player_type) {
+    int num_players_remaining_to_assign = num_of_players_ - (num_of_human_players_ + num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_);
+    if(num_players_remaining_to_assign < 1 || num_players_remaining_to_assign > num_of_players_) {
+        return;
+    }
+
+    string player_type_str;
+    switch(player_type) {
+        case PlayerType::Human :
+            player_type_str = "Human";
+            break;
+        case PlayerType::Aggressive :
+            player_type_str = "Aggressive";
+            break;
+        case PlayerType::Benevolant :
+            player_type_str = "Benevolant";
+            break;
+        case PlayerType::Random :
+            player_type_str = "Random";
+            break;
+        case PlayerType::Cheater :
+            player_type_str = "Cheater";
+            break;
+        default:
+            player_type_str = "";
+            break;
+    }
+
+    int num_players = 0;
+
+    if(num_players_remaining_to_assign > 0) {
+        cout << "How many " << player_type_str << " opponents would you like to battle? (choose between 0 - "
+             << num_players_remaining_to_assign << " ): ";
+        while (!(cin >> num_players) || num_players < 0 || num_players > num_players_remaining_to_assign) {
+            cout << "Invalid selection! Please try again:";
+            cin.clear();
+            cin.ignore(132, '\n');
+        }
+    }
+
+    switch(player_type) {
+        case PlayerType::Human :
+            num_of_human_players_ += num_players;
+            break;
+        case PlayerType::Aggressive :
+            num_aggressive_players_ += num_players;
+            break;
+        case PlayerType::Benevolant :
+            num_benevolant_players_ += num_players;
+            break;
+        case PlayerType::Random :
+            num_random_players_ += num_players;
+            break;
+        case PlayerType::Cheater :
+            num_cheater_players_ += num_players;
+            break;
+        default:
+            break;
+    }
+}
+
+void GameEngine::CreateNewGame() {
+    bool is_tournament;
+    cout << "Please enter 0 to play single game, or 1 to play tournament" << endl;
+
+    while(!(cin >> is_tournament)) {
+        cout << "Invalid entry! Please try again" << endl;
+    }
+
+    if(is_tournament) {
+        cout << "You have chosen to do a tournament!" << endl;
+
+        //TODO: implementation of the tournament
+
+    } else {
+        game_start_ = new StartupPhase;
+
+        SelectMap();
+        LoadSelectedMap();
+        if(loaded_map_->ParseMap()) {
+
+            cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
+            while(!(cin >> num_of_players_) || num_of_players_ < 2 || num_of_players_ > 6) {
+                cout << "Invalid number of players entered. Please try again: ";
+                cin.clear();
+                cin.ignore(132, '\n');
+            }
+
+            while(num_of_human_players_ + num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_ < num_of_players_) {
+                PromptUserToSelectNumPlayers(PlayerType::Human);
+                PromptUserToSelectNumPlayers(PlayerType::Aggressive);
+                PromptUserToSelectNumPlayers(PlayerType::Benevolant);
+                PromptUserToSelectNumPlayers(PlayerType::Random);
+                PromptUserToSelectNumPlayers(PlayerType::Cheater);
+            }
+
+            CreatePlayers();
+            CreateCardsDeck();
+            AssignHandOfCardsToPlayers();
+            AssignDiceToPlayers();
+            game_start_->RandomlyDeterminePlayerOrder(players_);
+            game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
+            game_start_->AutoAssignArmiesToAllPlayers(players_);
+        }
+
+        for(Player* player : *players_) {
+            player->SetGameMap(loaded_map_->GetParsedMap());
+        }
+        Notify("Starting New Game...\n");
+        Observer* observer = new PhaseObserver;
+        Register(observer);
+
+        //repeat game loop 2 times
+        for(int i = 0; i < 2; ++i) {
+            for(Player* player : *players_) {
+                player->Reinforce();
+                player->Attack();
+                player->Fortify();
+            }
+        }
+
+        Unregister(observer);
     }
 
 

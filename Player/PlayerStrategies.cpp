@@ -1,5 +1,5 @@
 /**
- * Assignment #3 COMP345, FALL 2019
+ * Assignment #4 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -676,4 +676,97 @@ void BenevolantComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
         return;
     }
     num_of_armies = Utility::GenerateRandomNumInRange(1, fortify_phase->GetSourceCountry()->GetNumberOfArmies());
+}
+
+
+//RANDOM PLAYER STRATEGIES #########################################################################################
+void RandomComputerStrategy::ReinforceStrategy(Player *player) {
+
+}
+
+//Strategies for Attack ------------------------------------------------------------------------------------------------
+
+bool RandomComputerStrategy::PromptPlayerToAttack(Player *player) {
+    return false;
+}
+
+bool RandomComputerStrategy::SelectCountryToAttackFrom(Player *player) {
+    return false;
+}
+
+bool RandomComputerStrategy::SelectCountryToAttack(Player *player) {
+    return false;
+}
+
+void RandomComputerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
+
+}
+
+void RandomComputerStrategy::MoveArmiesAfterAttack(Player *player, Country *attacking_country, Country *defending_country) {
+
+}
+
+//Strategies for Fortify -----------------------------------------------------------------------------------------------
+
+bool RandomComputerStrategy::PromptPlayerToFortify(Player *player) {
+    return false;
+}
+
+bool RandomComputerStrategy::SelectSourceCountry(Player *player) {
+    return false;
+}
+
+bool RandomComputerStrategy::SelectTargetCountry(Player *player) {
+    return false;
+}
+
+void RandomComputerStrategy::FortifyStrategy(Player *player, int &num_of_armies) {
+
+}
+
+
+
+
+//CHEATER PLAYER STRATEGIES #########################################################################################
+
+void CheaterComputerStrategy::ReinforceStrategy(Player *player) {
+
+}
+
+//Strategies for Attack ------------------------------------------------------------------------------------------------
+bool CheaterComputerStrategy::PromptPlayerToAttack(Player *player) {
+    return false;
+}
+
+bool CheaterComputerStrategy::SelectCountryToAttack(Player *player) {
+    return false;
+}
+
+bool CheaterComputerStrategy::SelectCountryToAttackFrom(Player *player) {
+    return false;
+}
+
+void CheaterComputerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
+
+}
+
+void CheaterComputerStrategy::MoveArmiesAfterAttack(Player *player, Country *attacking_country, Country *defending_country) {
+
+}
+
+//Strategies for Fortify -----------------------------------------------------------------------------------------------
+bool CheaterComputerStrategy::PromptPlayerToFortify(Player *player) {
+    return false;
+}
+
+bool CheaterComputerStrategy::SelectSourceCountry(Player *player) {
+    return false;
+}
+
+bool CheaterComputerStrategy::SelectTargetCountry(Player *player) {
+    return false;
+}
+
+void CheaterComputerStrategy::FortifyStrategy(Player *player, int &num_of_armies) {
+
 }

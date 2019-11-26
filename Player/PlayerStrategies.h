@@ -1,5 +1,5 @@
 /**
- * Assignment #3 COMP345, FALL 2019
+ * Assignment #4 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -42,7 +42,7 @@ class HumanPlayerStrategy : public ConcreteStrategies {
 
 public:
     HumanPlayerStrategy() {};
-    ~HumanPlayerStrategy() {};
+    ~HumanPlayerStrategy() override {};
 
     void ReinforceStrategy(Player* player) override;
 
@@ -62,7 +62,7 @@ class AggressiveComputerPlayerStrategy : public ConcreteStrategies {
 
 public:
     AggressiveComputerPlayerStrategy() {};
-    ~AggressiveComputerPlayerStrategy() {};
+    ~AggressiveComputerPlayerStrategy() override {};
 
     void ReinforceStrategy(Player* player) override;
 
@@ -82,7 +82,47 @@ class BenevolantComputerPlayerStrategy : public ConcreteStrategies {
 
 public:
     BenevolantComputerPlayerStrategy() {};
-    ~BenevolantComputerPlayerStrategy() {};
+    ~BenevolantComputerPlayerStrategy() override {};
+
+    void ReinforceStrategy(Player* player) override;
+
+    bool PromptPlayerToAttack(Player* player) override;
+    bool SelectCountryToAttack(Player* player) override;
+    bool SelectCountryToAttackFrom(Player* player) override;
+    void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) override;
+    void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
+
+
+    bool PromptPlayerToFortify(Player* player) override;
+    bool SelectSourceCountry(Player* player) override;
+    bool SelectTargetCountry(Player* player) override;
+    void FortifyStrategy(Player* player, int& num_of_armies) override;
+};
+
+class RandomComputerStrategy : public ConcreteStrategies {
+public:
+    RandomComputerStrategy() {};
+    ~RandomComputerStrategy() override {};
+
+    void ReinforceStrategy(Player* player) override;
+
+    bool PromptPlayerToAttack(Player* player) override;
+    bool SelectCountryToAttack(Player* player) override;
+    bool SelectCountryToAttackFrom(Player* player) override;
+    void AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice) override;
+    void MoveArmiesAfterAttack(Player* player, Country* attacking_country, Country* defending_country) override;
+
+
+    bool PromptPlayerToFortify(Player* player) override;
+    bool SelectSourceCountry(Player* player) override;
+    bool SelectTargetCountry(Player* player) override;
+    void FortifyStrategy(Player* player, int& num_of_armies) override;
+};
+
+class CheaterComputerStrategy : public ConcreteStrategies {
+public:
+    CheaterComputerStrategy() {};
+    ~CheaterComputerStrategy() override {};
 
     void ReinforceStrategy(Player* player) override;
 

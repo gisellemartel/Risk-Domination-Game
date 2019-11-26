@@ -14,6 +14,7 @@ class Tester {
 
 public:
 
+    //TODO: update to test with new computer strategies
     static void TestDynamicBehaviours() {
 
         cout << "\nTesting Dynamic Player Behaviour with Phase Observer...\n";
@@ -119,6 +120,7 @@ public:
         Utility::ClearScreen();
     }
 
+    //TODO: update to test with new computer strategies
     static void TestPlayerStrategiesWithPhaseObserver() {
         cout << "\n\nTesting Player Strategies with Phase Observer...\n\n";
         GameEngine* new_game = new GameEngine();
@@ -236,6 +238,18 @@ public:
         Tester::TestConquestMapLoader("../MapLoader/conquest-map-files/too-many-territories.map", false);
     }
 
+    static void TestGameTournament() {
+        cout << "\n\nTesting Game Tournament...\n\n";
+        GameEngine* new_game = new GameEngine();
+
+        new_game->CreateNewGame();
+
+        cout << "\n\nFinished Testing Game Tournament...\n\n";
+
+        new_game = nullptr;
+        delete new_game;
+    }
+
 };
 
 int main() {
@@ -245,6 +259,7 @@ int main() {
         Utility::ClearScreen();
         int user_response;
         cout << endl;
+        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
         cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
         cout << "Test Different Strategies w/ Phase Observer |  2\n";
         cout << "Test Game Statistic Observer                |  3\n";
@@ -253,13 +268,16 @@ int main() {
 
         cout << "Please Select what you would like to test (enter the corresponding number):\n";
 
-        while (!(cin >> user_response) || user_response < 1 || user_response > 4) {
+        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
             cin.clear();
             cin.ignore(132, '\n');
             cout << "Invalid selection. Please try again: ";
         }
 
         switch (user_response) {
+            case 0 :
+                Tester::TestGameTournament();
+                break;
             case 1 :
                 Tester::TestDynamicBehaviours();
                 break;

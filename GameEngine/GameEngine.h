@@ -1,5 +1,5 @@
 /**
- * Assignment #3 COMP345, FALL 2019
+ * Assignment #4 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -24,6 +24,14 @@ using namespace std;
 class GameEngine;
 class MapLoader;
 class Deck;
+
+enum PlayerType {
+    Human,
+    Aggressive,
+    Benevolant,
+    Random,
+    Cheater
+};
 
 class StartupPhase {
 
@@ -71,6 +79,8 @@ private:
     int num_of_human_players_;
     int num_aggressive_players_;
     int num_benevolant_players_;
+    int num_random_players_;
+    int num_cheater_players_;
     bool exit_game_;
 
     vector<Observer*>* observers_;
@@ -78,8 +88,9 @@ private:
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
     vector<filesystem::path>* file_paths_;
 
-    //private helper function
+    //private helper functions
     MapLoader* SelectFile();
+    void PromptUserToSelectNumPlayers(PlayerType player_type);
 
 public:
     // Function to test Player functions within game
@@ -92,9 +103,6 @@ public:
 
     //operator overloader
     GameEngine& operator=(const GameEngine& game_engine);
-
-    //Setters
-    void SetCurrentPhase(GamePhase phase);
 
     //Getters
     MapLoader* GetLoadedMap() const;
@@ -120,6 +128,11 @@ public:
     void DisplayCurrentGame();
 
     void StartGameLoop();
+
+
+    //TODO: code added for A4
+    void CreateNewGame();
+    //
 
     void Register(Observer* observer) override;
     void Unregister(Observer* observer) override;

@@ -1,5 +1,5 @@
 /**
- * Assignment #3 COMP345, FALL 2019
+ * Assignment #4 COMP345, FALL 2019
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
@@ -435,7 +435,6 @@ void Map::AddCountryToMap(int country_num, const string& continent_name, int con
     auto* country_to_add = new Country(country_num, new string(continent_name), continent_index, x_coordinate, y_coordinate);
     for(Country* country : *countries_){
         if(IsCountryDuplicate(country_to_add, country)){
-            cout << "Duplicate country found. Aborting operation" << endl;
             return;
         }
     }
@@ -466,7 +465,6 @@ void Map::AddContinentToMap(const string& continent_name, int army_value, int id
                 }
 
                 if (IsContinentDuplicate(continent_to_add, continent_to_check)) {
-                    cout << "duplicate continent name found" << endl;
                     continue;
                 }
             }
@@ -567,7 +565,8 @@ bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
 }
 
 bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
-    return (country_a->GetCountryID() == country_b->GetCountryID() || country_a->GetCountryName() == country_b->GetCountryName());
+    return (country_a->GetCountryID() == country_b->GetCountryID()
+    || country_a->GetCountryName() == country_b->GetCountryName());
 }
 
 vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) const {

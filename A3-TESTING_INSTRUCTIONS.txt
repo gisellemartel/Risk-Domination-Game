@@ -1,3 +1,0 @@
-
-
-In order to test Parts 1 - 4 for Assignment 3, please use the driver Tests.cpp located inside the Test folder.
