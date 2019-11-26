@@ -16,9 +16,11 @@ using namespace std;
 #include "../Map/Map.h"
 #include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
+#include "../MapLoader/ConquestMapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
 #include "../GameObservers/GameObservers.h"
+#include "StartupPhase.h"
 
 
 class GameEngine;
@@ -31,39 +33,6 @@ enum PlayerType {
     Benevolant,
     Random,
     Cheater
-};
-
-class StartupPhase {
-
-private:
-    map<Player*, int>* player_order_;
-    int number_of_armies_;
-
-    //private helper functions
-    template <class V>
-    static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
-
-public:
-    int current_player_index_;
-    //Constructors
-    StartupPhase();
-    StartupPhase(const StartupPhase& startup_phase);
-    ~StartupPhase();
-
-    //operator overloader
-    StartupPhase& operator=(const StartupPhase& startup_phase);
-
-    //Getters
-    inline map<Player*, int>* GetPlayerOrderMap() const;
-
-    //Setters
-    void SetNumberOfArmies(int number_of_players);
-
-    //Methods
-    void RandomlyDeterminePlayerOrder(vector<Player*>* players);
-    void AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign);
-    void AutoAssignArmiesToAllPlayers(vector<Player*>* players);
-    void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
 class GameEngine : public PhaseSubject, public StatisticsSubject {

@@ -8,6 +8,8 @@
 #define MAP_H
 
 #include "../Player/Player.h"
+#include "Country.h"
+#include "Continent.h"
 
 #include <list>
 #include <vector>
@@ -18,88 +20,7 @@ using namespace std;
 
 class Player;
 class Country;
-
-//Continent class ------------------------------------------------------------------------------------
-class Continent{
-
-private:
-    string* continent_name_;
-    string* color_;
-    int continent_ID_;
-    int army_value_;
-    vector<Country*>* countries_in_continent_;
-
-public:
-    //Constructors
-    Continent(string* in_continent_name, int army_value, int continent_id);
-    Continent(const Continent &continent);
-    ~Continent();
-
-    //operator overloader
-    Continent& operator=(const Continent &continent);
-
-    //Setters --------------------------------------------------
-    void SetContinentName(string* in_continent_name);
-    void SetContinentID(int in_continent_ID);
-
-    //Getters --------------------------------------------------
-    string* GetContinentName() const;
-    int GetContinentArmyValue() const;
-    int GetContinentID() const;
-    vector<Country*>* GetCountriesInContinent() const;
-
-    //Methods -------------------------------------------------------
-    void AddCountryToContinent(Country* country);
-    void DisplayInfo() const;
-};
-
-
-//Country class ------------------------------------------------------------------------------------
-class Country{
-
-private:
-    string* country_name_;
-    int continent_ID_;
-    int country_ID_;
-    int number_of_armies_;
-    int coordinate_x_;
-    int coordinate_y_;
-    Player* country_owner_;
-    Continent* continent_;
-
-public:
-    //Constructors
-    Country(int country_ID, string* country_name, int continent_ID);
-    Country(int country_ID, string* country_name, int continent_ID, int coordinate_x, int coordinate_y);
-    Country(const Country &country);
-    ~Country();
-
-    //operator overloader
-    Country& operator=(const Country &country);
-    bool operator==(const Country &country);
-
-    //Setters --------------------------------------------------
-    void SetCountryName(string* in_country_name);
-    void SetNumberOfArmies(int in_number_of_armies);
-    void SetCountryOwner(Player* player);
-    void SetContinent(Continent* continent);
-
-    //Getters --------------------------------------------------
-    string* GetCountryName() const;
-    int GetCountryID() const;
-    int GetNumberOfArmies() const;
-    int GetContinentID() const;
-    Player* GetCountryOwner() const;
-    string GetDisplayInfo() const;
-
-    //Methods -------------------------------------------------------
-    void AddArmyToCountry();
-    void RemoveArmiesFromCountry(int num_armies_to_remove);
-    void DisplayInfo() const;
-
-    bool BelongsToContinent(const Continent* continent);
-};
-
+class Continent;
 
 //Map class ------------------------------------------------------------------------------------
 //Implementation of a connected graph where nodes are countries and edges are adjacencies
