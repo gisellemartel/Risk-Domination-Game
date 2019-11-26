@@ -681,7 +681,27 @@ void BenevolantComputerPlayerStrategy::FortifyStrategy(Player* player, int& num_
 
 //RANDOM PLAYER STRATEGIES #########################################################################################
 void RandomComputerStrategy::ReinforceStrategy(Player *player) {
+    ReinforcePhase* reinforce_phase = player->GetReinforcePhase();
+    if(!reinforce_phase) {
+        return;
+    }
+    vector<Country*>* countries = player->GetPlayersCountries();
+    int num_bonus_army = reinforce_phase->TotalReinforceArmy();
 
+
+    while(num_bonus_army > 0) {
+        // random player select country to reinforce randomly
+        int random_country_to_reinforce = Utility::GenerateRandomNumInRange(0, countries->size() - 1);
+        int country_id = (*countries)[random_country_to_reinforce]->GetCountryID();
+        int random_num_armies = Utility::GenerateRandomNumInRange(0, num_bonus_army);
+
+        reinforce_phase->GetReinforceValues()->push_back(random_num_armies);
+        reinforce_phase->GetCountriesToReinforce()->push_back(country_id);
+
+        num_bonus_army -= random_num_armies;
+    }
+
+    reinforce_phase->SetTotalReinforcementArmy(0);
 }
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
@@ -730,6 +750,11 @@ void RandomComputerStrategy::FortifyStrategy(Player *player, int &num_of_armies)
 //CHEATER PLAYER STRATEGIES #########################################################################################
 
 void CheaterComputerStrategy::ReinforceStrategy(Player *player) {
+    vector<Country*>* countries = player->GetPlayersCountries();
+
+    for(Country* country : *countries) {
+        country->SetNumberOfArmies(country->GetNumberOfArmies()*2);
+    }
 
 }
 
