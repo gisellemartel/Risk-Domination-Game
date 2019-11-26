@@ -1,8 +1,4 @@
 
-#include <random>
-#include <iostream>
-
-using namespace std;
 #include "Utility.h"
 
 int Utility::GenerateRandomNumInRange(int lower_bound, int upper_bound) {

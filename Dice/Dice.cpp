@@ -6,15 +6,6 @@
 
 #include "Dice.h"
 
-#include <iomanip>
-#include <random>
-#include <vector>
-#include <algorithm>
-#include <iostream>
-#include <string>
-
-using namespace std;
-
 Dice::Dice() {
     roll_num_stats_ = new vector<int>(6);
     total_rolls_ = new int(0);

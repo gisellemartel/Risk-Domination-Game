@@ -8,8 +8,10 @@
 #include "Country.h"
 
 #include <string>
-
 using namespace std;
+
+class Country;
+
 //Continent class ------------------------------------------------------------------------------------
 class Continent{
 

@@ -11,9 +11,8 @@
 #include <iostream>
 #include <fstream>
 #include <iostream>
+#include <map>
 using namespace std;
-
-class Map;
 
 //ConquestMapLoader class (ADAPTEE)-------------------------------------------------------------------------------------
 class ConquestMapLoader {

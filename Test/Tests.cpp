@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-
 using namespace std;
 
 #include "../GameEngine/GameObservers.h"

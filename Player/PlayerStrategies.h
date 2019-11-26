@@ -7,14 +7,8 @@
 #ifndef PLAYER_STRATEGIES_H
 #define PLAYER_STRATEGIES_H
 
-#include "../Map/Map.h"
-#include "Player.h"
-#include "../Utility/Utility.h"
-#include <map>
-
 class Country;
 class Player;
-class Utility;
 
 //interface for different player strategies
 class ConcreteStrategies {

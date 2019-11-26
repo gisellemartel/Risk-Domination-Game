@@ -3,15 +3,9 @@
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
-#include <iostream>
-#include <string>
-#include <random>
-#include <filesystem>
 
-using namespace std;
-
-#include "PlayerStrategies.h"
 #include "../GameEngine/GameEngine.h"
+#include "PlayerStrategies.h"
 
 
 // HUMAN PLAYER STRATEGIES #############################################################################################

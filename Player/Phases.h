@@ -5,11 +5,12 @@
 #ifndef TEAMPROJECT_COMP345_PHASES_H
 #define TEAMPROJECT_COMP345_PHASES_H
 
+#include <iostream>
+using namespace std;
+
 #include "Player.h"
-#include "../Map/Map.h"
 
 class Map;
-class Player;
 
 // ReinforcePhase --------------------------------------
 class ReinforcePhase

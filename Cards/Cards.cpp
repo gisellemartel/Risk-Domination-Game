@@ -5,10 +5,6 @@
  */
 
 #include "Cards.h"
-#include <iostream>
-#include <ctime>
-using namespace std;
-
 
 // CARDS class ---------------------------------------------------------------------------------------------------------
 

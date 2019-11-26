@@ -7,6 +7,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "../Map/Country.h"
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
 #include "Phases.h"
@@ -14,6 +15,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <filesystem>
 using namespace std;
 
 class Hand;
@@ -23,7 +25,6 @@ class ReinforcePhase;
 class AttackPhase;
 class FortifyPhase;
 class GameEngine;
-class ConcreteStrategies;
 
 class Player {
 

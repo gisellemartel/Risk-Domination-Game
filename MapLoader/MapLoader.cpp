@@ -3,14 +3,8 @@
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
-
-#include <stdexcept>
-#include <string>
-#include <iostream>
-
 #include "MapLoader.h"
 
-using namespace std;
 
 //MapLoader class (TARGET) ---------------------------------------------------------------------------------------------
 MapLoader::MapLoader() {

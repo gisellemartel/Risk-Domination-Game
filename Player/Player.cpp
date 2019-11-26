@@ -4,16 +4,6 @@
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
-#include <utility>
-#include <vector>
-#include <iostream>
-#include <map>
-#include <iterator>
-#include <filesystem>
-
-using namespace std;
-
-#include "../GameEngine/GameObservers.h"
 #include "../GameEngine/GameEngine.h"
 #include "Player.h"
 

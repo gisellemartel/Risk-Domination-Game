@@ -2,6 +2,8 @@
 #define UTILITY_H
 
 #include <vector>
+#include <random>
+#include <iostream>
 using namespace std;
 
 class Utility {

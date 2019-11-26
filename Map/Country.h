@@ -6,15 +6,12 @@
 #define TEAMPROJECT_COMP345_COUNTRY_H
 
 #include "Map.h"
-#include "../Player/Player.h"
 
 #include <string>
-
 using namespace std;
 
 class Player;
 class Continent;
-class Map;
 
 
 //Country class ------------------------------------------------------------------------------------

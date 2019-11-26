@@ -4,16 +4,6 @@
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
-#include <iostream>
-#include <string>
-#include <utility>
-#include <map>
-#include <iterator>
-#include <filesystem>
-#include <random>
-
-using namespace std;
-
 #include "GameEngine.h"
 
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------

@@ -7,7 +7,12 @@
 #ifndef DICE_H
 #define DICE_H
 
+#include <iomanip>
+#include <random>
 #include <vector>
+#include <algorithm>
+#include <iostream>
+#include <string>
 
 using namespace std;
 

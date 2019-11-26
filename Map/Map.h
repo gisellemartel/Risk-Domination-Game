@@ -7,7 +7,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "../Player/Player.h"
 #include "Country.h"
 #include "Continent.h"
 
@@ -15,12 +14,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
-
 using namespace std;
 
-class Player;
-class Country;
 class Continent;
+class Country;
 
 //Map class ------------------------------------------------------------------------------------
 //Implementation of a connected graph where nodes are countries and edges are adjacencies

@@ -8,8 +8,19 @@
 #define GAMEOBSERVERS_H
 
 #include <iomanip>
+#include <iostream>
+#include <chrono>
+#include <thread>
+using namespace std;
 
+#include "../Map/Map.h"
+#include "../MapLoader/MapLoader.h"
+#include "../MapLoader/ConquestMapLoader.h"
+#include "../Dice/Dice.h"
+#include "../Cards/Cards.h"
+#include "../Utility/Utility.h"
 #include "../Player/Player.h"
+#include "StartupPhase.h"
 
 enum GamePhase {
     Startup = 0,

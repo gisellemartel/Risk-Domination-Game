@@ -4,10 +4,7 @@
 
 #include "Phases.h"
 
-
-
 // ReinforcePhase class implementation ----------------------------------------------------------------------------
-
 ReinforcePhase::ReinforcePhase() {
     turn_player_ = nullptr;
     num_of_swaps_ = 0;

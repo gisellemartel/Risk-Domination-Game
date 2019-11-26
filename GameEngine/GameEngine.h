@@ -3,28 +3,20 @@
  * Project: Risk Domination Game
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H
 
 #include <vector>
 #include <map>
 #include <filesystem>
-
+#include <iostream>
+#include <string>
+#include <utility>
+#include <iterator>
+#include <random>
 using namespace std;
 
-#include "../Map/Map.h"
-#include "../MapLoader/MapLoader.h"
-#include "../MapLoader/ConquestMapLoader.h"
-#include "../Dice/Dice.h"
-#include "../Cards/Cards.h"
-#include "../Player/Player.h"
-#include "../Utility/Utility.h"
-#include "StartupPhase.h"
 #include "GameObservers.h"
-
-class Deck;
-class MapLoader;
-class Player;
-class StartupPhase;
-class Observer;
 
 enum PlayerType {
     Human,
@@ -109,3 +101,5 @@ public:
 
     void RemovePlayer(Player* player);
 };
+
+#endif

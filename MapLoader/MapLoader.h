@@ -9,14 +9,11 @@
 
 #include "../Map/Map.h"
 
-#include <list>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <iostream>
-
-class Map;
-
+#include <stdexcept>
 using namespace std;
 
 //MapLoader class (TARGET) ---------------------------------------------------------------------------------------------
