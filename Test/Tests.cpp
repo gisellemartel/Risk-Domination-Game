@@ -7,8 +7,9 @@
 
 using namespace std;
 
-#include "../GameObservers/GameObservers.h"
+#include "../GameEngine/GameObservers.h"
 #include "../GameEngine/GameEngine.h"
+#include "../MapLoader/Adapter.h"
 
 class Tester {
 

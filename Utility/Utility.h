@@ -1,6 +1,9 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <vector>
+using namespace std;
+
 class Utility {
 public:
     static int GenerateRandomNumInRange(int lower_bound, int upper_bound);

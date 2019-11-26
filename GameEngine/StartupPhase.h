@@ -5,8 +5,13 @@
 #ifndef TEAMPROJECT_COMP345_STARTUPPHASE_H
 #define TEAMPROJECT_COMP345_STARTUPPHASE_H
 
-#include "../Map/Map.h"
 #include "../Player/Player.h"
+#include "../Utility/Utility.h"
+
+#include <vector>
+#include <map>
+#include <iostream>
+using namespace std;
 
 class StartupPhase {
 

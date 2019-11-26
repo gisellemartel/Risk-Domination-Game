@@ -37,8 +37,6 @@ public:
     Map* GetParsedMap() const;
 
     virtual bool ParseMap();
-
-
 };
 
 #endif //MAP_LOADER_H

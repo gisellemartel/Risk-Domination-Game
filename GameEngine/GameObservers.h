@@ -11,9 +11,6 @@
 
 #include "../Player/Player.h"
 
-class GameEngine;
-class Player;
-
 enum GamePhase {
     Startup = 0,
     Reinforce = 1,
@@ -25,6 +22,7 @@ enum GamePhase {
 class Observer {
 
 public:
+    Observer() = default;
     virtual ~Observer() = default;
     virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;
 
@@ -36,6 +34,7 @@ public:
 class StatisticsSubject {
 
 public:
+    StatisticsSubject() = default;
     virtual void Register(Observer* observer) = 0;
     virtual void Unregister(Observer* observer) = 0;
 
@@ -48,6 +47,7 @@ public:
 class PhaseSubject {
 
 public:
+    PhaseSubject() = default;
     virtual void Register(Observer* observer) = 0;
     virtual void Unregister(Observer* observer) = 0;
     virtual void Notify(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;

@@ -4,9 +4,6 @@
  * Authors: Giselle Martel (26352936), Wayne Tam (21308688), Jeffrey Li (40017627), Rania Az (40041630)
  */
 
-#ifndef GAME_ENGINE_H
-#define GAME_ENGINE_H
-
 #include <vector>
 #include <map>
 #include <filesystem>
@@ -14,18 +11,20 @@
 using namespace std;
 
 #include "../Map/Map.h"
-#include "../Player/PlayerStrategies.h"
 #include "../MapLoader/MapLoader.h"
 #include "../MapLoader/ConquestMapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
-#include "../GameObservers/GameObservers.h"
+#include "../Player/Player.h"
+#include "../Utility/Utility.h"
 #include "StartupPhase.h"
+#include "GameObservers.h"
 
-
-class GameEngine;
-class MapLoader;
 class Deck;
+class MapLoader;
+class Player;
+class StartupPhase;
+class Observer;
 
 enum PlayerType {
     Human,
@@ -66,7 +65,7 @@ public:
     void TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players);
 
     //Constructors
-    explicit GameEngine();
+    GameEngine();
     GameEngine(const GameEngine& game_engine);
     ~GameEngine();
 
@@ -110,6 +109,3 @@ public:
 
     void RemovePlayer(Player* player);
 };
-
-
-#endif

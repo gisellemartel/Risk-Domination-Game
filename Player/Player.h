@@ -7,30 +7,23 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../Map/Map.h"
-#include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
 #include "Phases.h"
-
 
 #include <iostream>
 #include <vector>
 #include <map>
 using namespace std;
 
-//forward declarations
-class Country;
+class Hand;
 class Dice;
 class Cards;
-class Hand;
-class Map;
-class Continent;
-class ConcreteStrategies;
 class ReinforcePhase;
 class AttackPhase;
 class FortifyPhase;
 class GameEngine;
+class ConcreteStrategies;
 
 class Player {
 

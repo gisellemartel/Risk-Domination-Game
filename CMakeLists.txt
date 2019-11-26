@@ -6,19 +6,19 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Test
         Test/Tests.cpp
-        Map/Country.cpp
-        Map/Continent.cpp
+        Utility/Utility.cpp
         Map/Map.cpp
+        Map/Continent.cpp
+        Map/Country.cpp
+        Cards/Cards.cpp
+        Dice/Dice.cpp
+        Player/PlayerStrategies.cpp
         Player/Phases.cpp
         Player/Player.cpp
-        Player/PlayerStrategies.cpp
-        Dice/Dice.cpp
-        Cards/Cards.cpp
+        MapLoader/Adapter.cpp
         MapLoader/MapLoader.cpp
         MapLoader/ConquestMapLoader.cpp
-        MapLoader/Adapter.cpp
+        GameEngine/GameObservers.cpp
         GameEngine/StartupPhase.cpp
         GameEngine/GameEngine.cpp
-        GameObservers/GameObservers.cpp
-        Utility/Utility.cpp
         )

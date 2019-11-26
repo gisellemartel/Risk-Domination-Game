@@ -5,11 +5,16 @@
 #ifndef TEAMPROJECT_COMP345_CONQUESTMAPLOADER_H
 #define TEAMPROJECT_COMP345_CONQUESTMAPLOADER_H
 
-#include "Adapter.h"
+#include "../Map/Map.h"
 
 #include <string>
-
+#include <iostream>
+#include <fstream>
+#include <iostream>
 using namespace std;
+
+class Map;
+
 //ConquestMapLoader class (ADAPTEE)-------------------------------------------------------------------------------------
 class ConquestMapLoader {
 
