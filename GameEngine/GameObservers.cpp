@@ -77,9 +77,11 @@ void PhaseObserver::Update(Player* current_player, int current_phase, string cur
 void PhaseObserver::DisplayPhaseData() {
     cout << current_action_description_ << endl;
     if(phase_over_) {
-        current_phase_ = "";
         //put thread to sleep to allow smoother visual transition
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        current_phase_ = "";
+    } else if (current_phase_ == "Attack Phase") {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 
 }

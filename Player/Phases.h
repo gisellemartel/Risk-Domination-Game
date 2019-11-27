@@ -93,6 +93,7 @@ private:
     Country* source_country_;
     Country* target_country_;
 
+    vector<Country*>* countries_with_armies_;
     vector<Country*>* neighbours_to_fortify_;
 
 public:
@@ -107,6 +108,7 @@ public:
     Country* GetSourceCountry() const;
     Country* GetTargetCountry() const;
     vector<Country*>* GetNeighboursToFortify() const;
+    vector<Country*>* GetCountriesWithArmies() const;
 
     void SetSourceCountry(Country* source);
     void SetTargetCountry(Country* target);

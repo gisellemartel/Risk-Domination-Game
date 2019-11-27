@@ -172,7 +172,7 @@ void HumanPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int M
 
     //prompt each player to enter the num of dice they wish to roll
     string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
-    player->Notify(player, GamePhase::Attack, msg, true, false);
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 
     while( !(cin >> attacker_num_dice) || attacker_num_dice < 1 || attacker_num_dice > MAX_NUM_OF_DICE_ATTACKER) {
         cout << "\nYou have entered an invalid number of dice to roll. Please try again: ";
@@ -442,7 +442,7 @@ void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player
 
     //prompt each player to enter the num of dice they wish to roll
     string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
-    player->Notify(player, GamePhase::Attack, msg, true, false);
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 
     attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
 }
@@ -726,14 +726,14 @@ bool RandomComputerPlayerStrategy::PromptPlayerToAttack(Player *player) {
 
     if(attack_phase->GetRandPlayerNumAttacks() > 0) {
         //each time a player takes a turn, update the number of attacks they have left to carry out
-        attack_phase->UpdateNumAttacks();
         string msg = "\n" + *player->GetPlayerName() + " has " + to_string(player->GetAttackPhase()->GetRandPlayerNumAttacks()) + " attacks left\n";
-        player->Notify(player, GamePhase::Attack, msg, true, false);
+        player->Notify(player, GamePhase::Attack, msg, false, false);
+        attack_phase->UpdateNumAttacks();
         return true;
     } else {
         // player has done all X number of attacks they chose to do initially
         string msg = *player->GetPlayerName() + " has carried out all their attacks\n";
-        player->Notify(player, GamePhase::Attack, msg, true, false);
+        player->Notify(player, GamePhase::Attack, msg, false, false);
         return false;
     }
 }
@@ -772,7 +772,7 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     Country* defending_country = nullptr;
 
     //Display neighboring countries
-    string msg = "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
+    string msg = "Here are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
 
     player->Notify(player, GamePhase::Attack, msg, false, false);
 
@@ -802,10 +802,6 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
         defending_country = (*opponents)[random_country_to_attack];
     }
 
-    msg = *player->GetPlayerName() + " chooses to attack " + *defending_country->GetCountryName() + "\n";
-    player->Notify(player, GamePhase::Attack, msg, false, false);
-
-
     attack_phase->SetDefendingCountry(defending_country);
     attack_phase->SetDefender(defending_country->GetCountryOwner());
 
@@ -820,7 +816,7 @@ void RandomComputerPlayerStrategy::AttackerSelectNumberOfDice(Player *player, co
 
     //the Random player will select random number of dice to rolll
     string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
-    player->Notify(player, GamePhase::Attack, msg, true, false);
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 
     attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
 }
@@ -857,8 +853,42 @@ bool RandomComputerPlayerStrategy::SelectSourceCountry(Player *player) {
     if(!fortify_phase) {
         return false;
     }
-    //TODO: select random soucre country that has armies
-    return false;
+
+    for(Country* country : *player->GetPlayersCountries()) {
+
+        // A source country must have at least one army
+        if(country->GetNumberOfArmies() > 0) {
+            vector<Country*> neighbours_player_owns;
+
+            //see if the current country has neighbours that belongs to the player
+            // (only countries that belong to the player can be fortified)
+            for(Country* players_country : *player->GetGameMap()->GetNeighbouringCountries(country)) {
+                if(player->DoesPlayerOwnCountry(players_country->GetCountryID())){
+                    neighbours_player_owns.push_back(players_country);
+                }
+            }
+
+            if(neighbours_player_owns.empty()) {
+                continue;
+            }
+
+            fortify_phase->GetCountriesWithArmies()->push_back(country);
+        }
+    }
+
+    //there are currently no countries that exist that can be used fortify another country at the moment
+    if(fortify_phase->GetCountriesWithArmies()->empty()) {
+        string msg = *player->GetPlayerName() + " currently has no countries available that can be used to fortify another country\n";
+        player->Notify(player, GamePhase::Fortify, msg, false, false);
+        return false;
+    }
+
+    //select one of the available source countries at random:
+    int rand_country_index = Utility::GenerateRandomNumInRange(0, (int)fortify_phase->GetCountriesWithArmies()->size()-1);
+
+    fortify_phase->SetSourceCountry(fortify_phase->GetCountriesWithArmies()->at(rand_country_index));
+
+    return fortify_phase->GetSourceCountry() != nullptr;
 }
 
 bool RandomComputerPlayerStrategy::SelectTargetCountry(Player *player) {
@@ -867,8 +897,17 @@ bool RandomComputerPlayerStrategy::SelectTargetCountry(Player *player) {
         return false;
     }
 
-    //TODO: select random country to fortify (cannot be source country)
-    return false;
+    if(fortify_phase->GetNeighboursToFortify()->empty()) {
+        return false;
+    }
+
+    fortify_phase->SetTargetCountry(nullptr);
+
+    // Random player randomly selects target country to fortify
+    int rand_country_index = Utility::GenerateRandomNumInRange(0, (int)fortify_phase->GetNeighboursToFortify()->size() - 1);
+    fortify_phase->SetTargetCountry(fortify_phase->GetNeighboursToFortify()->at(rand_country_index));
+
+    return fortify_phase->GetTargetCountry() != nullptr;
 }
 
 void RandomComputerPlayerStrategy::FortifyStrategy(Player *player, int &num_of_armies) {
@@ -877,7 +916,7 @@ void RandomComputerPlayerStrategy::FortifyStrategy(Player *player, int &num_of_a
         return;
     }
 
-    // TODO: Random player randomly selects number of armies to fortify with
+    // Random player randomly selects number of armies to fortify target country with
     num_of_armies = Utility::GenerateRandomNumInRange(1, (int)fortify_phase->GetSourceCountry()->GetNumberOfArmies());
 }
 

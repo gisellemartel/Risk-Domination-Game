@@ -372,6 +372,7 @@ FortifyPhase::FortifyPhase() {
     game_map_ = nullptr;
     source_country_ = nullptr;
     target_country_ = nullptr;
+    countries_with_armies_ = new vector<Country*>;
     neighbours_to_fortify_ = new vector<Country*>;
 }
 
@@ -381,6 +382,7 @@ FortifyPhase::FortifyPhase(Player* player) {
     source_country_ = nullptr;
     target_country_ = nullptr;
     neighbours_to_fortify_ = new vector<Country*>;
+    countries_with_armies_ = new vector<Country*>;
 }
 
 FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
@@ -391,10 +393,18 @@ FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
 
     *neighbours_to_fortify_ = *fortify.neighbours_to_fortify_;
 
+
     for(int i = 0; i < fortify.neighbours_to_fortify_->size(); ++i) {
         (*neighbours_to_fortify_)[i] = (*fortify.neighbours_to_fortify_)[i];
         (*fortify.neighbours_to_fortify_)[i] = nullptr;
         delete (*fortify.neighbours_to_fortify_)[i];
+    }
+
+    *countries_with_armies_ = *fortify.countries_with_armies_;
+    for(int i = 0; i < fortify.countries_with_armies_->size(); ++i) {
+        (*countries_with_armies_)[i] = (*fortify.countries_with_armies_)[i];
+        (*fortify.countries_with_armies_)[i] = nullptr;
+        delete (*fortify.countries_with_armies_)[i];
     }
 
     delete fortify.player_;
@@ -402,6 +412,7 @@ FortifyPhase::FortifyPhase(const FortifyPhase& fortify) {
     delete fortify.source_country_;
     delete fortify.target_country_;
     delete[] fortify.neighbours_to_fortify_;
+    delete[] fortify.countries_with_armies_;
 }
 
 FortifyPhase::~FortifyPhase() {
@@ -415,8 +426,15 @@ FortifyPhase::~FortifyPhase() {
         delete neighbour;
     }
 
+    for(Country* country : *countries_with_armies_) {
+        country = nullptr;
+        delete country;
+    }
+
+    countries_with_armies_ = nullptr;
     neighbours_to_fortify_ = nullptr;
 
+    delete[] countries_with_armies_;
     delete [] neighbours_to_fortify_;
     delete player_;
     delete game_map_;
@@ -438,11 +456,19 @@ FortifyPhase& FortifyPhase::operator=(const FortifyPhase &fortify) {
         delete (*fortify.neighbours_to_fortify_)[i];
     }
 
+    *countries_with_armies_ = *fortify.countries_with_armies_;
+    for(int i = 0; i < fortify.countries_with_armies_->size(); ++i) {
+        (*countries_with_armies_)[i] = (*fortify.countries_with_armies_)[i];
+        (*fortify.countries_with_armies_)[i] = nullptr;
+        delete (*fortify.countries_with_armies_)[i];
+    }
+
     delete fortify.player_;
     delete fortify.game_map_;
     delete fortify.source_country_;
     delete fortify.target_country_;
     delete[] fortify.neighbours_to_fortify_;
+    delete[] fortify.countries_with_armies_;
 
     return *this;
 }
@@ -459,6 +485,11 @@ vector<Country*>* FortifyPhase::GetNeighboursToFortify() const {
     return neighbours_to_fortify_;
 }
 
+vector<Country *> *FortifyPhase::GetCountriesWithArmies() const {
+    return countries_with_armies_;
+}
+
+
 void FortifyPhase::SetSourceCountry(Country *source) {
     source_country_ = source;
 }
@@ -466,3 +497,4 @@ void FortifyPhase::SetSourceCountry(Country *source) {
 void FortifyPhase::SetTargetCountry(Country *target) {
     target_country_ = target;
 }
+
