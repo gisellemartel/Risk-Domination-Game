@@ -713,6 +713,9 @@ void RandomComputerPlayerStrategy::SetNumberOfTimesToAttack(Player *player) {
     if(player->IsRandom()) {
         player->GetAttackPhase()->SetRandPlayerNumAttacks(Utility::GenerateRandomNumInRange(0, AttackPhase::RAND_PLAYER_MAX_NUM_ATTACKS));
     }
+
+    string msg = *player->GetPlayerName() + " has chosen to attack " + to_string(player->GetAttackPhase()->GetRandPlayerNumAttacks()) + " times\n";
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 }
 
 bool RandomComputerPlayerStrategy::PromptPlayerToAttack(Player *player) {
@@ -724,9 +727,13 @@ bool RandomComputerPlayerStrategy::PromptPlayerToAttack(Player *player) {
     if(attack_phase->GetRandPlayerNumAttacks() > 0) {
         //each time a player takes a turn, update the number of attacks they have left to carry out
         attack_phase->UpdateNumAttacks();
+        string msg = "\n" + *player->GetPlayerName() + " has " + to_string(player->GetAttackPhase()->GetRandPlayerNumAttacks()) + " attacks left\n";
+        player->Notify(player, GamePhase::Attack, msg, true, false);
         return true;
     } else {
         // player has done all X number of attacks they chose to do initially
+        string msg = *player->GetPlayerName() + " has carried out all their attacks\n";
+        player->Notify(player, GamePhase::Attack, msg, true, false);
         return false;
     }
 }

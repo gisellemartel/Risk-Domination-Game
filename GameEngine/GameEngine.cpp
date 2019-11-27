@@ -9,14 +9,16 @@
 // GAME ENGINE CLASS --------------------------------------------------------------------------------------------------
 
 //Function purely for testing purposes
-void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players) {
+void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_players, int num_aggressive_players, int num_benevolant_players, int num_random_players, int num_cheater_players) {
     exit_game_ = false;
     loaded_map_ = new MapLoader(file_path);
     if(loaded_map_->ParseMap()) {
-        num_of_players_ = num_human_players + num_aggressive_players + num_benevolant_players;
+        num_of_players_ = num_human_players + num_aggressive_players + num_benevolant_players + num_random_players + num_cheater_players;
         num_of_human_players_ = num_human_players;
         num_aggressive_players_ = num_aggressive_players;
         num_benevolant_players_ = num_benevolant_players;
+        num_random_players_ = num_random_players;
+        num_cheater_players_ = num_cheater_players;
         CreatePlayers();
         CreateCardsDeck();
         AssignHandOfCardsToPlayers();

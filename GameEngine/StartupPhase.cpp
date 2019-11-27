@@ -11,11 +11,11 @@
 // used to randomize both order of players, order in which countries are assigned
 template<class V>
 vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
-    int random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
+    int random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size()-1);
     vector<int> random_order;
     //randomize the order for the indices in the players vector
     while(!Utility::HasValue(random_order, random) || random_order.size() < vector_to_randomize.size()) {
-        random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size());
+        random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size()-1);
         if(!Utility::HasValue(random_order, random)) {
             random_order.push_back(random);
         }
@@ -269,9 +269,9 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
 
                 it.first->SetPlayersTurn(true);
 
-                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size() + 1);
+                int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
                 while(!it.first->DoesPlayerOwnCountry(country_id)) {
-                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size() + 1);
+                    country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
                 }
 
                 Country* current_country = it.first->GetCountryById(country_id);

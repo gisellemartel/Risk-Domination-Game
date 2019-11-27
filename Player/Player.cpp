@@ -571,12 +571,12 @@ void Player::Attack() {
                         cin.ignore(132, '\n');
                     }
                 } else {
-                    defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER + 1);
+                    defender_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_DEFENDER);
                 }
 
                 msg = "\n" + *player_name_ + " has chosen to roll " + to_string(attacker_num_dice) + " dice\n";
                 msg.append( *defender->GetPlayerName() + " has chosen to roll " + to_string(defender_num_dice) + " dice\n");
-                Notify(this, GamePhase::Attack, msg, true, false);
+                Notify(this, GamePhase::Attack, msg, false, false);
 
                 msg = "Carrying out attacks....\n";
                 //Roll the dice!
@@ -625,6 +625,7 @@ void Player::Attack() {
                         if(defending_country->GetNumberOfArmies() == 0) {
                             //function will return true when player is removed from game
                             AttackerConquersDefeatedCountry();
+                            break;
                         }
                     }
                 }

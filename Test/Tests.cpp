@@ -14,7 +14,6 @@ class Tester {
 
 public:
 
-    //TODO: update to test with new computer strategies
     static void TestDynamicBehaviours() {
 
         cout << "\nTesting Dynamic Player Behaviour with Phase Observer...\n";
@@ -24,7 +23,7 @@ public:
         new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,0);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,0, 0, 0);
 
         Player* human = nullptr;
         Player* bot = nullptr;
@@ -68,7 +67,7 @@ public:
         new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,1, 0, 0);
 
         human = nullptr;
         Player* benevolant = nullptr;
@@ -120,13 +119,62 @@ public:
         Utility::ClearScreen();
     }
 
-    //TODO: update to test with new computer strategies
+    static void TestRandomPlayers() {
+        GameEngine* new_game = new GameEngine();
+        Observer* observer = new PhaseObserver();
+        new_game->Register(observer);
+
+        //test with 1 human players and an aggressive player
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 0 ,0, 2, 0);
+
+        for(int i = 0; i < 2; ++i) {
+            for(Player* player : *new_game->GetPlayers()) {
+                player->Reinforce();
+                player->Attack();
+                player->Fortify();
+            }
+        }
+
+        new_game->Unregister(observer);
+
+
+        observer = nullptr;
+        new_game = nullptr;
+        delete observer;
+        delete new_game;
+    }
+
+    static void TestCheaterPlayers() {
+        GameEngine* new_game = new GameEngine();
+        Observer* observer = new PhaseObserver();
+        new_game->Register(observer);
+
+        //test with 1 human players and an aggressive player
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 0 ,0, 0, 2);
+
+        for(int i = 0; i < 2; ++i) {
+            for(Player* player : *new_game->GetPlayers()) {
+                player->Reinforce();
+                player->Attack();
+                player->Fortify();
+            }
+        }
+
+        new_game->Unregister(observer);
+
+
+        observer = nullptr;
+        new_game = nullptr;
+        delete observer;
+        delete new_game;
+    }
+
     static void TestPlayerStrategiesWithPhaseObserver() {
         cout << "\n\nTesting Player Strategies with Phase Observer...\n\n";
         GameEngine* new_game = new GameEngine();
         Observer* observer = new PhaseObserver;
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,1, 1, 1);
 
         new_game->Register(observer);
 
@@ -159,7 +207,7 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 3, 3);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 1, 2, 1, 2);
 
         for(int i = 0; i < 1000; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
@@ -254,56 +302,59 @@ public:
 
 int main() {
 
-    string do_test = "";
-    do {
-        Utility::ClearScreen();
-        int user_response;
-        cout << endl;
-        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
-        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
-        cout << "Test Different Strategies w/ Phase Observer |  2\n";
-        cout << "Test Game Statistic Observer                |  3\n";
-        cout << "Test Conquest Map Loader                    |  4\n\n";
+//    string do_test = "";
+//    do {
+//        Utility::ClearScreen();
+//        int user_response;
+//        cout << endl;
+//        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
+//        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
+//        cout << "Test Different Strategies w/ Phase Observer |  2\n";
+//        cout << "Test Game Statistic Observer                |  3\n";
+//        cout << "Test Conquest Map Loader                    |  4\n\n";
+//
+//
+//        cout << "Please Select what you would like to test (enter the corresponding number):\n";
+//
+//        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
+//            cin.clear();
+//            cin.ignore(132, '\n');
+//            cout << "Invalid selection. Please try again: ";
+//        }
+//
+//        switch (user_response) {
+//            case 0 :
+//                Tester::TestGameTournament();
+//                break;
+//            case 1 :
+//                Tester::TestDynamicBehaviours();
+//                break;
+//            case 2:
+//                Tester::TestPlayerStrategiesWithPhaseObserver();
+//                break;
+//            case 3:
+//                Tester::TestGameStatisticsObserver();
+//                break;
+//            case 4:
+//                Tester::TestMapFiles();
+//                break;
+//            default:
+//                break;
+//        }
+//
+//        cout << "\nWould you like to conduct another test? enter 'y' (enter any other key to quit): ";
+//
+//
+//        while(!(cin >> do_test)) {
+//            cin.clear();
+//            cin.ignore(132, '\n');
+//            cout << "Invalid input give. Please try again: ";
+//        }
+//
+//    } while(do_test == "y");
 
 
-        cout << "Please Select what you would like to test (enter the corresponding number):\n";
-
-        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
-            cin.clear();
-            cin.ignore(132, '\n');
-            cout << "Invalid selection. Please try again: ";
-        }
-
-        switch (user_response) {
-            case 0 :
-                Tester::TestGameTournament();
-                break;
-            case 1 :
-                Tester::TestDynamicBehaviours();
-                break;
-            case 2:
-                Tester::TestPlayerStrategiesWithPhaseObserver();
-                break;
-            case 3:
-                Tester::TestGameStatisticsObserver();
-                break;
-            case 4:
-                Tester::TestMapFiles();
-                break;
-            default:
-                break;
-        }
-
-        cout << "\nWould you like to conduct another test? enter 'y' (enter any other key to quit): ";
-
-
-        while(!(cin >> do_test)) {
-            cin.clear();
-            cin.ignore(132, '\n');
-            cout << "Invalid input give. Please try again: ";
-        }
-
-    } while(do_test == "y");
+    Tester::TestRandomPlayers();
 
     return 0;
 }
