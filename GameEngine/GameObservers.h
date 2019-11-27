@@ -72,6 +72,7 @@ private:
     string current_phase_;
     string current_action_description_;
     bool phase_over_;
+    bool phase_start_;
 
 
     void DisplayPhaseData();

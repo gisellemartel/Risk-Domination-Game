@@ -491,9 +491,6 @@ void Player::Attack() {
     player_strategy_->SetNumberOfTimesToAttack(this);
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
-        if(has_had_first_turn) {
-            Notify(this, GamePhase::Attack, *player_name_ + " is attacking again\n", true, false);
-        }
         attack_phase_->SetDefendingCountry(nullptr);
         attack_phase_->SetAttackingCountry(nullptr);
         attack_phase_->SetDefender(nullptr);
@@ -647,7 +644,7 @@ void Player::Attack() {
             Notify(this, GamePhase::Attack, msg, false, false);
         }
 
-        has_had_first_turn = true;
+        Notify(this, GamePhase::Attack, *player_name_ + " is attacking again\n", false, true);
     }
 
     for(int i = 0; i < countries_conquered; ++i) {

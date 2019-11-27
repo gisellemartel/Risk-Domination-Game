@@ -13,6 +13,7 @@ PhaseObserver::PhaseObserver() {
     current_phase_ = "";
     current_action_description_ = "";
     phase_over_ = false;
+    phase_start_ = false;
 }
 
 PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
@@ -20,6 +21,7 @@ PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
+    phase_start_ = phase_observer.phase_start_;
 }
 
 PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
@@ -27,6 +29,7 @@ PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
     current_phase_ = phase_observer.current_phase_;
     current_action_description_ = phase_observer.current_action_description_;
     phase_over_ = phase_observer.phase_over_;
+    phase_start_ = phase_observer.phase_start_;
 
     return *this;
 }
@@ -40,6 +43,7 @@ void PhaseObserver::Update(Player* current_player, int current_phase, string cur
     current_player_name_ = *current_player->GetPlayerName();
     current_action_description_ = current_action_description;
     phase_over_ = phase_over;
+    phase_start_ = phase_start;
 
     //only print header once at start of phase or if we've filled the screen and need to clear it again
     if(current_phase_.empty() || phase_start) {
@@ -80,10 +84,7 @@ void PhaseObserver::DisplayPhaseData() {
         //put thread to sleep to allow smoother visual transition
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         current_phase_ = "";
-    } else if (current_phase_ == "Attack Phase") {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-
 }
 
 void PhaseObserver::DisplayPhaseHeader() {
