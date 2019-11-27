@@ -53,8 +53,10 @@ private:
     Country* attacking_country_;
     Country* defending_country_;
     vector<Country*>* opponent_neighbours_;
+    int rand_player_num_attacks_;
 
 public:
+    static const int RAND_PLAYER_MAX_NUM_ATTACKS = 20;
 
     explicit AttackPhase();
     explicit AttackPhase(Player *player);
@@ -66,11 +68,14 @@ public:
     Country* GetAttackingCountry() const;
     Country* GetDefendingCountry() const;
     vector<Country*>* GetOpponentNeighbours() const;
+    int GetRandPlayerNumAttacks() const;
 
     void SetAttackingCountry(Country* attacking_country);
     void SetDefendingCountry(Country* defending_country);
     void SetDefender(Player* defender);
+    void SetRandPlayerNumAttacks(int num_attacks);
 
+    void UpdateNumAttacks();
     void RemoveDefeatedCountryFromOpponents(Country* defeated_country);
 
     bool DoesOpposingCountryExist();

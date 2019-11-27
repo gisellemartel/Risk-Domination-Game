@@ -31,6 +31,8 @@ class Player {
 private:
     bool is_player_turn_;
     bool is_human_;
+    bool is_random_;
+    bool is_cheater_;
     string* player_name_;
 
     vector<Country*>* countries_;
@@ -45,6 +47,10 @@ private:
 
     ConcreteStrategies* player_strategy_;
     GameEngine* game_engine_;
+
+    //helper function for Attack()
+    void AttackerConquersDefeatedCountry();
+    void RemoveDefeatedPlayerFromGame();
 
 public:
     explicit Player(string player_name);
@@ -62,8 +68,9 @@ public:
     void SetPlayerHand(Hand* hand);
     void SetGameMap(Map* map);
     void SetPlayerStrategy(ConcreteStrategies* player_strategy);
-
     void SetAsHuman();
+    void SetAsRandom();
+    void SetAsCheater();
 
     vector<Country*>* GetPlayersCountries() const;
     GameEngine* GetGameEngine() const;
@@ -82,6 +89,8 @@ public:
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;
     bool IsHuman() const;
+    bool IsRandom() const;
+    bool IsCheater() const;
 
     int Find(Country* country) const;
 

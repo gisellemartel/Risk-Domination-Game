@@ -159,6 +159,7 @@ AttackPhase::AttackPhase() {
     attacker_ = nullptr;
     game_map_ = nullptr;
     opponent_neighbours_ = new vector<Country*>;
+    rand_player_num_attacks_ = 0;
 }
 
 AttackPhase::AttackPhase(Player* player) {
@@ -168,6 +169,7 @@ AttackPhase::AttackPhase(Player* player) {
     attacker_ = player;
     game_map_ = player->GetGameMap();
     opponent_neighbours_ = new vector<Country*>;
+    rand_player_num_attacks_ = 0;
 }
 
 AttackPhase::~AttackPhase() {
@@ -201,6 +203,7 @@ AttackPhase::AttackPhase(const AttackPhase& attack) {
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
     *game_map_ = *attack.game_map_;
+    rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
@@ -223,6 +226,7 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
     *game_map_ = *attack.game_map_;
+    rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
@@ -241,6 +245,10 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     return *this;
 }
 
+int AttackPhase::GetRandPlayerNumAttacks() const {
+    return rand_player_num_attacks_;
+}
+
 Country* AttackPhase::GetAttackingCountry() const {
     return attacking_country_;
 }
@@ -253,6 +261,10 @@ vector<Country*>* AttackPhase::GetOpponentNeighbours() const {
     return opponent_neighbours_;
 }
 
+void AttackPhase::SetRandPlayerNumAttacks(int num_attacks) {
+    rand_player_num_attacks_ = num_attacks;
+}
+
 void AttackPhase::SetAttackingCountry(Country *attacking_country) {
     attacking_country_ = attacking_country;
 }
@@ -263,6 +275,10 @@ void AttackPhase::SetDefender(Player* defender) {
 
 void AttackPhase::SetDefendingCountry(Country* defending_country) {
     defending_country_ = defending_country;
+}
+
+void AttackPhase::UpdateNumAttacks() {
+    --rand_player_num_attacks_;
 }
 
 void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) {

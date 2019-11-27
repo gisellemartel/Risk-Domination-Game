@@ -18,6 +18,7 @@ public:
 
     virtual void ReinforceStrategy(Player* player) = 0;
 
+    virtual void SetNumberOfTimesToAttack(Player* player) = 0;
     virtual bool PromptPlayerToAttack(Player* player) = 0;
     virtual bool SelectCountryToAttack(Player* player) = 0;
     virtual bool SelectCountryToAttackFrom(Player* player) = 0;
@@ -40,6 +41,7 @@ public:
 
     void ReinforceStrategy(Player* player) override;
 
+    void SetNumberOfTimesToAttack(Player* player) override;
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
@@ -60,6 +62,7 @@ public:
 
     void ReinforceStrategy(Player* player) override;
 
+    void SetNumberOfTimesToAttack(Player* player) override;
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
@@ -80,6 +83,7 @@ public:
 
     void ReinforceStrategy(Player* player) override;
 
+    void SetNumberOfTimesToAttack(Player* player) override;
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
@@ -93,13 +97,14 @@ public:
     void FortifyStrategy(Player* player, int& num_of_armies) override;
 };
 
-class RandomComputerStrategy : public ConcreteStrategies {
+class RandomComputerPlayerStrategy : public ConcreteStrategies {
 public:
-    RandomComputerStrategy() {};
-    ~RandomComputerStrategy() override {};
+    RandomComputerPlayerStrategy() {};
+    ~RandomComputerPlayerStrategy() override {};
 
     void ReinforceStrategy(Player* player) override;
 
+    void SetNumberOfTimesToAttack(Player* player) override;
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;
@@ -113,13 +118,14 @@ public:
     void FortifyStrategy(Player* player, int& num_of_armies) override;
 };
 
-class CheaterComputerStrategy : public ConcreteStrategies {
+class CheaterComputerPlayerStrategy : public ConcreteStrategies {
 public:
-    CheaterComputerStrategy() {};
-    ~CheaterComputerStrategy() override {};
+    CheaterComputerPlayerStrategy() {};
+    ~CheaterComputerPlayerStrategy() override {};
 
     void ReinforceStrategy(Player* player) override;
 
+    void SetNumberOfTimesToAttack(Player* player) override;
     bool PromptPlayerToAttack(Player* player) override;
     bool SelectCountryToAttack(Player* player) override;
     bool SelectCountryToAttackFrom(Player* player) override;

@@ -14,6 +14,8 @@ Player::Player(string player_name) {
     player_name_ = new string(std::move(player_name));
     is_player_turn_ = false;
     is_human_ = false;
+    is_random_ = false;
+    is_cheater_ = false;
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
@@ -31,6 +33,8 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
     game_engine_ = game_engine;
     is_player_turn_ = false;
     is_human_ = false;
+    is_random_ = false;
+    is_cheater_ = false;
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
@@ -44,6 +48,8 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     player_name_ = new string(std::move(player_name));
     is_player_turn_ = is_player_turn;
     is_human_ = false;
+    is_random_ = false;
+    is_cheater_ = false;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
     risk_cards_ = nullptr;
@@ -60,6 +66,8 @@ Player::Player(const Player &player) {
     *player_name_ = *player.player_name_;
     is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
+    is_random_ = player.is_random_;
+    is_cheater_ = player.is_cheater_;
 
     *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
@@ -116,11 +124,12 @@ Player::~Player() {
     delete fortify_phase_;
 }
 
-//TODO: DEEP COPY / SHOULD DELETE OLD VALUES
 Player& Player::operator=(const Player &player) {
     *player_name_ = *player.player_name_;
     is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
+    is_random_ = player.is_random_;
+    is_cheater_ = player.is_cheater_;
 
     *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
@@ -165,7 +174,9 @@ bool Player::operator==(const Player& player) {
             && attack_phase_ == player.attack_phase_
             && fortify_phase_ == player.fortify_phase_
             && game_engine_ == player.game_engine_
-            && is_human_ == player.is_human_;
+            && is_human_ == player.is_human_
+            && is_random_ == player.is_random_
+            && is_cheater_ == player.is_cheater_;
 }
 
 int Player::Find(Country* country) const {
@@ -197,6 +208,14 @@ vector<Country*>* Player::GetPlayersCountries() const {
 
 bool Player::IsHuman() const {
     return is_human_;
+}
+
+bool Player::IsRandom() const {
+    return is_random_;
+}
+
+bool Player::IsCheater() const {
+    return is_cheater_;
 }
 
 Country* Player::GetCountryById(int id) const {
@@ -288,6 +307,14 @@ void Player::SetAsHuman() {
     is_human_ = true;
 }
 
+void Player::SetAsRandom() {
+    is_random_ = true;
+}
+
+void Player::SetAsCheater() {
+    is_cheater_ = true;
+}
+
 void Player::AddCountryToCollection(Country *country) {
     if(!countries_) {
         countries_ = new vector<Country*>;
@@ -339,6 +366,54 @@ void Player::DisplayCountries() const {
         cout << endl;
     }
     cout << endl;
+}
+
+void Player::AttackerConquersDefeatedCountry() {
+    Country* attacking_country = attack_phase_->GetAttackingCountry();
+    Country* defending_country = attack_phase_->GetDefendingCountry();
+    Player* defender = defending_country->GetCountryOwner();
+
+    string msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
+    Notify(this, GamePhase::Attack, msg, false, true);
+    msg = "";
+
+    //defender has lost. Its country will now be transferred to the attacker
+    AddCountryToCollection(defending_country);
+    defender->RemoveCountryFromCollection(defending_country);
+
+    player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
+
+    attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
+
+    //GameStatisticObserver: notify that a player has lost a country
+    if(!defender->GetPlayersCountries()->empty()) {
+        Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName());
+    }
+
+    // Draw card once country has been conquered
+    Deck* game_deck_ = game_engine_->GetCardsDeck();
+    if(!game_deck_) {
+        return;
+    }
+    risk_cards_->AddCardToHand(game_deck_->Draw());
+
+    //check to see if player has no more countries
+    if(defender->GetPlayersCountries()->empty()) {
+        RemoveDefeatedPlayerFromGame();
+    }
+}
+
+void Player::RemoveDefeatedPlayerFromGame() {
+    Country* defeated_country = attack_phase_->GetDefendingCountry();
+    Player* defeated_player = defeated_country->GetCountryOwner();
+    string defeated_name = *defeated_player->GetPlayerName();
+    string msg;
+    //Player has been defeated they have no more armies
+    msg = *player_name_+" has conquered " + defeated_name + "'s country " + *defeated_country->GetCountryName() + ". " + defeated_name + " has been eliminated from the game!";
+    game_engine_->RemovePlayer(defeated_player);
+
+    //GameStatisticObserver: notify that a player has been defeated
+    Notify(msg);
 }
 
 void Player::Reinforce() {
@@ -409,15 +484,12 @@ void Player::Attack() {
     //PhaseObserver
     Notify(this, GamePhase::Attack, msg, true, false);
 
+    player_strategy_->SetNumberOfTimesToAttack(this);
 
     while (player_strategy_->PromptPlayerToAttack(this)) {
-        Notify(this, GamePhase::Attack, "", true, false);
-
         attack_phase_->SetDefendingCountry(nullptr);
         attack_phase_->SetAttackingCountry(nullptr);
         attack_phase_->SetDefender(nullptr);
-
-        string msg;
 
         //Check first if the player owns at least one country with enough armies to execute an attack
         if(!attack_phase_->PlayerHasCountryWithEnoughArmiesToAttack()) {
@@ -472,44 +544,8 @@ void Player::Attack() {
 
             // if the defending country has no armies, they are defeated automatically
             if(defending_country->GetNumberOfArmies() == 0) {
-                msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
-                Notify(this, GamePhase::Attack, msg, false, true);
-                msg = "";
-
-                //defender has lost. Its country will now be transferred to the attacker
-                AddCountryToCollection(defending_country);
-                defender->RemoveCountryFromCollection(defending_country);
-
-                player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
-
-                attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
-
-                //GameStatisticObserver: notify that a player has lost a country
-                if(!defender->GetPlayersCountries()->empty()) {
-                    Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName());
-                }
-
-                // Draw card once country has been conquered
-                Deck* game_deck_ = game_engine_->GetCardsDeck();
-                if(!game_deck_) {
-                    return;
-                }
-                risk_cards_->AddCardToHand(game_deck_->Draw());
-
-                //check to see if player has no more countries
-                if(defender->GetPlayersCountries()->empty()) {
-                    //Player has been defeated they have no more armies
-                    string defeated = *defender->GetPlayerName();
-                    msg = *player_name_+" has conquered " + defeated + "'s country " + *defending_country->GetCountryName() + ". " + defeated + " has been eliminated from the game!";
-                    game_engine_->RemovePlayer(defender);
-
-                    //GameStatisticObserver: notify that a player has been defeated
-                    Notify(msg);
-
-                    return;
-                }
-
-
+                //function will return true when player is removed from game
+                 AttackerConquersDefeatedCountry();
             } else { //otherwise the players will roll their dice and the attack will occur
 
                 int attacker_num_dice = 0;
@@ -567,7 +603,6 @@ void Player::Attack() {
                 sort(defender_dice_rolls.begin(), defender_dice_rolls.end());
                 reverse(defender_dice_rolls.begin(), defender_dice_rolls.end());
 
-
                 // Get the number of dice pairs we are evaluating
                 int num_of_iterations = (attacker_dice_rolls.size() == defender_dice_rolls.size() || attacker_dice_rolls.size() < defender_dice_rolls.size()) ? attacker_dice_rolls.size() : defender_dice_rolls.size();
                 msg = "";
@@ -588,52 +623,16 @@ void Player::Attack() {
                         defending_country->RemoveArmiesFromCountry(1);
 
                         if(defending_country->GetNumberOfArmies() == 0) {
-                            msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
-                            Notify(this, GamePhase::Attack, msg, false, true);
-                            msg = "";
-
-                            //defender has lost. Its country will now be transferred to the attacker
-                            AddCountryToCollection(defending_country);
-                            defender->RemoveCountryFromCollection(defending_country);
-
-                            player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
-
-                            attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
-
-                            //GameStatisticObserver: notify that a player has lost a country
-                            if(!defender->GetPlayersCountries()->empty()) {
-                                Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName());
-                            }
-
-                            // Draw card once country has been conquered
-                            Deck* game_deck_ = game_engine_->GetCardsDeck();
-                            if(!game_deck_) {
-                                return;
-                            }
-                            risk_cards_->AddCardToHand(game_deck_->Draw());
-
-                            //check to see if player has no more countries
-                            if(defender->GetPlayersCountries()->empty()) {
-                                //Player has been defeated they have no more armies
-                                string defeated = *defender->GetPlayerName();
-                                msg = *player_name_+" has conquered " + defeated + "'s country " + *defending_country->GetCountryName() + ". " + defeated + " has been eliminated from the game!";
-                                game_engine_->RemovePlayer(defender);
-
-                                //GameStatisticObserver: notify that a player has been defeated
-                                Notify(msg);
-
-                                return;
-                            }
+                            //function will return true when player is removed from game
+                            AttackerConquersDefeatedCountry();
                         }
                     }
                 }
             }
 
             msg.append("Result:\n\n");
-
             msg.append(*player_name_ + "\n");
             msg.append(attacking_country->GetDisplayInfo());
-
             msg.append("\n" +  *defender->GetPlayerName() + "\n");
             msg.append(defending_country->GetDisplayInfo() + "\n");
 

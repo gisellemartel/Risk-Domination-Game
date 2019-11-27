@@ -419,6 +419,26 @@ void GameEngine::CreatePlayers() {
         players_->push_back(player);
     }
 
+    for(size_t i = 0; i < num_random_players_; ++i) {
+        string player_name = "Random Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new RandomComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        player->SetPlayerStrategy(strategy);
+        player->SetAsRandom();
+        players_->push_back(player);
+    }
+
+    for(size_t i = 0; i < num_cheater_players_; ++i) {
+        string player_name = "Cheater Player " + std::to_string(player_counter++);
+
+        ConcreteStrategies* strategy = new CheaterComputerPlayerStrategy();
+        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        player->SetPlayerStrategy(strategy);
+        player->SetAsCheater();
+        players_->push_back(player);
+    }
+
     game_start_->SetNumberOfArmies(num_of_players_);
 }
 
