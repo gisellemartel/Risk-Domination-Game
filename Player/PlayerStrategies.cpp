@@ -384,7 +384,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
         return false;
     }
 
-    player->GetAttackPhase()->SetAttackingCountry(nullptr);
+    phase->SetAttackingCountry(nullptr);
     multimap<int, Country*> countries_sorted_by_strength;
     vector<Country*>& countries = *player->GetPlayersCountries();
 
@@ -419,12 +419,12 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
        if(!attacker.second) {
            continue;
        } else {
-           player->GetAttackPhase()->SetAttackingCountry(attacker.second);
+           phase->SetAttackingCountry(attacker.second);
            break;
        }
    }
 
-   return player->GetAttackPhase()->GetAttackingCountry() != nullptr;
+   return phase->GetAttackingCountry() != nullptr;
 }
 
 void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
@@ -682,7 +682,6 @@ void RandomComputerStrategy::ReinforceStrategy(Player *player) {
     vector<Country*>* countries = player->GetPlayersCountries();
     int num_bonus_army = reinforce_phase->TotalReinforceArmy();
 
-
     while(num_bonus_army > 0) {
         // random player select country to reinforce randomly
         int random_country_to_reinforce = Utility::GenerateRandomNumInRange(0, countries->size() - 1);
@@ -701,41 +700,149 @@ void RandomComputerStrategy::ReinforceStrategy(Player *player) {
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 
 bool RandomComputerStrategy::PromptPlayerToAttack(Player *player) {
-    return false;
+    //Random player will always choose to attack
+    return true;
 }
 
 bool RandomComputerStrategy::SelectCountryToAttackFrom(Player *player) {
-    return false;
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
+
+    vector<Country*>* countries = player->GetPlayersCountries();
+
+    if(!countries || countries->empty()) {
+        return false;
+    }
+
+    int random_country_to_attack_from = Utility::GenerateRandomNumInRange(0, countries->size() - 1);
+
+    Country* attacker = countries->at(random_country_to_attack_from);
+
+    if(!attacker) {
+        return false;
+    }
+
+    attack_phase->SetAttackingCountry(attacker);
+
+    return attack_phase->GetAttackingCountry() != nullptr;
 }
 
 bool RandomComputerStrategy::SelectCountryToAttack(Player *player) {
-    return false;
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
+
+    Country* defending_country = nullptr;
+
+    //Display neighboring countries
+    string msg = "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
+
+    player->Notify(player, GamePhase::Attack, msg, false, false);
+
+    cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
+        cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
+             << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
+        cout << endl;
+    }
+
+    attack_phase->FindOpponentNeighboursToAttackingCountry();
+
+
+    //TODO: Randomly select opponent neighbouring country to attack
+//    for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
+//        defending_country = opponent;
+//
+//        if(player->DoesPlayerOwnCountry(defending_country->GetCountryID())) {
+//            continue;
+//        }
+//        msg = *player->GetPlayerName() + " chooses to attack " + *opponent->GetCountryName() + "\n";
+//        player->Notify(player, GamePhase::Attack, msg, false, false);
+//        break;
+//    }
+
+
+    if(defending_country) {
+        attack_phase->SetDefendingCountry(defending_country);
+        attack_phase->SetDefender(defending_country->GetCountryOwner());
+    }
+
+    return defending_country != nullptr;
 }
 
 void RandomComputerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
 
+    //the Random player will select random number of dice to rolll
+    string msg = "\nIt is " + *player->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_ATTACKER) + ") dice: ";
+    player->Notify(player, GamePhase::Attack, msg, true, false);
+
+    attacker_num_dice = Utility::GenerateRandomNumInRange(1, MAX_NUM_OF_DICE_ATTACKER);
 }
 
 void RandomComputerStrategy::MoveArmiesAfterAttack(Player *player, Country *attacking_country, Country *defending_country) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
+
+
+    string msg = *player->GetPlayerName() + " is moving armies from " + *attacking_country->GetCountryName() + " to " + *defending_country->GetCountryName() + "\n";
+    player->Notify(player, GamePhase::Attack, msg, false, false);
+
+    //TODO: should foritfy random country with random number of armes in range
+//    //Aggressive player will move all armies to their strongest country
+//    int num_armies_to_assign = attacking_country->GetNumberOfArmies();
+//    Country* newly_acquired_country = player->GetCountryById(defending_country->GetCountryID());
+//
+//    if(newly_acquired_country) {
+//        newly_acquired_country->SetNumberOfArmies(num_armies_to_assign);
+//        attacking_country->RemoveArmiesFromCountry(num_armies_to_assign);
+//    }
 
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
 
 bool RandomComputerStrategy::PromptPlayerToFortify(Player *player) {
-    return false;
+    // Random player automatically chooses to fortify
+    return true;
 }
 
 bool RandomComputerStrategy::SelectSourceCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+    //TODO: select random soucre country that has armies
     return false;
 }
 
 bool RandomComputerStrategy::SelectTargetCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
+
+    //TODO: select random country to fortify (cannot be source country)
     return false;
 }
 
 void RandomComputerStrategy::FortifyStrategy(Player *player, int &num_of_armies) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return;
+    }
 
+    // TODO: Random player randomly selects number of armies to fortify with
+    num_of_armies = Utility::GenerateRandomNumInRange(1, fortify_phase->GetSourceCountry()->GetNumberOfArmies());
 }
 
 
@@ -754,38 +861,78 @@ void CheaterComputerStrategy::ReinforceStrategy(Player *player) {
 
 //Strategies for Attack ------------------------------------------------------------------------------------------------
 bool CheaterComputerStrategy::PromptPlayerToAttack(Player *player) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
+
     return false;
 }
 
 bool CheaterComputerStrategy::SelectCountryToAttack(Player *player) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
+
     return false;
 }
 
 bool CheaterComputerStrategy::SelectCountryToAttackFrom(Player *player) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return false;
+    }
+
     return false;
 }
 
 void CheaterComputerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
+
 
 }
 
 void CheaterComputerStrategy::MoveArmiesAfterAttack(Player *player, Country *attacking_country, Country *defending_country) {
+    AttackPhase* attack_phase = player->GetAttackPhase();
+    if(!attack_phase) {
+        return;
+    }
 
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
 bool CheaterComputerStrategy::PromptPlayerToFortify(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
     return false;
 }
 
 bool CheaterComputerStrategy::SelectSourceCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
     return false;
 }
 
 bool CheaterComputerStrategy::SelectTargetCountry(Player *player) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return false;
+    }
     return false;
 }
 
 void CheaterComputerStrategy::FortifyStrategy(Player *player, int &num_of_armies) {
+    FortifyPhase* fortify_phase = player->GetFortifyPhase();
+    if(!fortify_phase) {
+        return;
+    }
 
 }
