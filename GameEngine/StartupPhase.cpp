@@ -282,10 +282,16 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
 
                     cout << "Auto selecting number of armign to assign to " << name_country  << " (you currently have " << num_armies[it.second] << " armies remaining to assign)..." << endl;
 
-                    int num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
-                    while(num_armies_to_assign < 1 || num_armies_to_assign > num_armies[it.second]) {
-                        num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]);
+                    int num_armies_to_assign;
+                    if(num_armies[it.second] == 0) {
+                        num_armies_to_assign = 0;
+                    } else {
+                        num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]) / num_armies[it.second] ;
+                        while(num_armies_to_assign < 1 || num_armies_to_assign > num_armies[it.second]) {
+                            num_armies_to_assign = Utility::GenerateRandomNumInRange(1, num_armies[it.second]) / num_armies[it.second] ;
+                        }
                     }
+
 
                     //debug string
                     cout << "Assigning " << country_id << " armies to " << name_country << "...\n";

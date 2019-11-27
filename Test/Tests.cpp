@@ -124,15 +124,13 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 0 ,0, 2, 0);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/google.map", 0, 0 ,0, 3, 0);
 
-        for(int i = 0; i < 2; ++i) {
-            for(Player* player : *new_game->GetPlayers()) {
-                player->Reinforce();
-                player->Attack();
-                player->Fortify();
-            }
+        for(Player* player : *new_game->GetPlayers()) {
+            player->Reinforce();
+            player->Attack();
+            player->DisplayCountries();
+            player->Fortify();
         }
 
         new_game->Unregister(observer);
@@ -149,15 +147,13 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 0 ,0, 0, 2);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/google.map", 0, 0 ,0, 0, 3);
 
-        for(int i = 0; i < 2; ++i) {
-            for(Player* player : *new_game->GetPlayers()) {
-                player->Reinforce();
-                player->Attack();
-                player->Fortify();
-            }
+        for(Player* player : *new_game->GetPlayers()) {
+            player->Reinforce();
+            player->Attack();
+            player->DisplayCountries();
+            player->Fortify();
         }
 
         new_game->Unregister(observer);

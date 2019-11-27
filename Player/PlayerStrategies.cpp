@@ -842,7 +842,6 @@ void RandomComputerPlayerStrategy::MoveArmiesAfterAttack(Player *player, Country
 }
 
 //Strategies for Fortify -----------------------------------------------------------------------------------------------
-
 bool RandomComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
     // Random player automatically chooses to fortify
     return true;
@@ -862,7 +861,8 @@ bool RandomComputerPlayerStrategy::SelectSourceCountry(Player *player) {
 
             //see if the current country has neighbours that belongs to the player
             // (only countries that belong to the player can be fortified)
-            for(Country* players_country : *player->GetGameMap()->GetNeighbouringCountries(country)) {
+            vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
+            for(Country* players_country : *neighbours) {
                 if(player->DoesPlayerOwnCountry(players_country->GetCountryID())){
                     neighbours_player_owns.push_back(players_country);
                 }
@@ -924,7 +924,6 @@ void RandomComputerPlayerStrategy::FortifyStrategy(Player *player, int &num_of_a
 
 
 //CHEATER PLAYER STRATEGIES #########################################################################################
-
 void CheaterComputerPlayerStrategy::ReinforceStrategy(Player *player) {
     vector<Country*>* countries = player->GetPlayersCountries();
 
