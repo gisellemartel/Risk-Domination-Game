@@ -375,7 +375,7 @@ void Player::AttackerConquersDefeatedCountry() {
 
     string msg;
     if(!is_cheater_) {
-        msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
+        msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and has been defeated!\n";
         Notify(this, GamePhase::Attack, msg, false, false);
     } else {
         msg = "Defending country " + *defending_country->GetCountryName() + " is defeated automatically by Cheater player!\n";
@@ -460,7 +460,7 @@ void Player::Reinforce() {
         int current_num_armies = current_country->GetNumberOfArmies();
 
         if(num_armies_to_add > 0) {
-            msg = *player_name_ + " reinforcing " + *current_country->GetCountryName() + " with " + to_string(num_armies_to_add) + " armies";
+            msg = *player_name_ + " reinforcing " + *current_country->GetCountryName() + " who currently has " + to_string(current_country->GetNumberOfArmies()) + " armies with " + to_string(num_armies_to_add) + " armies";
             Notify(this, GamePhase::Reinforce, msg, false,false);
         }
 
@@ -557,7 +557,6 @@ void Player::Attack() {
                 //function will return true when player is removed from game
                  AttackerConquersDefeatedCountry();
             } else { //otherwise the players will roll their dice and the attack will occur
-
                 int attacker_num_dice = 0;
                 int defender_num_dice = 0;
                 //determine maximum number of rolls for each player based on rules of Risk
@@ -629,7 +628,6 @@ void Player::Attack() {
                         //defender lose an army if attacker's dice has a greater value
                     } else if (attacker_dice_rolls[i] > defender_dice_rolls[i]) {
                         msg.append("Defender has lost this roll. Loosing an army\n");
-
                         defending_country->RemoveArmiesFromCountry(1);
 
                         if(defending_country->GetNumberOfArmies() == 0) {
@@ -639,9 +637,11 @@ void Player::Attack() {
                         }
                     }
                 }
+
+                Notify(this, GamePhase::Attack, msg, false, false);
             }
 
-            msg.append("Result:\n\n");
+            msg = "Result:\n\n";
             msg.append(*player_name_ + "\n");
             msg.append(attacking_country->GetDisplayInfo());
             msg.append("\n" +  *defender->GetPlayerName() + "\n");

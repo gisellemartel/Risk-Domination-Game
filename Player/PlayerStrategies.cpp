@@ -392,7 +392,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
     }
 
     phase->SetAttackingCountry(nullptr);
-    multimap<int, Country*> countries_sorted_by_strength;
+    vector<Country*> countries_with_enemies;
     vector<Country*>& countries = *player->GetPlayersCountries();
 
     //sort countries by number of armies.
@@ -402,35 +402,37 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
        }
 
        vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-
+       bool has_enemy = false;
        //make sure current country has at least one neighbour opponent to attack
-        for(int i = 0; i < neighbours->size(); ++i) {
-            if(player->DoesPlayerOwnCountry(country->GetCountryID())) {
-                neighbours->erase(neighbours->begin() + i);
+        for(Country* neighbour : *neighbours) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
+                has_enemy = true;
             }
         }
 
         //as long as the current country has opposing countries with armies
-        if(!neighbours->empty()) {
-            countries_sorted_by_strength.insert({country->GetNumberOfArmies(), country});
+        if(has_enemy) {
+            countries_with_enemies.push_back(country);
         }
    }
 
-   if(countries_sorted_by_strength.empty()) {
+   if(countries_with_enemies.empty()) {
        string msg = "Currently no country exists that can attack right now\n";
        player->Notify(player, GamePhase::Attack, msg, false, false);
        return false;
    }
 
-   for(auto attacker : countries_sorted_by_strength) {
-       if(!attacker.second) {
+   Country* strongest_country = countries_with_enemies[0];
+   for(Country* attacker : countries_with_enemies) {
+       if(!attacker) {
            continue;
-       } else {
-           phase->SetAttackingCountry(attacker.second);
+       } else if (attacker->GetNumberOfArmies() > strongest_country->GetNumberOfArmies()) {
+           strongest_country = attacker;
            break;
        }
    }
 
+   phase->SetAttackingCountry(strongest_country);
    return phase->GetAttackingCountry() != nullptr;
 }
 

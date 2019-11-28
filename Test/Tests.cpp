@@ -119,15 +119,24 @@ public:
         Utility::ClearScreen();
     }
 
-    static void TestRandomPlayers() {
+    static void TestPlayerStrategiesWithPhaseObserver() {
+        cout << "\n\nTesting Player Strategies with Phase Observer...\n\n";
         GameEngine* new_game = new GameEngine();
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/google.map", 0, 0 ,0, 3, 0);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,2, 1, 1);
+
+        new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
+        for(Player* player : *new_game->GetPlayers()) {
+            cout << *player->GetPlayerName() << endl;
+            player->DisplayCountries();
+        }
 
         for(Player* player : *new_game->GetPlayers()) {
+            player->DisplayCountries();
             player->Reinforce();
+            player->DisplayCountries();
             player->Attack();
             player->DisplayCountries();
             player->Fortify();
@@ -135,61 +144,8 @@ public:
 
         new_game->Unregister(observer);
 
-
         observer = nullptr;
         new_game = nullptr;
-        delete observer;
-        delete new_game;
-    }
-
-    static void TestCheaterPlayers() {
-        GameEngine* new_game = new GameEngine();
-        Observer* observer = new PhaseObserver();
-        new_game->Register(observer);
-
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/google.map", 0, 0 ,0, 0, 3);
-
-        for(Player* player : *new_game->GetPlayers()) {
-            player->Reinforce();
-            //player->Attack();
-            player->DisplayCountries();
-            player->Fortify();
-        }
-
-        new_game->Unregister(observer);
-
-
-        observer = nullptr;
-        new_game = nullptr;
-        delete observer;
-        delete new_game;
-    }
-
-    static void TestPlayerStrategiesWithPhaseObserver() {
-        cout << "\n\nTesting Player Strategies with Phase Observer...\n\n";
-        GameEngine* new_game = new GameEngine();
-        Observer* observer = new PhaseObserver;
-
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,1, 1, 1);
-
-        new_game->Register(observer);
-
-        //repeat game loop 2 times
-        for(int i = 0; i < 2; ++i) {
-            for(Player* player : *new_game->GetPlayers()) {
-                player->Reinforce();
-                player->Attack();
-                player->Fortify();
-            }
-        }
-
-        new_game->Unregister(observer);
-
-        cout << "\n\nFinished Testing player strategies...\n\n";
-
-        new_game = nullptr;
-        observer = nullptr;
-
         delete observer;
         delete new_game;
     }
@@ -203,7 +159,7 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 1, 2, 1, 2);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 1, 2, 2, 1);
 
         for(int i = 0; i < 1000; ++i) {
             for(Player* player : *new_game->GetPlayers()) {
@@ -213,7 +169,6 @@ public:
             }
 
         }
-
 
         //Should pass message to notify: "as soon as a player owns all the countries, the game statistics view updates itself and displays a celebratory message"
         new_game->Notify("Game Test Over");
@@ -349,9 +304,7 @@ int main() {
 //
 //    } while(do_test == "y");
 
-
-//    Tester::TestRandomPlayers();
-    Tester::TestCheaterPlayers();
+    Tester::TestPlayerStrategiesWithPhaseObserver();
 
     return 0;
 }
