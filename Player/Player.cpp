@@ -373,8 +373,15 @@ void Player::AttackerConquersDefeatedCountry() {
     Country* defending_country = attack_phase_->GetDefendingCountry();
     Player* defender = defending_country->GetCountryOwner();
 
-    string msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
-    Notify(this, GamePhase::Attack, msg, false, false);
+    string msg;
+    if(!is_cheater_) {
+        msg = "Defending country " + *defending_country->GetCountryName() + " has no armies and is defeated automatically!\n";
+        Notify(this, GamePhase::Attack, msg, false, false);
+    } else {
+        msg = "Defending country " + *defending_country->GetCountryName() + " is defeated automatically by Cheater player!\n";
+        Notify(this, GamePhase::Attack, msg, false, false);
+    }
+
     msg = "";
 
     //defender has lost. Its country will now be transferred to the attacker
@@ -527,7 +534,6 @@ void Player::Attack() {
         bool can_attack = !attack_phase_->GetOpponentNeighbours()->empty();
 
         if(can_attack) {
-
             //prompt player to select a defending country
             can_attack &= player_strategy_->SelectCountryToAttack(this);
             can_attack &= attack_phase_->GetDefendingCountry() != nullptr;
@@ -546,8 +552,8 @@ void Player::Attack() {
             Player* defender = defending_country->GetCountryOwner();
 
 
-            // if the defending country has no armies, they are defeated automatically
-            if(defending_country->GetNumberOfArmies() == 0) {
+            // if the defending country has no armies or if the current player is in cheat mode, they are defeated automatically
+            if(defending_country->GetNumberOfArmies() == 0 || is_cheater_) {
                 //function will return true when player is removed from game
                  AttackerConquersDefeatedCountry();
             } else { //otherwise the players will roll their dice and the attack will occur
@@ -638,7 +644,7 @@ void Player::Attack() {
             msg.append("Result:\n\n");
             msg.append(*player_name_ + "\n");
             msg.append(attacking_country->GetDisplayInfo());
-            msg.append("\n" +  *defender->GetPlayerName());
+            msg.append("\n" +  *defender->GetPlayerName() + "\n");
             msg.append(defending_country->GetDisplayInfo());
 
             Notify(this, GamePhase::Attack, msg, false, false);
@@ -678,96 +684,135 @@ void Player::Fortify() {
     fortify_phase_ = new FortifyPhase(this);
 
     if(player_strategy_->PromptPlayerToFortify(this))  {
-        vector<Country*> neighbouring_countries;
 
-        int count = 0;
-        for(Country* country : *countries_) {
-            if(country->GetNumberOfArmies() < 1) {
-                ++count;
+
+        if(!is_cheater_) {
+            int count = 0;
+            for (Country *country : *countries_) {
+                if (country->GetNumberOfArmies() < 1) {
+                    ++count;
+                }
             }
-        }
 
-        if(count == countries_->size()) {
-            msg = "No countries with enough armies to assign to another country!\nEnding Fortify phase\n" + *player_name_ + "'s turn end.\n";
-            Notify(this, GamePhase::Fortify, msg, false, true);
-            return;
-        }
-
-        player_strategy_->SelectSourceCountry(this);
-
-        if(!fortify_phase_->GetSourceCountry()) {
-            msg = "Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
-            Notify(this, GamePhase::Fortify, msg, false, true);
-            return;
-        }
-
-        Country* source_country = fortify_phase_->GetSourceCountry();
-
-
-        cout << "Please select which target country you wish to fortify:\n";
-
-        vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(source_country);
-
-        if(!neighbours || neighbours->empty()) {
-            msg = *source_country->GetCountryName() + " has no neighbours!\nEnding Fortify phase\n" + *player_name_ + "'s turn end.\n";
-            Notify(this, GamePhase::Fortify, msg, false, true);
-            return;
-        }
-
-        //find all the neighbours of the source country that belong to the current player
-        for(Country* country : *neighbours) {
-            if(DoesPlayerOwnCountry(country->GetCountryID())) {
-                fortify_phase_->GetNeighboursToFortify()->push_back(country);
+            if (count == countries_->size()) {
+                msg = "No countries with enough armies to assign to another country!\nEnding Fortify phase\n" +
+                      *player_name_ + "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
             }
+
+
+            player_strategy_->SelectSourceCountry(this);
+
+            if (!fortify_phase_->GetSourceCountry()) {
+                msg = "Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
+            }
+
+            Country *source_country = fortify_phase_->GetSourceCountry();
+
+
+            cout << "Please select which target country you wish to fortify:\n";
+
+            vector<Country *> *neighbours = game_map_->GetNeighbouringCountries(source_country);
+
+            if (!neighbours || neighbours->empty()) {
+                msg = *source_country->GetCountryName() + " has no neighbours!\nEnding Fortify phase\n" +
+                      *player_name_ + "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
+            }
+
+            //find all the neighbours of the source country that belong to the current player
+            for (Country *country : *neighbours) {
+                if (DoesPlayerOwnCountry(country->GetCountryID())) {
+                    fortify_phase_->GetNeighboursToFortify()->push_back(country);
+                }
+            }
+
+            //only opponents are neighbours, skip phase
+            if (fortify_phase_->GetNeighboursToFortify()->empty()) {
+                msg = *source_country->GetCountryName() +
+                      " has no neighbours to assign armies to!\nEnding Fortify phase\n" + *player_name_ +
+                      "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
+            }
+
+            //player selects country to fortify from list of neighbours
+            cout << "\nHere are the neighbouring countries to " << *source_country->GetCountryName() << endl;
+            cout << endl << setw(25) << left << "Country ID" << setw(25) << "Name" << setw(25) << right
+                 << "Number of Armies" << endl;
+            for (const Country *country : *fortify_phase_->GetNeighboursToFortify()) {
+                cout << setw(25) << left << country->GetCountryID() << setw(25) << *country->GetCountryName()
+                     << setw(25) << right << country->GetNumberOfArmies() << endl;
+                cout << endl;
+            }
+
+
+            player_strategy_->SelectTargetCountry(this);
+
+            if (!fortify_phase_->GetTargetCountry()) {
+                msg = "No target country selected. Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
+            }
+
+            Country *target_country = fortify_phase_->GetTargetCountry();
+
+            msg = "There are " + to_string(source_country->GetNumberOfArmies()) + " armies in " +
+                  *source_country->GetCountryName() + ".\n";
+            msg.append("There are " + to_string(target_country->GetNumberOfArmies()) + " armies in " +
+                       *target_country->GetCountryName() + ".\n");
+            Notify(this, GamePhase::Fortify, msg, false, false);
+
+
+            int num_of_armies;
+
+            player_strategy_->FortifyStrategy(this, num_of_armies);
+
+
+            msg = "Fortifying " + *target_country->GetCountryName() + " with " + to_string(num_of_armies) +
+                  " armies.\n";
+            Notify(this, GamePhase::Fortify, msg, false, false);
+
+            source_country->RemoveArmiesFromCountry(num_of_armies);
+            target_country->SetNumberOfArmies(target_country->GetNumberOfArmies() + num_of_armies);
+
+
+            msg = "\nHere is the result after fortification: \nThere are " +
+                  to_string(source_country->GetNumberOfArmies()) + " armies in " + *source_country->GetCountryName() +
+                  ".\n";
+            msg.append("There are " + to_string(target_country->GetNumberOfArmies()) + " armies in " +
+                       *target_country->GetCountryName() + ".\n");
+            Notify(this, GamePhase::Fortify, msg, false, false);
+
+        } else {
+            //cheater does not select source country, but instead fortifies a country if it has at least 1 enemy neighbour
+            int num_of_armies;
+            if(!player_strategy_->SelectTargetCountry(this)) {
+                msg = "No target country selected. Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
+                Notify(this, GamePhase::Fortify, msg, false, true);
+                return;
+            }
+
+            msg = *player_name_ +  " has chosen to fortify " + *fortify_phase_->GetTargetCountry()->GetCountryName() + " who currently has " + to_string(fortify_phase_->GetTargetCountry()->GetNumberOfArmies()) +
+                  " armies.\n";
+            Notify(this, GamePhase::Fortify, msg, false, false);
+
+            player_strategy_->FortifyStrategy(this, num_of_armies);
+
+            msg = "Doubling number of armies in " + *fortify_phase_->GetTargetCountry()->GetCountryName() + " by Fortifying with " + to_string(num_of_armies) +
+                  " armies.\n";
+
+            // the cheater will double the armies on the target country
+            fortify_phase_->GetTargetCountry()->SetNumberOfArmies(fortify_phase_->GetTargetCountry()->GetNumberOfArmies() + num_of_armies);
+
+            msg.append("There are " + to_string(fortify_phase_->GetTargetCountry()->GetNumberOfArmies()) + " armies in " +
+                       *fortify_phase_->GetTargetCountry()->GetCountryName() + ".\n");
+            Notify(this, GamePhase::Fortify, msg, false, false);
         }
-
-        //only opponents are neighbours, skip phase
-        if(fortify_phase_->GetNeighboursToFortify()->empty()) {
-            msg = *source_country->GetCountryName() + " has no neighbours to assign armies to!\nEnding Fortify phase\n" + *player_name_ + "'s turn end.\n";
-            Notify(this, GamePhase::Fortify, msg, false, true);
-            return;
-        }
-
-        //player selects country to fortify from list of neighbours
-        cout << "\nHere are the neighbouring countries to " << *source_country->GetCountryName() << endl;
-        cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) << right <<  "Number of Armies" << endl;
-        for (const Country *country : *fortify_phase_->GetNeighboursToFortify()) {
-            cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25) << right  << country->GetNumberOfArmies() << endl;
-            cout << endl;
-        }
-
-
-        player_strategy_->SelectTargetCountry(this);
-
-        if(!fortify_phase_->GetTargetCountry()) {
-            msg = "No target country selected. Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";
-            Notify(this, GamePhase::Fortify, msg, false, true);
-            return;
-        }
-
-        Country* target_country = fortify_phase_->GetTargetCountry();
-
-        msg = "There are " + to_string(source_country->GetNumberOfArmies()) + " armies in " + *source_country->GetCountryName() + ".\n";
-        msg.append("There are " + to_string(target_country->GetNumberOfArmies()) + " armies in " + *target_country->GetCountryName() + ".\n");
-        Notify(this, GamePhase::Fortify, msg, false, false);
-
-        int num_of_armies;
-
-        player_strategy_->FortifyStrategy(this, num_of_armies);
-
-
-        msg = "Fortifying " + *target_country->GetCountryName() + " with " + to_string(num_of_armies) + " armies.\n";
-        Notify(this, GamePhase::Fortify, msg, false, false);
-
-        source_country->RemoveArmiesFromCountry(num_of_armies);
-        target_country->SetNumberOfArmies(target_country->GetNumberOfArmies() + num_of_armies);
-
-
-
-        msg = "\nHere is the result after fortification: \nThere are " + to_string(source_country->GetNumberOfArmies()) + " armies in " + *source_country->GetCountryName() + ".\n";
-        msg.append("There are " + to_string(target_country->GetNumberOfArmies()) + " armies in " + *target_country->GetCountryName() + ".\n");
-        Notify(this, GamePhase::Fortify, msg, false, false);
-
     }
 
     msg = "Ending Fortify phase\n" + *player_name_ + "'s turn end.\n";

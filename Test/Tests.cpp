@@ -151,7 +151,7 @@ public:
 
         for(Player* player : *new_game->GetPlayers()) {
             player->Reinforce();
-            player->Attack();
+            //player->Attack();
             player->DisplayCountries();
             player->Fortify();
         }
@@ -350,7 +350,8 @@ int main() {
 //    } while(do_test == "y");
 
 
-    Tester::TestRandomPlayers();
+//    Tester::TestRandomPlayers();
+    Tester::TestCheaterPlayers();
 
     return 0;
 }
