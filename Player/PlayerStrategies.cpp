@@ -956,7 +956,7 @@ void CheaterComputerPlayerStrategy::ReinforceStrategy(Player *player) {
 
     // The cheater gets to double their # of armies in each country
     for(Country* country : *countries) {
-        reinforce_phase->GetReinforceValues()->push_back(country->GetNumberOfArmies() * 2);
+        reinforce_phase->GetReinforceValues()->push_back(country->GetNumberOfArmies());
         reinforce_phase->GetCountriesToReinforce()->push_back(country->GetCountryID());
     }
 }

@@ -23,7 +23,7 @@ public:
         new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 1 ,0, 0, 0);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 1, 0);
 
         Player* human = nullptr;
         Player* bot = nullptr;
@@ -49,7 +49,7 @@ public:
         human->SetPlayerStrategy(strategies1);
         human->Reinforce();
 
-        cout<< "\n\nTesting random player with reinforce...\n";
+        cout<< "\n\nTesting Random player with reinforce...\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         bot->Reinforce();
         cout << "\n\n\nDynamically changing behaviour of " << *bot->GetPlayerName() << " to human player, Will execute Reinforce phase again... \n\n\n";
@@ -67,7 +67,7 @@ public:
         new_game->Register(observer);
 
         //test with 1 human players and an aggressive player
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,1, 0, 0);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 0, 1);
 
         human = nullptr;
         Player* cheater = nullptr;
@@ -87,7 +87,7 @@ public:
         cout<< "\n\nTesting human player with reinforce...\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         human->Reinforce();
-        cout << "\n\n\nDynamically changing behaviour of "  << *human->GetPlayerName() << " to cheater player. cWill execute Reinforce phase again ...\n\n\n";
+        cout << "\n\n\nDynamically changing behaviour of "  << *human->GetPlayerName() << " to Cheater player. Will execute Reinforce phase again ...\n\n\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         strategies1 = new CheaterComputerPlayerStrategy;
         human->SetPlayerStrategy(strategies1);
@@ -97,9 +97,9 @@ public:
         cout<< "\n\nTesting Cheater player with reinforce...\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         bot->Reinforce();
-        cout << "\n\n\nDynamically changing behaviour of " << *bot->GetPlayerName() << " to aggressive player. Will execute Reinforce phase again ...\n\n\n";
+        cout << "\n\n\nDynamically changing behaviour of " << *bot->GetPlayerName() << " to benevolant player. Will execute Reinforce phase again ...\n\n\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        strategies2 = new AggressiveComputerPlayerStrategy;
+        strategies2 = new BenevolantComputerPlayerStrategy;
         bot->SetPlayerStrategy(strategies2);
         bot->Reinforce();
 
@@ -125,7 +125,7 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,2, 1, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,1, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
         for(Player* player : *new_game->GetPlayers()) {
