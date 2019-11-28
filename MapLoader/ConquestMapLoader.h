@@ -6,6 +6,7 @@
 #define TEAMPROJECT_COMP345_CONQUESTMAPLOADER_H
 
 #include "../Map/Map.h"
+#include "../Utility/Utility.h"
 
 #include <string>
 #include <iostream>

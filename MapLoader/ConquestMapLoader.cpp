@@ -9,7 +9,7 @@
 ConquestMapLoader::ConquestMapLoader(string file_name) {
 
     cout << "Creating ConquestMapLoader object for file: " << file_name << endl;
-    string map_name = Map::StripString(file_name, "/", ".");
+    string map_name = Utility::StripString(file_name, "/", ".");
     file_name_ = file_name;
     parsed_map_ = new Map(map_name);
 }
@@ -74,7 +74,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                         string continent_data = line;
                         string delim = "=";
                         //parse the name of the continent
-                        string continent_name = Map::StripString(continent_data, "", delim);
+                        string continent_name = Utility::StripString(continent_data, "", delim);
                         continent_data.erase(0, continent_name.length() + delim.length());
 
                         if (continent_data.length() == 0) {
@@ -136,7 +136,7 @@ bool ConquestMapLoader::ParseConquestMap() {
 
                         int country_num = current_index;
 
-                        string country_name = Map::StripString(country_data, "", delim);
+                        string country_name = Utility::StripString(country_data, "", delim);
                         country_data.erase(0, country_name.length() + delim.length());
 
                         if (country_data.length() == 0) {
@@ -146,7 +146,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                         }
 
 
-                        string x_coordinate_str = Map::StripString(country_data, "", delim);
+                        string x_coordinate_str = Utility::StripString(country_data, "", delim);
                         int x_coordinate;
 
                         try {
@@ -165,7 +165,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                             return false;
                         }
 
-                        string y_coordinate_str = Map::StripString(country_data, "", delim);
+                        string y_coordinate_str = Utility::StripString(country_data, "", delim);
                         int y_coordinate;
 
                         try {
@@ -177,7 +177,7 @@ bool ConquestMapLoader::ParseConquestMap() {
                         }
                         country_data.erase(0, y_coordinate_str.length() + delim.length());
 
-                        string continent_name = Map::StripString(country_data, "", delim);
+                        string continent_name = Utility::StripString(country_data, "", delim);
                         country_data.erase(0, continent_name.length() + delim.length());
 
                         Continent* continent = parsed_map_->GetContinentByName(continent_name);

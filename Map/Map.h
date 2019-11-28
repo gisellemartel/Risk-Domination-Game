@@ -73,8 +73,6 @@ public:
     vector<Country*>* GetNeighbouringCountriesWithArmies(Country* country) const;
     vector<Country*>* GetNeighbouringCountries(Country* country) const;
 
-    static string StripString(string string_to_strip, const string &left_delim, const string &right_delim);
-
     static bool IsContinentDuplicate(Continent* continent_a, Continent* continent_b);
     static bool IsCountryDuplicate(Country* country_a, Country* country_b);
 };

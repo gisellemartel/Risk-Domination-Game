@@ -14,7 +14,7 @@ MapLoader::MapLoader() {
 
 MapLoader::MapLoader(string file_name) {
     cout << "Creating MapLoader object for file: " << file_name << endl;
-    string map_name = Map::StripString(file_name, "/", ".");
+    string map_name = Utility::StripString(file_name, "/", ".");
     file_name_ = file_name;
     parsed_map_ = new Map(map_name);
 }
@@ -75,7 +75,7 @@ bool MapLoader::ParseMap() {
                         string continent_data = line;
                         string delim = " ";
                         //parse the name of the continent
-                        string continent_name = Map::StripString(continent_data, "", delim);
+                        string continent_name = Utility::StripString(continent_data, "", delim);
                         continent_data.erase(0, continent_name.length() + delim.length());
 
                         if (continent_data.length() == 0) {
@@ -85,7 +85,7 @@ bool MapLoader::ParseMap() {
                         }
 
                         //parse the army value of the continent
-                        string army_value_str = Map::StripString(continent_data, "", delim);
+                        string army_value_str = Utility::StripString(continent_data, "", delim);
                         int army_value;
 
                         try {
@@ -124,7 +124,7 @@ bool MapLoader::ParseMap() {
                         string country_data = line;
                         string delim = " ";
                         //parse the name of the continent
-                        string country_num_str = Map::StripString(country_data, "", delim);
+                        string country_num_str = Utility::StripString(country_data, "", delim);
                         int country_num;
 
                         try {
@@ -149,7 +149,7 @@ bool MapLoader::ParseMap() {
                             return false;
                         }
 
-                        string continent_name = Map::StripString(country_data, "", delim);
+                        string continent_name = Utility::StripString(country_data, "", delim);
                         country_data.erase(0, continent_name.length() + delim.length());
 
                         if (country_data.length() == 0) {
@@ -158,7 +158,7 @@ bool MapLoader::ParseMap() {
                             return false;
                         }
 
-                        string continent_index_str = Map::StripString(country_data, "", delim);
+                        string continent_index_str = Utility::StripString(country_data, "", delim);
                         int continent_index;
 
                         try {
@@ -176,7 +176,7 @@ bool MapLoader::ParseMap() {
                             return false;
                         }
 
-                        string x_coordinate_str = Map::StripString(country_data, "", delim);
+                        string x_coordinate_str = Utility::StripString(country_data, "", delim);
                         int x_coordinate;
 
                         try {
@@ -195,7 +195,7 @@ bool MapLoader::ParseMap() {
                             return false;
                         }
 
-                        string y_coordinate_str = Map::StripString(country_data, "", delim);
+                        string y_coordinate_str = Utility::StripString(country_data, "", delim);
                         int y_coordinate;
 
                         try {
@@ -243,7 +243,7 @@ bool MapLoader::ParseMap() {
 
                         while (border_data.length() > 0 && border_data[0] != '\r') {
                             string delim = " ";
-                            string border_str = Map::StripString(border_data, "", delim);
+                            string border_str = Utility::StripString(border_data, "", delim);
                             border_data.erase(0, border_str.length() + delim.length());
 
                             int border;

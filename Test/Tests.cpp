@@ -125,7 +125,7 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,2, 1, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 0, 1 ,2, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
         for(Player* player : *new_game->GetPlayers()) {
@@ -134,11 +134,11 @@ public:
         }
 
         for(Player* player : *new_game->GetPlayers()) {
-            player->DisplayCountries();
+          //  player->DisplayCountries();
             player->Reinforce();
-            player->DisplayCountries();
+           // player->DisplayCountries();
             player->Attack();
-            player->DisplayCountries();
+            //player->DisplayCountries();
             player->Fortify();
         }
 

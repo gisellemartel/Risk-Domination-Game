@@ -31,3 +31,33 @@ void Utility::ClearScreen() {
     cout << string(100, '\n');
 }
 
+string Utility::StripString(string string_to_strip, const string &left_delim, const string &right_delim) {
+    if (
+            (left_delim.length() == 0 && right_delim.length() == 0)
+            || (string_to_strip.length() < 2)
+            || (!string_to_strip.find(left_delim) && !string_to_strip.find(right_delim))
+            ) {
+        return string_to_strip;
+    }
+
+    if (left_delim.length() == 0) {
+        return string_to_strip.substr(0, string_to_strip.find(right_delim));
+    }
+
+    if (right_delim.length() == 0) {
+        return string_to_strip.substr(string_to_strip.find(left_delim) + 1, string_to_strip.length() - 1);
+    }
+
+    if (string_to_strip.length() > 2) {
+        int left_index = string_to_strip.find(left_delim);
+        if (left_index > -1 && left_index < string_to_strip.length()) {
+            string_to_strip = string_to_strip.substr(left_index);
+        }
+
+        int right_index = string_to_strip.find(right_delim) - 1;
+        if (right_index > -1 && right_index < string_to_strip.length() - 1) {
+            return string_to_strip.substr(1, right_index);
+        }
+    }
+    return string_to_strip;
+}

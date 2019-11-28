@@ -37,16 +37,13 @@ Map::Map(const Map &map) {
         (*countries_)[i] = (*map.countries_)[i];
     }
 
-    *adjacency_matrix_ = *map.adjacency_matrix_;
+    adjacency_matrix_ = map.adjacency_matrix_;
     for(size_t i = 0; i < map.num_countries_; ++i) {
-        (*adjacency_matrix_)[i] = (*map.adjacency_matrix_)[i];
+        adjacency_matrix_[i] = map.adjacency_matrix_[i];
 
         for(size_t j = 0; j < map.num_countries_; ++j) {
             adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
         }
-
-        map.adjacency_matrix_[i] = nullptr;
-        delete[] map.adjacency_matrix_[i];
     }
 
     delete[] map.continents_;
@@ -76,7 +73,7 @@ Map::~Map() {
     delete[] continents_;
 }
 
-//TODO: deep copy & delete old values
+
 Map& Map::operator=(const Map &map)
 {
     *map_name_ = *map.map_name_;
@@ -96,16 +93,13 @@ Map& Map::operator=(const Map &map)
         (*countries_)[i] = (*map.countries_)[i];
     }
 
-    *adjacency_matrix_ = *map.adjacency_matrix_;
+    adjacency_matrix_ = map.adjacency_matrix_;
     for(size_t i = 0; i < map.num_countries_; ++i) {
-        (*adjacency_matrix_)[i] = (*map.adjacency_matrix_)[i];
+        adjacency_matrix_[i] = map.adjacency_matrix_[i];
 
         for(size_t j = 0; j < map.num_countries_; ++j) {
             adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
         }
-
-        map.adjacency_matrix_[i] = nullptr;
-        delete[] map.adjacency_matrix_[i];
     }
 
     delete[] map.continents_;
@@ -133,13 +127,14 @@ Country* Map::GetCountryById(int id) const {
         return nullptr;
     }
 
-    for(int i = 0; i < countries_->size(); ++i) {
-        if((*countries_)[i]->GetCountryID() == id)  {
-            return (*countries_)[i];
+    for(Country* country : *countries_) {
+        if(country->GetCountryID() == id)  {
+            return country;
         }
     }
     return nullptr;
 }
+
 Country* Map::GetCountryByName(string name) const{
 
     if(name.length()==0) {
@@ -147,24 +142,22 @@ Country* Map::GetCountryByName(string name) const{
         return nullptr;
     }
 
-    for(int i = 0; i < countries_->size(); ++i) {
-        if(*(*countries_)[i]->GetCountryName()==name)  {
-            return (*countries_)[i];
+    for(Country* country : *countries_) {
+        if(*country->GetCountryName()==name)  {
+            return country;
         }
     }
     return nullptr;
 }
-
-
 
 Continent* Map::GetContinentById(int id) const {
     if(id < 1 || id > continents_->size() + 1) {
         cout << "Invalid Id given. Continents start from 1" << endl;
         return nullptr;
     }
-    for(int i = 0; i < continents_->size(); ++i) {
-        if((*continents_)[i]->GetContinentID() == id)  {
-            return (*continents_)[i];
+    for(Continent* continent : *continents_) {
+        if(continent->GetContinentID() == id)  {
+            return continent;
         }
     }
     return nullptr;
@@ -175,9 +168,9 @@ Continent* Map::GetContinentByName(string name) const {
         cout << "Invalid Name given. " << endl;
         return nullptr;
     }
-    for(int i = 0; i < continents_->size(); ++i) {
-        if(*((*continents_)[i]->GetContinentName()) == name)  {
-            return (*continents_)[i];
+    for(Continent* continent : *continents_) {
+        if(*(continent->GetContinentName()) == name)  {
+            return continent;
         }
     }
     return nullptr;
@@ -189,37 +182,6 @@ vector<Country*>* Map::GetCountries() const {
 
 vector<Continent*>* Map::GetContinents() const {
     return continents_;
-}
-
-string Map::StripString(string string_to_strip, const string &left_delim, const string &right_delim) {
-    if (
-            (left_delim.length() == 0 && right_delim.length() == 0)
-            || (string_to_strip.length() < 2)
-            || (!string_to_strip.find(left_delim) && !string_to_strip.find(right_delim))
-            ) {
-        return string_to_strip;
-    }
-
-    if (left_delim.length() == 0) {
-        return string_to_strip.substr(0, string_to_strip.find(right_delim));
-    }
-
-    if (right_delim.length() == 0) {
-        return string_to_strip.substr(string_to_strip.find(left_delim) + 1, string_to_strip.length() - 1);
-    }
-
-    if (string_to_strip.length() > 2) {
-        int left_index = string_to_strip.find(left_delim);
-        if (left_index > -1 && left_index < string_to_strip.length()) {
-            string_to_strip = string_to_strip.substr(left_index);
-        }
-
-        int right_index = string_to_strip.find(right_delim) - 1;
-        if (right_index > -1 && right_index < string_to_strip.length() - 1) {
-            return string_to_strip.substr(1, right_index);
-        }
-    }
-    return string_to_strip;
 }
 
 void Map::SetTwoCountriesAsNeighbours(bool value, int country_index, int border_index) {

@@ -7,6 +7,7 @@
 #ifndef MAP_LOADER_H
 #define MAP_LOADER_H
 
+#include "../Utility/Utility.h"
 #include "../Map/Map.h"
 
 #include <vector>
@@ -25,7 +26,7 @@ private:
 
 public:
     MapLoader();
-    MapLoader(string file_name);
+    explicit MapLoader(string file_name);
     MapLoader(const MapLoader& map);
     virtual ~MapLoader();
 

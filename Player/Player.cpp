@@ -384,9 +384,21 @@ void Player::AttackerConquersDefeatedCountry() {
 
     msg = "";
 
+    //TODO: fix bug that occurs here
+    cout << "ATTACKER" << endl;
+    DisplayCountries();
+    cout << "DEFENDER" << endl;
+    defender->DisplayCountries();
+
     //defender has lost. Its country will now be transferred to the attacker
     AddCountryToCollection(defending_country);
     defender->RemoveCountryFromCollection(defending_country);
+
+    cout << "ATTACKER" << endl;
+    DisplayCountries();
+    cout << "DEFENDER" << endl;
+    defender->DisplayCountries();
+    //
 
     player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
