@@ -990,16 +990,17 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
         }
 
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-        bool has_enemy = false;
+        bool belongs_to_player = false;
         //make sure current country has at least one neighbour opponent to attack
         for(int i = 0; i < neighbours->size(); ++i) {
             if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()) {
-                has_enemy = true;
+                belongs_to_player = true;
+                break;
             }
         }
 
         //as long as the current country has opposing countries with armies
-        if(has_enemy) {
+        if(belongs_to_player) {
             list_of_attackers.push_back(country);
         }
     }

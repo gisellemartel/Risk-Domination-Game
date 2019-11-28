@@ -167,8 +167,7 @@ bool Player::operator==(const Player& player) {
     is_equal &= *player_name_ == *player.player_name_
             && is_human_ == player.is_human_
             && is_random_ == player.is_random_
-            && is_cheater_ == player.is_cheater_
-            && *countries_ == *player.countries_;
+            && is_cheater_ == player.is_cheater_;
 
     return is_equal;
 }
@@ -378,13 +377,16 @@ void Player::AttackerConquersDefeatedCountry() {
 
     msg = "";
 
+    defender->RemoveCountryFromCollection(defending_country);
     //defender has lost. Its country will now be transferred to the attacker
     AddCountryToCollection(defending_country);
-    defender->RemoveCountryFromCollection(defending_country);
+
 
     player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
+    defending_country->SetCountryOwner(this);
     attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
+
 
     //GameStatisticObserver: notify that a player has lost a country
     if(!defender->GetPlayersCountries()->empty()) {
@@ -396,8 +398,11 @@ void Player::AttackerConquersDefeatedCountry() {
     if(!game_deck_) {
         return;
     }
-    risk_cards_->AddCardToHand(game_deck_->Draw());
 
+    Cards* card = game_deck_->Draw();
+    if(card) {
+        risk_cards_->AddCardToHand(card);
+    }
     //check to see if player has no more countries
     if(defender->GetPlayersCountries()->empty()) {
         RemoveDefeatedPlayerFromGame(defending_country, defender);
@@ -512,6 +517,10 @@ void Player::Attack() {
             msg = "Failed to Select valid country to attack from!\n";
             Notify(this, GamePhase::Attack, msg, false, false);
             break;
+        }
+
+        if(!(*attack_phase_->GetAttackingCountry()->GetCountryOwner() == *this)) {
+            continue;
         }
 
         msg =  *player_name_ + " has selected " + *attack_phase_->GetAttackingCountry()->GetCountryName() + " to attack with\n";
@@ -642,26 +651,24 @@ void Player::Attack() {
 
             Notify(this, GamePhase::Attack, msg, false, false);
         } else {
+            DisplayCountries();
             break;
         }
 
         Notify(this, GamePhase::Attack, *player_name_ + " is attacking again\n", false, true);
     }
 
+    // Draw cards from deck after turn
     for(int i = 0; i < countries_conquered; ++i) {
-
         Deck* game_deck_ = game_engine_->GetCardsDeck();
-
         if(!game_deck_) {
             return;
         }
-
         risk_cards_->AddCardToHand(game_deck_->Draw());
     }
 
-    msg =  *player_name_ + "'s Attack phase is over, going to next phase";
-
     //PhaseObserver
+    msg =  *player_name_ + "'s Attack phase is over, going to next phase";
     Notify(this, GamePhase::Attack, msg, false, true);
 }
 

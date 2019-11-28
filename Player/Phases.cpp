@@ -124,9 +124,13 @@ int ReinforcePhase::PerContinentReinforceArmy(){
 int ReinforcePhase::CardSwapReinforceArmy(){
     int army_from_cards = 0;
 
-//    while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5) {
-//        army_from_cards += turn_player_->GetPlayersCards()->Exchange();
-//    }
+    while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5) {
+        if(turn_player_->IsHuman()) {
+            army_from_cards += turn_player_->GetPlayersCards()->Exchange();
+        } else {
+            army_from_cards += turn_player_->GetPlayersCards()->AutoExchange();
+        }
+    }
 
     return army_from_cards;
 }

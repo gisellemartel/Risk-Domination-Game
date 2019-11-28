@@ -540,8 +540,9 @@ void GameEngine::StartGameLoop() {
         if(!current_player->GetPlayersCountries()->empty()){
 
             current_player->Reinforce();
-            current_player->Attack();
+            cout << *current_player->GetPlayerName() << endl;
             current_player->DisplayCountries();
+            current_player->Attack();
             if(num_of_players_ < 2) {
                 break;
             }

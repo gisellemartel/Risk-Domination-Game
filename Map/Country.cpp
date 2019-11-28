@@ -74,10 +74,9 @@ Country& Country::operator=(const Country &country) {
 }
 
 bool Country::operator==(const Country &country) {
-    return country.country_ID_ == continent_ID_
-        && *country.continent_ == *continent_
-        && *country.country_owner_ == *country_owner_
-        && *country.country_name_ == *country_name_;
+    return country.country_ID_ == country_ID_
+        && *country.country_name_ == *country_name_
+        && *country.country_owner_ == *country_owner_;
 }
 
 //Setters --------------------------------------------------

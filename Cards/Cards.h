@@ -8,6 +8,7 @@
 #define CARDS_H
 
 #include "../Map/Map.h"
+#include "../Utility/Utility.h"
 
 #include <iostream>
 #include <vector>
@@ -76,6 +77,7 @@ public:
 
     // Methods---------------------------------------------
     int Exchange();
+    int AutoExchange();
     size_t InputCard();
     bool ValidateInput(size_t card_index);
     void AddCardToHand(Cards* card_);

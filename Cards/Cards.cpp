@@ -185,8 +185,6 @@ void Hand::AddCardToHand(Cards* card_) {
 // 2-(Inputs for choices of cards in hand are valid and unique)
 // 3-(Cards are 3 same type or 3 different type)
 int Hand::Exchange() {
-//    static int exchanges_done = 0;
-
     //condition #1
     if(cards_in_hand_->size() < 3) {
         cout << "Not enough cards to exchange" << endl;
@@ -207,6 +205,7 @@ int Hand::Exchange() {
 
         //condition #2
         while (!valid_input) {
+            DisplayHand();
             cout << "Pick 3 valid cards to exchange" << endl << endl;
 
             card_1 = InputCard();
@@ -242,6 +241,46 @@ int Hand::Exchange() {
                 valid_input = false; //restart condition #2
             }
         }
+    }
+
+    return 0;
+}
+
+int Hand::AutoExchange() {
+    //condition #1
+    if(!cards_in_hand_ || cards_in_hand_->size() < 3) {
+        cout << "Not enough cards to exchange" << endl;
+        return 0;
+    }
+
+    size_t card_1 = 0, card_2 = 0, card_3 = 0;
+    bool valid_input = false;
+
+
+    while (!valid_input) {
+        DisplayHand();
+        cout << "Pick 3 valid cards to exchange" << endl << endl;
+
+        card_1 = Utility::GenerateRandomNumInRange(0, (int)cards_in_hand_->size() - 1);
+        card_2 = Utility::GenerateRandomNumInRange(0, (int)cards_in_hand_->size() - 1);
+        card_3 = Utility::GenerateRandomNumInRange(0, (int)cards_in_hand_->size() - 1);
+
+        if (card_1 == card_2 || card_1 == card_3 || card_2 == card_3) {
+            cout << "Invalid inputs. Pick 3 unique cards" << endl << endl;
+            continue;
+        }
+        else {
+            valid_input = true;
+        }
+    }
+
+    if(AreThreeSame(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))|| AreThreeDifferent(cards_in_hand_->at(card_1), cards_in_hand_->at(card_2), cards_in_hand_->at(card_3))) {
+        cout << "Exchanging Cards" << endl;
+        cards_in_hand_->erase(cards_in_hand_->begin() + Max(card_1, card_2, card_3));
+        cards_in_hand_->erase(cards_in_hand_->begin() + Mid(card_1, card_2, card_3));
+        cards_in_hand_->erase(cards_in_hand_->begin() + Min(card_1, card_2, card_3));
+
+        return AcquireArmy(exchanges_done++);
     }
 
     return 0;
