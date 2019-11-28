@@ -327,12 +327,11 @@ bool Map::AreCountriesNeighbors(Country* country_a, Country* country_b) const {
 
 //static functions
 bool Map::IsContinentDuplicate(Continent* continent_a, Continent* continent_b){
-    return(continent_a->GetContinentID() == continent_b->GetContinentID() || continent_a->GetContinentName() == continent_b->GetContinentName());
+    return(continent_a->GetContinentID() == continent_b->GetContinentID());
 }
 
 bool Map::IsCountryDuplicate(Country* country_a, Country* country_b){
-    return (country_a->GetCountryID() == country_b->GetCountryID()
-    || country_a->GetCountryName() == country_b->GetCountryName());
+    return (country_a->GetCountryID() == country_b->GetCountryID());
 }
 
 vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) const {
@@ -357,7 +356,7 @@ vector<Country*>* Map::GetNeighbouringCountriesWithArmies(Country* country) cons
                         }
                         Country* neighbouring_country = GetCountryById(id_of_neighbour);
 
-                        if(neighbouring_country->GetCountryOwner() == country->GetCountryOwner()) {
+                        if(*neighbouring_country == *country) {
                             continue;
                         }
 
@@ -396,7 +395,7 @@ vector<Country*>* Map::GetNeighbouringCountries(Country* country) const {
                         }
                         Country* neighbouring_country = GetCountryById(id_of_neighbour);
 
-                        if(neighbouring_country->GetCountryOwner() == country->GetCountryOwner()) {
+                        if(*neighbouring_country == *country) {
                             continue;
                         }
 

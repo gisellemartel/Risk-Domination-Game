@@ -207,12 +207,5 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
             << "%"
             << endl << endl;
         }
-        //Display winning message if a player owns the same amount of countries the map has
-        if(player_countries->size() == map_countries->size()) {
-            cout << "Congratulations "
-                 << *player->GetPlayerName()
-                 << " has won the game!"
-                 << endl;
-        }
     }
 }

@@ -125,7 +125,7 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 0, 1 ,2, 1, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,2, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
         for(Player* player : *new_game->GetPlayers()) {
@@ -134,11 +134,11 @@ public:
         }
 
         for(Player* player : *new_game->GetPlayers()) {
-          //  player->DisplayCountries();
+            player->DisplayCountries();
             player->Reinforce();
-           // player->DisplayCountries();
+            player->DisplayCountries();
             player->Attack();
-            //player->DisplayCountries();
+            player->DisplayCountries();
             player->Fortify();
         }
 
@@ -159,16 +159,9 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 1, 2, 2, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 0, 0, 0, 1, 1);
 
-        for(int i = 0; i < 1000; ++i) {
-            for(Player* player : *new_game->GetPlayers()) {
-                player->Reinforce();
-                player->Attack();
-                player->Fortify();
-            }
-
-        }
+        new_game->StartGameLoop();
 
         //Should pass message to notify: "as soon as a player owns all the countries, the game statistics view updates itself and displays a celebratory message"
         new_game->Notify("Game Test Over");
@@ -253,58 +246,56 @@ public:
 
 int main() {
 
-//    string do_test = "";
-//    do {
-//        Utility::ClearScreen();
-//        int user_response;
-//        cout << endl;
-//        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
-//        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
-//        cout << "Test Different Strategies w/ Phase Observer |  2\n";
-//        cout << "Test Game Statistic Observer                |  3\n";
-//        cout << "Test Conquest Map Loader                    |  4\n\n";
-//
-//
-//        cout << "Please Select what you would like to test (enter the corresponding number):\n";
-//
-//        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
-//            cin.clear();
-//            cin.ignore(132, '\n');
-//            cout << "Invalid selection. Please try again: ";
-//        }
-//
-//        switch (user_response) {
-//            case 0 :
-//                Tester::TestGameTournament();
-//                break;
-//            case 1 :
-//                Tester::TestDynamicBehaviours();
-//                break;
-//            case 2:
-//                Tester::TestPlayerStrategiesWithPhaseObserver();
-//                break;
-//            case 3:
-//                Tester::TestGameStatisticsObserver();
-//                break;
-//            case 4:
-//                Tester::TestMapFiles();
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        cout << "\nWould you like to conduct another test? enter 'y' (enter any other key to quit): ";
-//
-//
-//        while(!(cin >> do_test)) {
-//            cin.clear();
-//            cin.ignore(132, '\n');
-//            cout << "Invalid input give. Please try again: ";
-//        }
-//
-//    } while(do_test == "y");
+    string do_test = "";
+    do {
+        Utility::ClearScreen();
+        int user_response;
+        cout << endl;
+        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
+        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
+        cout << "Test Different Strategies w/ Phase Observer |  2\n";
+        cout << "Test Game Statistic Observer                |  3\n";
+        cout << "Test Conquest Map Loader                    |  4\n\n";
 
-    Tester::TestPlayerStrategiesWithPhaseObserver();
+
+        cout << "Please Select what you would like to test (enter the corresponding number):\n";
+
+        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
+            cin.clear();
+            cin.ignore(132, '\n');
+            cout << "Invalid selection. Please try again: ";
+        }
+
+        switch (user_response) {
+            case 0 :
+                Tester::TestGameTournament();
+                break;
+            case 1 :
+                Tester::TestDynamicBehaviours();
+                break;
+            case 2:
+                Tester::TestPlayerStrategiesWithPhaseObserver();
+                break;
+            case 3:
+                Tester::TestGameStatisticsObserver();
+                break;
+            case 4:
+                Tester::TestMapFiles();
+                break;
+            default:
+                break;
+        }
+
+        cout << "\nWould you like to conduct another test? enter 'y' (enter any other key to quit): ";
+
+
+        while(!(cin >> do_test)) {
+            cin.clear();
+            cin.ignore(132, '\n');
+            cout << "Invalid input give. Please try again: ";
+        }
+
+    } while(do_test == "y");
 
     return 0;
 }

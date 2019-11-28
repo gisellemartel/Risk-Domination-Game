@@ -30,6 +30,7 @@ public:
 
     //operator overloader
     Continent& operator=(const Continent &continent);
+    bool operator==(const Continent& continent);
 
     //Setters --------------------------------------------------
     void SetContinentName(string* in_continent_name);

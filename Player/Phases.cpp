@@ -124,16 +124,11 @@ int ReinforcePhase::PerContinentReinforceArmy(){
 int ReinforcePhase::CardSwapReinforceArmy(){
     int army_from_cards = 0;
 
-    while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5) {
-        army_from_cards += turn_player_->GetPlayersCards()->Exchange();
-    }
+//    while(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() >= 5) {
+//        army_from_cards += turn_player_->GetPlayersCards()->Exchange();
+//    }
 
-    if(turn_player_->GetPlayersCards()->GetNumberOfCardsInHand() < 3) {
-        return army_from_cards;
-    } else {
-        army_from_cards += turn_player_->GetPlayersCards()->Exchange();
-        return army_from_cards;
-    }
+    return army_from_cards;
 }
 
 vector<int>* ReinforcePhase::GetCountriesToReinforce() const {
@@ -288,7 +283,7 @@ void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) 
 
     int idx_to_remove = -1;
     for(int i = 0; i < opponent_neighbours_->size(); ++i) {
-        if ((*opponent_neighbours_)[i] == defeated_country) {
+        if (*(*opponent_neighbours_)[i] == *defeated_country) {
             idx_to_remove = i;
             break;
         }
@@ -311,20 +306,22 @@ void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
         defending_country_ = nullptr;
     }
 
-    for(int i = 0; i < opponent_neighbours_->size(); ++i) {
-        if(attacker_->DoesPlayerOwnCountry((*opponent_neighbours_)[i]->GetCountryID())) {
-            opponent_neighbours_->erase(opponent_neighbours_->begin() + i);
+    bool has_enemy = false;
+    for(Country* opponent_neighbour : *opponent_neighbours_) {
+        if(!attacker_->DoesPlayerOwnCountry(opponent_neighbour->GetCountryID())) {
+            has_enemy = true;
         }
     }
 
-    if(opponent_neighbours_->empty()) {
+    if(!has_enemy) {
         cout << "No opposing neighbours found!\n";
+        opponent_neighbours_ = nullptr;
     }
 }
 
 bool AttackPhase::DoesOpposingCountryExist() {
     //check here to see if there is not a single country that can attack
-    bool country_that_can_be_attacked_exists = false;
+    bool has_enemy = false;
     for(Country* country : *attacker_->GetPlayersCountries()) {
         //Get all the neighbouring countries
         vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(country);
@@ -332,19 +329,14 @@ bool AttackPhase::DoesOpposingCountryExist() {
         if(!neighbouring_countries->empty()) {
             //if there is a neighbour that has an army, then verify the country belongs to an opponent
             for(int i = 0; i < neighbouring_countries->size(); ++i) {
-                if(attacker_->DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
-                    neighbouring_countries->erase(neighbouring_countries->begin() + i);
+                if(!attacker_->DoesPlayerOwnCountry((*neighbouring_countries)[i]->GetCountryID())) {
+                    has_enemy = true;
                 }
             }
         }
-
-        //if there is a country remaining in the vector, it means there exists at least one the attacker can attack
-        if(!neighbouring_countries->empty()) {
-            country_that_can_be_attacked_exists = true;
-        }
     }
 
-    if(!country_that_can_be_attacked_exists) {
+    if(!has_enemy) {
         cout << "No opposing neighbour exists that you can attack right now\n";
         return false;
     } else {

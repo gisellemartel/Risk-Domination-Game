@@ -163,25 +163,19 @@ Player& Player::operator=(const Player &player) {
 }
 
 bool Player::operator==(const Player& player) {
-    return player_name_ == player.player_name_
-            && is_player_turn_ == player.is_player_turn_
-            && countries_ == player.countries_
-            && risk_cards_ == player.risk_cards_
-            && dice_roll_ == player.dice_roll_
-            && game_map_ == player.game_map_
-            && player_strategy_ == player.player_strategy_
-            && reinforce_phase_ == player.reinforce_phase_
-            && attack_phase_ == player.attack_phase_
-            && fortify_phase_ == player.fortify_phase_
-            && game_engine_ == player.game_engine_
+    bool is_equal = true;
+    is_equal &= *player_name_ == *player.player_name_
             && is_human_ == player.is_human_
             && is_random_ == player.is_random_
-            && is_cheater_ == player.is_cheater_;
+            && is_cheater_ == player.is_cheater_
+            && *countries_ == *player.countries_;
+
+    return is_equal;
 }
 
 int Player::Find(Country* country) const {
     for(int i = 0; i < countries_->size(); ++i) {
-        if((*countries_)[i] == country) {
+        if(*(*countries_)[i] == *country) {
             return i;
         }
     }
@@ -384,21 +378,9 @@ void Player::AttackerConquersDefeatedCountry() {
 
     msg = "";
 
-    //TODO: fix bug that occurs here
-    cout << "ATTACKER" << endl;
-    DisplayCountries();
-    cout << "DEFENDER" << endl;
-    defender->DisplayCountries();
-
     //defender has lost. Its country will now be transferred to the attacker
     AddCountryToCollection(defending_country);
     defender->RemoveCountryFromCollection(defending_country);
-
-    cout << "ATTACKER" << endl;
-    DisplayCountries();
-    cout << "DEFENDER" << endl;
-    defender->DisplayCountries();
-    //
 
     player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
@@ -418,18 +400,16 @@ void Player::AttackerConquersDefeatedCountry() {
 
     //check to see if player has no more countries
     if(defender->GetPlayersCountries()->empty()) {
-        RemoveDefeatedPlayerFromGame();
+        RemoveDefeatedPlayerFromGame(defending_country, defender);
     }
 }
 
-void Player::RemoveDefeatedPlayerFromGame() {
-    Country* defeated_country = attack_phase_->GetDefendingCountry();
-    Player* defeated_player = defeated_country->GetCountryOwner();
-    string defeated_name = *defeated_player->GetPlayerName();
+void Player::RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* defender) {
+    string defeated_name = *defender->GetPlayerName();
     string msg;
     //Player has been defeated they have no more armies
     msg = *player_name_+" has conquered " + defeated_name + "'s country " + *defeated_country->GetCountryName() + ". " + defeated_name + " has been eliminated from the game!";
-    game_engine_->RemovePlayer(defeated_player);
+    game_engine_->RemovePlayer(defender);
 
     //GameStatisticObserver: notify that a player has been defeated
     Notify(msg);
@@ -500,7 +480,6 @@ void Player::Attack() {
     attack_phase_ = new AttackPhase(this);
 
     int countries_conquered = 0;
-    bool has_had_first_turn = false;
 
     string msg =  "Beginning Attack phase for " + *player_name_ + "\n";
 
@@ -509,7 +488,7 @@ void Player::Attack() {
 
     player_strategy_->SetNumberOfTimesToAttack(this);
 
-    while (player_strategy_->PromptPlayerToAttack(this)) {
+    while (player_strategy_->PromptPlayerToAttack(this) && countries_->size() < game_map_->GetNumCountries()) {
         attack_phase_->SetDefendingCountry(nullptr);
         attack_phase_->SetAttackingCountry(nullptr);
         attack_phase_->SetDefender(nullptr);
@@ -543,12 +522,12 @@ void Player::Attack() {
         attack_phase_->FindOpponentNeighboursToAttackingCountry();
 
         // if there are no opponent neighbours, the attacker cannot execute an attack
-        bool can_attack = !attack_phase_->GetOpponentNeighbours()->empty();
+        bool can_attack = attack_phase_->GetOpponentNeighbours() && !attack_phase_->GetOpponentNeighbours()->empty();
 
         if(can_attack) {
             //prompt player to select a defending country
             can_attack &= player_strategy_->SelectCountryToAttack(this);
-            can_attack &= attack_phase_->GetDefendingCountry() != nullptr;
+            can_attack &= !(*attack_phase_->GetDefendingCountry()->GetCountryOwner() == *this);
 
             if(!can_attack){
                 msg = *player_name_ + " something went wrong when selecting a defending country. Cannot Attack!\n";
@@ -567,6 +546,7 @@ void Player::Attack() {
             // if the defending country has no armies or if the current player is in cheat mode, they are defeated automatically
             if(defending_country->GetNumberOfArmies() == 0 || is_cheater_) {
                 //function will return true when player is removed from game
+                ++countries_conquered;
                  AttackerConquersDefeatedCountry();
             } else { //otherwise the players will roll their dice and the attack will occur
                 int attacker_num_dice = 0;
@@ -644,6 +624,7 @@ void Player::Attack() {
 
                         if(defending_country->GetNumberOfArmies() == 0) {
                             //function will return true when player is removed from game
+                            ++countries_conquered;
                             AttackerConquersDefeatedCountry();
                             break;
                         }
@@ -660,6 +641,8 @@ void Player::Attack() {
             msg.append(defending_country->GetDisplayInfo());
 
             Notify(this, GamePhase::Attack, msg, false, false);
+        } else {
+            break;
         }
 
         Notify(this, GamePhase::Attack, *player_name_ + " is attacking again\n", false, true);
@@ -738,7 +721,7 @@ void Player::Fortify() {
 
             //find all the neighbours of the source country that belong to the current player
             for (Country *country : *neighbours) {
-                if (DoesPlayerOwnCountry(country->GetCountryID())) {
+                if (DoesPlayerOwnCountry(country->GetCountryID()) && *this == *country->GetCountryOwner()) {
                     fortify_phase_->GetNeighboursToFortify()->push_back(country);
                 }
             }

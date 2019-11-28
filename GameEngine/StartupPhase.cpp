@@ -101,7 +101,7 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
         Player* player = dynamic_cast<Player*>(it->first);
 
         for(int i = 0; i < players->size(); ++i ) {
-            if(player && player == (*players)[i]) {
+            if(player && *player == *(*players)[i]) {
                 //set the turn for the current player
                 (*players)[i]->SetPlayersTurn(it->second == current_player_index_);
                 //display order for current player

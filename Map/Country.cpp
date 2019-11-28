@@ -74,17 +74,10 @@ Country& Country::operator=(const Country &country) {
 }
 
 bool Country::operator==(const Country &country) {
-    bool is_equal = true;
-    is_equal &= country_name_ == country.country_name_;
-    is_equal &= continent_ID_ == country.continent_ID_;
-    is_equal &= country_ID_ == country.country_ID_;
-    is_equal &= number_of_armies_ == country.number_of_armies_;
-    is_equal &= coordinate_x_ == country.coordinate_x_;
-    is_equal &= coordinate_y_ == country.coordinate_y_;
-    is_equal &= country_owner_ == country.country_owner_;
-    is_equal &= continent_ == country.continent_;
-
-    return is_equal;
+    return country.country_ID_ == continent_ID_
+        && *country.continent_ == *continent_
+        && *country.country_owner_ == *country_owner_
+        && *country.country_name_ == *country_name_;
 }
 
 //Setters --------------------------------------------------

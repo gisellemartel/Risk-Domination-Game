@@ -50,7 +50,7 @@ private:
 
     //helper function for Attack()
     void AttackerConquersDefeatedCountry();
-    void RemoveDefeatedPlayerFromGame();
+    void RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* defender);
 
 public:
     explicit Player(string player_name);

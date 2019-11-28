@@ -61,6 +61,17 @@ Continent& Continent::operator=(const Continent &continent) {
     return *this;
 }
 
+bool Continent::operator==(const Continent &continent) {
+    bool is_equal = true;
+
+    is_equal &= *continent_name_ == *continent.continent_name_;
+    is_equal &= continent_ID_ == continent.continent_ID_;
+    is_equal &= *color_ == *continent.color_;
+    is_equal &= army_value_ == continent.army_value_;
+
+    return is_equal;
+}
+
 void Continent::SetContinentName(string* in_continent_name) {
     continent_name_ = in_continent_name;
 }
@@ -92,7 +103,7 @@ void Continent::AddCountryToContinent(Country* country){
     }
     if(!countries_in_continent_->empty()) {
         for(Country* country_in_continent :  *countries_in_continent_) {
-            if(*country_in_continent == *country) {
+            if(country_in_continent == country) {
                 cout << "Country already in continent";
                 return;
             }

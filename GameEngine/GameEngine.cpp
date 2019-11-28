@@ -303,24 +303,7 @@ bool GameEngine::LoadSelectedMap() {
 }
 
 bool GameEngine::PlayerHasWon(Player *current_player) {
-
-    Map* game_map_ = current_player->GetGameMap();
-    vector<Country*>* all_countries;
-
-    if(game_map_) {
-        all_countries = game_map_->GetCountries();
-    }
-
-    for(Country* country : *all_countries){
-        int id = country->GetCountryID();
-        if(!current_player->DoesPlayerOwnCountry(id)) {
-            return false;
-        }
-    }
-    cout << "Game Over" << endl;
-    cout << "Winner: " << *current_player->GetPlayerName();
-
-    return true;
+   return current_player->GetPlayersCountries()->size() == current_player->GetGameMap()->GetNumCountries();
 }
 
 
@@ -547,7 +530,7 @@ void GameEngine::StartGameLoop() {
         return;
     }
 
-    while(!PlayerHasWon(current_player)){
+    while(!PlayerHasWon(current_player) && num_of_players_ > 1){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -558,6 +541,10 @@ void GameEngine::StartGameLoop() {
 
             current_player->Reinforce();
             current_player->Attack();
+            current_player->DisplayCountries();
+            if(num_of_players_ < 2) {
+                break;
+            }
             current_player->Fortify();
             ++num_iterations;
         }
@@ -739,7 +726,7 @@ void GameEngine::Notify(string msg){
 void GameEngine::RemovePlayer(Player *player) {
     int idx_to_remove = -1;
     for(int i = 0; i < players_->size(); ++i) {
-        if((*players_)[i] == player) {
+        if(*(*players_)[i] == *player) {
             idx_to_remove = i;
             break;
         }
@@ -749,6 +736,8 @@ void GameEngine::RemovePlayer(Player *player) {
     if(idx_to_remove > -1) {
         players_->erase(players_->begin() + idx_to_remove);
     }
+
+    --num_of_players_;
 }
 
 

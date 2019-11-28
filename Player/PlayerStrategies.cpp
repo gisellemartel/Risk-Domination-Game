@@ -98,7 +98,7 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country);
 
         //just to be safe to ensure player doesnt attack their own country
-        if(player->DoesPlayerOwnCountry(country->GetCountryID())){
+        if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()){
             continue;
         }
 
@@ -363,7 +363,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
     for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
         defending_country = opponent;
 
-        if(player->DoesPlayerOwnCountry(defending_country->GetCountryID())) {
+        if(player->DoesPlayerOwnCountry(defending_country->GetCountryID()) || *player == *defending_country->GetCountryOwner()) {
             continue;
         }
         msg = *player->GetPlayerName() + " chooses to attack " + *opponent->GetCountryName() + "\n";
@@ -405,7 +405,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
        bool has_enemy = false;
        //make sure current country has at least one neighbour opponent to attack
         for(Country* neighbour : *neighbours) {
-            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && player != country->GetCountryOwner()) {
                 has_enemy = true;
             }
         }
@@ -499,7 +499,7 @@ bool AggressiveComputerPlayerStrategy::SelectSourceCountry(Player *player) {
 
     //there needs to be at least one neighbour to the strongest country that has armies and belongs to current player
     for(Country* country : *neighbours_of_stongest_country) {
-        if(player->DoesPlayerOwnCountry(country->GetCountryID()) && country->GetNumberOfArmies() > 0) {
+        if(player->DoesPlayerOwnCountry(country->GetCountryID()) && *player == *country->GetCountryOwner() && country->GetNumberOfArmies() > 0) {
             fortify_phase->SetSourceCountry(country);
         }
     }
@@ -759,16 +759,17 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
         }
 
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-
+        bool has_enemy = false;
         //make sure current country has at least one neighbour opponent to attack
         for(int i = 0; i < neighbours->size(); ++i) {
-            if(player->DoesPlayerOwnCountry(country->GetCountryID())) {
-                neighbours->erase(neighbours->begin() + i);
+            if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()) {
+               has_enemy = true;
+               break;
             }
         }
 
         //as long as the current country has opposing countries with armies
-        if(!neighbours->empty()) {
+        if(has_enemy) {
             list_of_attackers.push_back(country);
         }
     }
@@ -819,10 +820,12 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
 
 
     int random_country_to_attack;
+    int iteration_ctr = 0;
 
-    while(!defending_country || player->DoesPlayerOwnCountry(defending_country->GetCountryID())) {
+    while((!defending_country || player->DoesPlayerOwnCountry(defending_country->GetCountryID()) || *player == *defending_country->GetCountryOwner()) && iteration_ctr < 100) {
         random_country_to_attack = Utility::GenerateRandomNumInRange(0, (int)opponents->size() - 1);
         defending_country = (*opponents)[random_country_to_attack];
+        ++iteration_ctr;
     }
 
     attack_phase->SetDefendingCountry(defending_country);
@@ -885,7 +888,7 @@ bool RandomComputerPlayerStrategy::SelectSourceCountry(Player *player) {
             // (only countries that belong to the player can be fortified)
             vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
             for(Country* players_country : *neighbours) {
-                if(player->DoesPlayerOwnCountry(players_country->GetCountryID())){
+                if(player->DoesPlayerOwnCountry(players_country->GetCountryID()) && *player == *country->GetCountryOwner()){
                     neighbours_player_owns.push_back(players_country);
                 }
             }
@@ -987,16 +990,16 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
         }
 
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-
+        bool has_enemy = false;
         //make sure current country has at least one neighbour opponent to attack
         for(int i = 0; i < neighbours->size(); ++i) {
-            if(player->DoesPlayerOwnCountry(country->GetCountryID())) {
-                neighbours->erase(neighbours->begin() + i);
+            if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()) {
+                has_enemy = true;
             }
         }
 
         //as long as the current country has opposing countries with armies
-        if(!neighbours->empty()) {
+        if(has_enemy) {
             list_of_attackers.push_back(country);
         }
     }
@@ -1028,35 +1031,40 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
 
     player->Notify(player, GamePhase::Attack, msg, false, false);
 
+    attack_phase->FindOpponentNeighboursToAttackingCountry();
+    vector<Country*>* opponents = attack_phase->GetOpponentNeighbours();
+
+
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
-    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+    for (Country *country : *opponents) {
         string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
         cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
              << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
     }
 
-    attack_phase->FindOpponentNeighboursToAttackingCountry();
-
-
-    vector<Country*>* opponents = attack_phase->GetOpponentNeighbours();
-
-    if(!opponents || opponents->empty()) {
+    if(opponents->empty()) {
         cout << "There are no opposing neighbours to " << attack_phase->GetAttackingCountry();
         return false;
     }
 
     //select at random one of the neighbouring opponents to attack
     int random_country_to_attack;
-    while(!defending_country || player->DoesPlayerOwnCountry(defending_country->GetCountryID())) {
+    int iteration_ctr = 0;
+    while((!defending_country || player->DoesPlayerOwnCountry(defending_country->GetCountryID()) || *defending_country->GetCountryOwner() == *player) && iteration_ctr < 100) {
         random_country_to_attack = Utility::GenerateRandomNumInRange(0, (int)opponents->size() - 1);
         defending_country = (*opponents)[random_country_to_attack];
+        ++iteration_ctr;
+    }
+
+    if(*defending_country->GetCountryOwner() == *player) {
+        return false;
     }
 
     attack_phase->SetDefendingCountry(defending_country);
     attack_phase->SetDefender(defending_country->GetCountryOwner());
 
-    return defending_country != nullptr;
+    return attack_phase->GetDefendingCountry() != nullptr && !(*attack_phase->GetDefendingCountry()->GetCountryOwner() == *player);
 }
 
 void CheaterComputerPlayerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
@@ -1107,7 +1115,7 @@ bool CheaterComputerPlayerStrategy::SelectTargetCountry(Player *player) {
 
         for(Country* neighbour : *neighbours) {
             // if we find at least 1 enemy neighbour, then add the country to the list of possible countries to fortify
-            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && !(*player == *country->GetCountryOwner())) {
                 countries_to_fortify.push_back(country);
             }
         }
