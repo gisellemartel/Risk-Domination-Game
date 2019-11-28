@@ -26,6 +26,13 @@ enum PlayerType {
     Cheater
 };
 
+enum GameResult {
+    AggressiveWin,
+    RandomWin,
+    CheaterWin,
+    Draw
+};
+
 class GameEngine : public PhaseSubject, public StatisticsSubject {
 
 private:
@@ -41,7 +48,13 @@ private:
     int num_benevolant_players_;
     int num_random_players_;
     int num_cheater_players_;
+    int num_unqiue_maps_;
+    int num_strategies_;
+    int max_num_turns_per_game_;
     bool exit_game_;
+
+    map<int, Map*>* game_maps_;  //key is # game per map
+    map<Map*, vector<GameResult>>* game_results_; //data structure that will store the results of all games for each map
 
     vector<Observer*>* observers_;
 
@@ -51,6 +64,8 @@ private:
     //private helper functions
     MapLoader* SelectFile();
     void PromptUserToSelectNumPlayers(PlayerType player_type);
+
+    void StartTournament();
 
 public:
     // Function to test Player functions within game
