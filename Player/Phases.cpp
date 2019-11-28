@@ -301,23 +301,23 @@ void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) 
 }
 
 void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
-    opponent_neighbours_ = nullptr;
-    opponent_neighbours_ = game_map_->GetNeighbouringCountries(attacking_country_);
+    opponent_neighbours_ = new vector<Country*>;
+    vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(attacking_country_);
     defending_country_ = nullptr;
 
-    if(opponent_neighbours_->empty()) {
+    if(neighbours->empty()) {
         cout << endl << *attacking_country_->GetCountryName() << " has no neighbours with armies!\n";
         defending_country_ = nullptr;
     }
 
-    bool has_enemy = false;
-    for(Country* opponent_neighbour : *opponent_neighbours_) {
-        if(!attacker_->DoesPlayerOwnCountry(opponent_neighbour->GetCountryID())) {
-            has_enemy = true;
+
+    for(Country* neighbour : *neighbours) {
+        if(!attacker_->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
+            opponent_neighbours_->push_back(neighbour);
         }
     }
 
-    if(!has_enemy) {
+    if(!opponent_neighbours_ || opponent_neighbours_->empty()) {
         cout << "No opposing neighbours found!\n";
         opponent_neighbours_ = nullptr;
     }
