@@ -405,7 +405,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
        bool has_enemy = false;
        //make sure current country has at least one neighbour opponent to attack
         for(Country* neighbour : *neighbours) {
-            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && player != country->GetCountryOwner()) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && !(*player == *neighbour->GetCountryOwner())) {
                 has_enemy = true;
             }
         }
@@ -761,10 +761,10 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
         bool has_enemy = false;
         //make sure current country has at least one neighbour opponent to attack
-        for(int i = 0; i < neighbours->size(); ++i) {
-            if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()) {
-               has_enemy = true;
-               break;
+        for(Country* neighbour : *neighbours) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && !(*player == *neighbour->GetCountryOwner())) {
+                has_enemy = true;
+                break;
             }
         }
 
@@ -990,17 +990,17 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
         }
 
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-        bool belongs_to_player = false;
+        bool has_enemy = false;
         //make sure current country has at least one neighbour opponent to attack
-        for(int i = 0; i < neighbours->size(); ++i) {
-            if(player->DoesPlayerOwnCountry(country->GetCountryID()) || *player == *country->GetCountryOwner()) {
-                belongs_to_player = true;
+        for(Country* neighbour : *neighbours) {
+            if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && !(*player == *neighbour->GetCountryOwner())) {
+                has_enemy = true;
                 break;
             }
         }
 
         //as long as the current country has opposing countries with armies
-        if(belongs_to_player) {
+        if(has_enemy) {
             list_of_attackers.push_back(country);
         }
     }
