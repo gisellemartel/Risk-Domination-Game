@@ -593,7 +593,7 @@ void GameEngine::StartGameLoop() {
         return;
     }
 
-    while(!PlayerHasWon(current_player) && num_of_players_ > 1){
+    while(!PlayerHasWon(current_player) && num_of_players_ > 1 && num_iterations < max_num_turns_per_game_){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -610,11 +610,13 @@ void GameEngine::StartGameLoop() {
                 break;
             }
             current_player->Fortify();
-            ++num_iterations;
         }
 
         current_index = (current_index + 1) % num_of_players_;
         current_player = players_->at(game_start_->current_player_index_);
+
+        //each time the game is played by all players, increment the counter
+        ++num_iterations;
     }
 
     string game_over = "############################################################################# GAME OVER #############################################################################\n";
@@ -761,9 +763,8 @@ void GameEngine::StartTournament() {
         PromptUserToSelectNumPlayers(PlayerType::Cheater);
     }
 
+    // iterate through all the chosen game maps and execute the game M number of times
     for(auto& game : *game_maps_) {
-
-
         int num_games = game.first;
         Map* current_map = game.second;
 
@@ -772,15 +773,71 @@ void GameEngine::StartTournament() {
             continue;
         }
 
-
+        //current map will be played for num_games
         for(int i = 0; i < num_games; ++i) {
-//            CreatePlayers();
-//            CreateCardsDeck();
-//            AssignHandOfCardsToPlayers();
-//            AssignDiceToPlayers();
-//            game_start_->RandomlyDeterminePlayerOrder(players_);
-//            game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
-//            game_start_->AutoAssignArmiesToAllPlayers(players_);
+            CreatePlayers();
+            CreateCardsDeck();
+            AssignHandOfCardsToPlayers();
+            AssignDiceToPlayers();
+            game_start_->RandomlyDeterminePlayerOrder(players_);
+            game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
+            game_start_->AutoAssignArmiesToAllPlayers(players_);
+
+
+            int current_turn = 0;
+
+                int current_index = game_start_->current_player_index_;
+
+                Player* current_player = players_->at(current_index);
+
+                if(!current_player) {
+                    return;
+                }
+
+                while(!PlayerHasWon(current_player) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_){
+                    current_player = players_->at(current_index);
+                    if(!current_player) {
+                        break;
+                    }
+                    cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+
+                    if(!current_player->GetPlayersCountries()->empty()){
+
+                        current_player->Reinforce();
+                        cout << *current_player->GetPlayerName() << endl;
+                        current_player->DisplayCountries();
+                        current_player->Attack();
+                        if(num_of_players_ < 2) {
+                            break;
+                        }
+                        current_player->Fortify();
+                    }
+
+                    current_index = (current_index + 1) % num_of_players_;
+                    current_player = players_->at(game_start_->current_player_index_);
+
+                    //each time the game is played by all players, increment the counter
+                    ++current_turn;
+                }
+
+                //TODO: need to track if game ends via win or draw and print appropriate message
+
+//                string game_over = "############################################################################# GAME OVER #############################################################################\n";
+//
+//                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n");
+//
+//                if(current_player) {
+//                    game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
+//                }
+//
+//                Notify(game_over);
+//
+//                for(Player* player : *players_) {
+//                    cout << *player->GetPlayerName() << "'s countries: ";
+//                    player->DisplayCountries();
+//                }
+
+//            }
         }
 
     }
