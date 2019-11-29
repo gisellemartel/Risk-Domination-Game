@@ -699,7 +699,7 @@ void GameEngine::PromptUserToSelectNumPlayers(PlayerType player_type) {
 void GameEngine::StartTournament() {
 
     int num_maps;
-    cout << "How many maps would you like to include in the tournament? You may choose between 1-5: ";
+    cout << "\nHow many maps would you like to include in the tournament? You may choose between 1-5: ";
 
     while(!(cin >> num_maps) || num_maps < 1 || num_maps > 5) {
         cin.clear();
@@ -713,12 +713,12 @@ void GameEngine::StartTournament() {
 
     // Ask the user to specify and load the maps they wish to use
     for(int i = 0; i < num_unqiue_maps_; ++i) {
-        SelectFile();
+        SelectMap();
         LoadSelectedMap();
 
         // Prompt the user for the number of games they wish to play per map
         int num_games;
-        cout << "Please enter the number of games you would like to play for map " << i << " : ";
+        cout << "\nPlease enter the number of games you would like to play for map " << i << " : ";
         while(!(cin >> num_games) || num_games < 1 || num_games > 5) {
             cout << "Invalid number of strategies entered. Please try again: ";
             cin.clear();
@@ -730,7 +730,7 @@ void GameEngine::StartTournament() {
 
     //prompt the user to specify the max number of turns for each game
     int num_turns_per_game;
-    cout << "Please enter the maximum number of turns allowed per game (between 10-50): ";
+    cout << "\nPlease enter the maximum number of turns allowed per game (between 10-50): ";
     while(!(cin >> num_turns_per_game) || num_turns_per_game < 10 || num_turns_per_game > 50) {
         cout << "Invalid number entered. Please try again: ";
         cin.clear();
@@ -741,7 +741,7 @@ void GameEngine::StartTournament() {
 
     // prompt the user for the number of different strategies they would like to include
     int num_strategies;
-    cout << "Please enter the number of different computer strategies you would like to include in the game (between 2-4): ";
+    cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
     while(!(cin >> num_strategies) || num_strategies < 2 || num_strategies > 4) {
         cout << "Invalid number of strategies entered. Please try again: ";
         cin.clear();
@@ -761,13 +761,30 @@ void GameEngine::StartTournament() {
         PromptUserToSelectNumPlayers(PlayerType::Cheater);
     }
 
-    CreatePlayers();
-    CreateCardsDeck();
-    AssignHandOfCardsToPlayers();
-    AssignDiceToPlayers();
-    game_start_->RandomlyDeterminePlayerOrder(players_);
-    game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
-    game_start_->AutoAssignArmiesToAllPlayers(players_);
+    for(auto& game : *game_maps_) {
+
+
+        int num_games = game.first;
+        Map* current_map = game.second;
+
+        if(!current_map) {
+            cout << "\nSomething went wrong! unable to load a game map. Aborting game\n";
+            continue;
+        }
+
+
+        for(int i = 0; i < num_games; ++i) {
+//            CreatePlayers();
+//            CreateCardsDeck();
+//            AssignHandOfCardsToPlayers();
+//            AssignDiceToPlayers();
+//            game_start_->RandomlyDeterminePlayerOrder(players_);
+//            game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
+//            game_start_->AutoAssignArmiesToAllPlayers(players_);
+        }
+
+    }
+
 
 }
 
