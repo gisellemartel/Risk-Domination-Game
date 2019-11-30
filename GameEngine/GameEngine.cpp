@@ -264,37 +264,52 @@ void GameEngine::PrintFinalTournamentResult() {
     //# num turns per game
     result.append("\nD: " + to_string(max_num_turns_per_game_) + "\n\n");
 
+    for(auto& entry : tournament_results_) {
+        Map* game_map = entry.first;
 
+        int num_tabs = 0;
+        if(game_map) {
+            num_tabs = game_map->GetMapName()->size();
+        }
+
+        for(int i = 0; i < num_tabs; ++i) {
+            result.append(" ");
+        }
+
+    }
+
+    string result_str = "";
     for(auto& entry : tournament_results_) {
         Map* game_map = entry.first;
 
         if(game_map) {
-
-            result.append(*game_map->GetMapName());
+            result_str.append(*game_map->GetMapName() + "\t");
             vector<GameResult> game_results = entry.second;
-
+            int game_ctr = 0;
             for(GameResult game_result : game_results) {
-
+                result.append("\tGame " + to_string(++game_ctr));
                 switch(game_result) {
                     case GameResult::AggressiveWin :
-                        result.append("Aggressive\t");
+                        result_str.append("Aggressive\t");
                         break;
                     case GameResult ::CheaterWin :
-                        result.append("Cheater\t");
+                        result_str.append("Cheater\t");
                         break;
                     case GameResult::RandomWin :
-                        result.append("Random\t");
+                        result_str.append("Random\t");
                         break;
                     case GameResult::Draw :
-                        result.append("Draw\t");
+                        result_str.append("Draw\t");
                         break;
                     default:
                         break;
                 }
             }
-            result.append("\n\n");
+            result_str.append("\n\n");
         }
     }
+
+    result.append("\n"  + result_str);
     Utility::ClearScreen();
     cout << result;
 }
