@@ -33,9 +33,6 @@ public:
     //operator overloader
     StartupPhase& operator=(const StartupPhase& startup_phase);
 
-    //Getters
-    inline map<Player*, int>* GetPlayerOrderMap() const;
-
     //Setters
     void SetNumberOfArmies(int number_of_players);
 

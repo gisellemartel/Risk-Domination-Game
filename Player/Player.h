@@ -36,6 +36,8 @@ private:
     bool is_human_;
     bool is_random_;
     bool is_cheater_;
+    const int player_id_;
+
     string* player_name_;
 
     vector<Country*>* countries_;
@@ -54,6 +56,11 @@ private:
     //helper function for Attack()
     void AttackerConquersDefeatedCountry();
     void RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* defender);
+
+    static int ID() {
+        static int ID = 0;
+        return ID++;
+    }
 
 public:
     explicit Player(string player_name);
@@ -75,6 +82,7 @@ public:
     void SetAsRandom();
     void SetAsCheater();
 
+    int GetPlayerID() const;
     vector<Country*>* GetPlayersCountries() const;
     GameEngine* GetGameEngine() const;
     ReinforcePhase* GetReinforcePhase() const;
@@ -111,6 +119,5 @@ public:
     void Notify(Player* current_player, int current_phase, const string& current_action_description, bool phase_start, bool phase_over);
     void Notify(string msg);
 };
-
 
 #endif //PLAYER_H

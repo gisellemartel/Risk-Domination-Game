@@ -177,7 +177,7 @@ int GameStatisticObserver::CardExchangesCompleted(){
 void GameStatisticObserver::DisplayActivePlayerStats(){
 
     if(!players_ || players_->empty()) {
-        cout << "game_plgame_players error" << endl;
+        cout << "Error has occurred! No players found in game" << endl;
         return;
     }
 

@@ -58,13 +58,6 @@ StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
     return *this;
 }
 
-
-//Getters
-map<Player*, int>* StartupPhase::GetPlayerOrderMap() const {
-    return player_order_;
-}
-
-
 //Setters
 void StartupPhase::SetNumberOfArmies(int number_of_players) {
     switch(number_of_players) {

@@ -87,6 +87,7 @@ public:
     int GetNumPlayers() const;
     bool ExitGameSelected() const;
     StartupPhase* GetGameStart() const;
+    Player* GetPlayerByID(int id) const;
 
     //Methods
     bool SelectMap();

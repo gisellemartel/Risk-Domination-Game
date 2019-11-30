@@ -15,8 +15,7 @@ Country::Country(int country_ID, string* country_name, int continent_ID) {
     number_of_armies_ = 0;
     coordinate_x_ = 0;
     coordinate_y_ = 0;
-    country_owner_ = nullptr;
-    continent_ = nullptr;
+    owner_id_ = 0;
 }
 
 Country::Country(int country_ID, string* country_name, int continent_ID, int coordinate_x, int coordinate_y) {
@@ -26,8 +25,7 @@ Country::Country(int country_ID, string* country_name, int continent_ID, int coo
     coordinate_x_ = coordinate_x;
     coordinate_y_ = coordinate_y;
     number_of_armies_ = 0;
-    country_owner_ = nullptr;
-    continent_ = nullptr;
+    owner_id_ = 0;
 }
 
 Country::Country(const Country &country) {
@@ -37,30 +35,15 @@ Country::Country(const Country &country) {
     number_of_armies_ = country.number_of_armies_;
     coordinate_x_ = country.coordinate_x_;
     coordinate_y_ = country.coordinate_y_;
-    *country_owner_ = *country.country_owner_;
-    *continent_ = *country.continent_;
+    owner_id_ = country.owner_id_;
 
-    delete country.continent_;
-    delete country.country_owner_;
     delete country.country_name_;
 }
 
 Country::~Country() {
-
-    if(country_owner_) {
-        delete country_owner_;
-        country_owner_ = nullptr;
-    }
-
     if(country_name_) {
         delete country_name_;
         country_name_ = nullptr;
-    }
-
-
-    if(continent_) {
-        delete continent_;
-        continent_ = nullptr;
     }
 }
 
@@ -71,11 +54,8 @@ Country& Country::operator=(const Country &country) {
     number_of_armies_ = country.number_of_armies_;
     coordinate_x_ = country.coordinate_x_;
     coordinate_y_ = country.coordinate_y_;
-    *country_owner_ = *country.country_owner_;
-    *continent_ = *country.continent_;
+    owner_id_ = country.owner_id_;
 
-    delete country.continent_;
-    delete country.country_owner_;
     delete country.country_name_;
 
     return *this;
@@ -84,7 +64,7 @@ Country& Country::operator=(const Country &country) {
 bool Country::operator==(const Country &country) {
     return country.country_ID_ == country_ID_
         && *country.country_name_ == *country_name_
-        && *country.country_owner_ == *country_owner_;
+        && country.owner_id_ == owner_id_;
 }
 
 //Setters --------------------------------------------------
@@ -97,12 +77,12 @@ void Country::SetNumberOfArmies(int in_number_of_armies) {
     number_of_armies_ = in_number_of_armies;
 }
 
-void Country::SetCountryOwner(Player* player) {
-    country_owner_ = player;
+void Country::SetCountryOwner(int id) {
+    owner_id_ = id;
 }
 
-void Country::SetContinent(Continent *continent) {
-    continent_ = continent;
+void Country::SetContinentID(int id) {
+    continent_ID_ = id;
 }
 
 //Getters --------------------------------------------------
@@ -123,24 +103,11 @@ int Country::GetContinentID() const {
     return continent_ID_;
 }
 
-Player* Country::GetCountryOwner() const {
-    return country_owner_;
+int Country::GetOwnerID() const {
+    return owner_id_;
 }
 
 //Methods------------------------------------------------------
-
-//TODO implementation
-bool Country::BelongsToContinent(const Continent* continent) {
-    return GetContinentID() == continent->GetContinentID();
-}
-
-void Country::AddArmyToCountry() {
-    if(number_of_armies_ < 0) {
-        number_of_armies_ = 1;
-    }
-    ++number_of_armies_;
-}
-
 void Country::RemoveArmiesFromCountry(int num_armies_to_remove) {
 
     if(num_armies_to_remove > number_of_armies_ || num_armies_to_remove < 1) {

@@ -12,12 +12,12 @@ using namespace std;
 #include "Player.h"
 
 class Player;
+class Continent;
 
 // ReinforcePhase --------------------------------------
 class ReinforcePhase
 {
 private:
-    Player* turn_player_;
     int num_of_swaps_;
     int divider_;
     int reinforcement_army_;
@@ -26,7 +26,6 @@ private:
 
 public:
     explicit ReinforcePhase();
-    ReinforcePhase(Player* turn_player, int num_of_swaps);
     ReinforcePhase(const ReinforcePhase& reinforce);
     ~ReinforcePhase();
 
@@ -37,10 +36,10 @@ public:
     vector<int>* GetCountriesToReinforce() const;
     vector<int>* GetReinforceValues() const;
 
-    int TotalReinforceArmy();
-    int PerCountryReinforceArmy();
-    int PerContinentReinforceArmy();
-    int CardSwapReinforceArmy();
+    int TotalReinforceArmy(Player* player, vector<Continent*>* continents);
+    int PerCountryReinforceArmy(vector<Country*>* countries);
+    int PerContinentReinforceArmy(Player* player, vector<Continent*>* continents);
+    int CardSwapReinforceArmy(Player* player);
 };
 
 #endif //TEAMPROJECT_COMP345_REINFORCEPHASE_H

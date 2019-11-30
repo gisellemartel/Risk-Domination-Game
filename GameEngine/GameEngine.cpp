@@ -259,6 +259,16 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 }
 
 //getters
+Player* GameEngine::GetPlayerByID(int id) const {
+    for(Player* player : *players_) {
+        if(id == player->GetPlayerID()) {
+            return player;
+        }
+    }
+
+    return nullptr;
+}
+
 MapLoader* GameEngine::GetLoadedMap() const {
     return loaded_map_;
 }
@@ -593,7 +603,7 @@ void GameEngine::DisplayCurrentGame() {
 
     for(const Country* country : *loaded_map_->GetParsedMap()->GetCountries()) {
         string country_name = *country->GetCountryName();
-        string owner_name = (country->GetCountryOwner()) ? *country->GetCountryOwner()->GetPlayerName() : "";
+        string owner_name = (GetPlayerByID(country->GetOwnerID())) ? *GetPlayerByID(country->GetOwnerID())->GetPlayerName() : "";
 
         if(!owner_name.empty() && !country_name.empty()) {
             cout << setw(20) << left <<country_name << setw(30) << right << owner_name << endl;

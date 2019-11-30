@@ -4,6 +4,7 @@
 
 #include "AttackPhase.h"
 
+
 // AttackPhase class implementation ------------------------------------------------------------------------------------
 
 AttackPhase::AttackPhase() {

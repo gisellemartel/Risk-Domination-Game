@@ -6,13 +6,9 @@
 #define TEAMPROJECT_COMP345_COUNTRY_H
 
 #include "Map.h"
-#include "../Player/Player.h"
 
 #include <string>
 using namespace std;
-
-class Player;
-class Continent;
 
 
 //Country class ------------------------------------------------------------------------------------
@@ -25,8 +21,7 @@ private:
     int number_of_armies_;
     int coordinate_x_;
     int coordinate_y_;
-    Player* country_owner_;
-    Continent* continent_;
+    int owner_id_;
 
 public:
     //Constructors
@@ -40,25 +35,22 @@ public:
     bool operator==(const Country &country);
 
     //Setters --------------------------------------------------
+    void SetContinentID(int id);
     void SetCountryName(string* in_country_name);
     void SetNumberOfArmies(int in_number_of_armies);
-    void SetCountryOwner(Player* player);
-    void SetContinent(Continent* continent);
+    void SetCountryOwner(int id);
 
     //Getters --------------------------------------------------
     string* GetCountryName() const;
     int GetCountryID() const;
     int GetNumberOfArmies() const;
     int GetContinentID() const;
-    Player* GetCountryOwner() const;
+    int GetOwnerID() const;
     string GetDisplayInfo() const;
 
     //Methods -------------------------------------------------------
-    void AddArmyToCountry();
     void RemoveArmiesFromCountry(int num_armies_to_remove);
     void DisplayInfo() const;
-
-    bool BelongsToContinent(const Continent* continent);
 };
 
 

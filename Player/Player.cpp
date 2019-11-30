@@ -10,7 +10,7 @@
 
 // Player class implementation ----------------------------------------------------------------------------
 
-Player::Player(string player_name) {
+Player::Player(string player_name) : player_id_(ID()) {
     player_name_ = new string(std::move(player_name));
     is_player_turn_ = false;
     is_human_ = false;
@@ -27,7 +27,7 @@ Player::Player(string player_name) {
     game_engine_ = nullptr;
 }
 
-Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
+Player::Player(string player_name, Map *game_map, GameEngine* game_engine) : player_id_(ID()) {
     player_name_ = new string(std::move(player_name));
     game_map_ = game_map;
     game_engine_ = game_engine;
@@ -44,7 +44,7 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_engine) {
     fortify_phase_ = nullptr;
 }
 
-Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) {
+Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) : player_id_(ID()) {
     player_name_ = new string(std::move(player_name));
     is_player_turn_ = is_player_turn;
     is_human_ = false;
@@ -62,7 +62,7 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     game_engine_ = nullptr;
 }
 
-Player::Player(const Player &player) {
+Player::Player(const Player &player) : player_id_(player.player_id_){
     *player_name_ = *player.player_name_;
     is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
@@ -125,39 +125,43 @@ Player::~Player() {
 }
 
 Player& Player::operator=(const Player &player) {
-    *player_name_ = *player.player_name_;
-    is_player_turn_ = player.is_player_turn_;
-    is_human_ = player.is_human_;
-    is_random_ = player.is_random_;
-    is_cheater_ = player.is_cheater_;
 
-    *countries_ = *player.countries_;
-    for(size_t i = 0; i < player.countries_->size(); ++i) {
-        (*countries_)[i] = (*player.countries_)[i];
-        delete (*player.countries_)[i];
-        (*player.countries_)[i] = nullptr;
+    if(this != & player) {
+        *player_name_ = *player.player_name_;
+        is_player_turn_ = player.is_player_turn_;
+        is_human_ = player.is_human_;
+        is_random_ = player.is_random_;
+        is_cheater_ = player.is_cheater_;
+
+        *countries_ = *player.countries_;
+        for(size_t i = 0; i < player.countries_->size(); ++i) {
+            (*countries_)[i] = (*player.countries_)[i];
+            delete (*player.countries_)[i];
+            (*player.countries_)[i] = nullptr;
+        }
+
+        *risk_cards_ = *player.risk_cards_;
+        *dice_roll_ = *player.dice_roll_;
+        *game_map_ = *player.game_map_;
+        *player_strategy_ = *player.player_strategy_;
+        *reinforce_phase_ = *player.reinforce_phase_;
+        *attack_phase_ = *player.attack_phase_;
+        *fortify_phase_ = *player.fortify_phase_;
+        *game_engine_ = *player.game_engine_;
+
+
+        delete player.player_name_;
+        delete player.risk_cards_;
+        delete player.dice_roll_;
+        delete player.game_map_;
+        delete player.player_strategy_;
+        delete player.reinforce_phase_;
+        delete player.attack_phase_;
+        delete player.fortify_phase_;
+        delete player.game_engine_;
+        delete player.countries_;
     }
 
-    *risk_cards_ = *player.risk_cards_;
-    *dice_roll_ = *player.dice_roll_;
-    *game_map_ = *player.game_map_;
-    *player_strategy_ = *player.player_strategy_;
-    *reinforce_phase_ = *player.reinforce_phase_;
-    *attack_phase_ = *player.attack_phase_;
-    *fortify_phase_ = *player.fortify_phase_;
-    *game_engine_ = *player.game_engine_;
-
-
-    delete player.player_name_;
-    delete player.risk_cards_;
-    delete player.dice_roll_;
-    delete player.game_map_;
-    delete player.player_strategy_;
-    delete player.reinforce_phase_;
-    delete player.attack_phase_;
-    delete player.fortify_phase_;
-    delete player.game_engine_;
-    delete player.countries_;
 
     return *this;
 }
@@ -165,6 +169,7 @@ Player& Player::operator=(const Player &player) {
 bool Player::operator==(const Player& player) {
     bool is_equal = true;
     is_equal &= *player_name_ == *player.player_name_
+            && player_id_ == player.player_id_
             && is_human_ == player.is_human_
             && is_random_ == player.is_random_
             && is_cheater_ == player.is_cheater_;
@@ -189,6 +194,10 @@ bool Player::DoesPlayerOwnCountry(int id) const {
         }
     }
     return false;
+}
+
+int Player::GetPlayerID() const {
+    return player_id_;
 }
 
 bool Player::IsCurrentlyPlayersTurn() const {
@@ -313,7 +322,7 @@ void Player::AddCountryToCollection(Country *country) {
         countries_ = new vector<Country*>;
     }
     countries_->push_back(country);
-    country->SetCountryOwner(this);
+    country->SetCountryOwner(player_id_);
 }
 
 void Player::RemoveCountryFromCollection(Country* country) {
@@ -364,7 +373,7 @@ void Player::DisplayCountries() const {
 void Player::AttackerConquersDefeatedCountry() {
     Country* attacking_country = attack_phase_->GetAttackingCountry();
     Country* defending_country = attack_phase_->GetDefendingCountry();
-    Player* defender = defending_country->GetCountryOwner();
+    Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
     string msg;
     if(!is_cheater_) {
@@ -384,7 +393,7 @@ void Player::AttackerConquersDefeatedCountry() {
 
     player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
-    defending_country->SetCountryOwner(this);
+    defending_country->SetCountryOwner(player_id_);
     attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
 
 
@@ -435,9 +444,9 @@ void Player::Reinforce() {
     //PhaseObserver
     Notify(this, GamePhase::Reinforce, msg, true, false);
 
-    reinforce_phase_ = new ReinforcePhase(this, 0);
+    reinforce_phase_ = new ReinforcePhase();
 
-    if(reinforce_phase_->TotalReinforceArmy() < 1) {
+    if(reinforce_phase_->TotalReinforceArmy(this, game_engine_->GetLoadedMap()->GetParsedMap()->GetContinents()) < 1) {
         msg = *player_name_;
         msg.append(" currently has to armies to reinforce a country with. Please try again next round\n\n");
         Notify(this, GamePhase::Reinforce, msg, false, true);
@@ -519,7 +528,7 @@ void Player::Attack() {
             break;
         }
 
-        if(!(*attack_phase_->GetAttackingCountry()->GetCountryOwner() == *this)) {
+        if(attack_phase_->GetAttackingCountry()->GetOwnerID() != player_id_) {
             continue;
         }
 
@@ -536,7 +545,7 @@ void Player::Attack() {
         if(can_attack) {
             //prompt player to select a defending country
             can_attack &= player_strategy_->SelectCountryToAttack(this);
-            can_attack &= !(*attack_phase_->GetDefendingCountry()->GetCountryOwner() == *this);
+            can_attack &= attack_phase_->GetDefendingCountry()->GetOwnerID() != player_id_;
 
             if(!can_attack){
                 msg = *player_name_ + " something went wrong when selecting a defending country. Cannot Attack!\n";
@@ -549,7 +558,7 @@ void Player::Attack() {
 
             Country* attacking_country = attack_phase_->GetAttackingCountry();
             Country* defending_country = attack_phase_->GetDefendingCountry();
-            Player* defender = defending_country->GetCountryOwner();
+            Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
 
             // if the defending country has no armies or if the current player is in cheat mode, they are defeated automatically
@@ -728,7 +737,7 @@ void Player::Fortify() {
 
             //find all the neighbours of the source country that belong to the current player
             for (Country *country : *neighbours) {
-                if (DoesPlayerOwnCountry(country->GetCountryID()) && *this == *country->GetCountryOwner()) {
+                if (DoesPlayerOwnCountry(country->GetCountryID()) && player_id_ == country->GetOwnerID()) {
                     fortify_phase_->GetNeighboursToFortify()->push_back(country);
                 }
             }

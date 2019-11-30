@@ -230,7 +230,7 @@ void Map::AddCountryToMap(int country_num, const string& continent_name, int con
     ++num_countries_;
 
     Continent* continent = GetContinentById(continent_index);
-    country_to_add->SetContinent(continent);
+    country_to_add->SetContinentID(continent->GetContinentID());
     continent->AddCountryToContinent(country_to_add);
 }
 
