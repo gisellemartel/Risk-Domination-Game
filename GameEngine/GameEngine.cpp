@@ -792,27 +792,20 @@ void GameEngine::StartTournament() {
                          << *current_player->GetPlayerName()
                          << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
-                    if (!current_player->GetPlayersCountries()->empty()) {
+                    if(!current_player->GetPlayersCountries()->empty()){
 
                         current_player->Reinforce();
                         cout << *current_player->GetPlayerName() << endl;
                         current_player->DisplayCountries();
                         current_player->Attack();
-                        if (num_of_players_ < 2) {
-                            while (!PlayerHasWon(current_player) && num_of_players_ > 1 &&
-                                   current_turn < max_num_turns_per_game_) {
-                                current_player = players_->at(current_index);
-                                if (!current_player) {
-                                    break;
-                                }
-                                current_player->Fortify();
-                            }
-
-                            current_index = (current_index + 1) % num_of_players_;
-                            current_player = players_->at(game_start_->current_player_index_);
+                        if(num_of_players_ < 2) {
+                            break;
                         }
+                        current_player->Fortify();
                     }
 
+                    current_index = (current_index + 1) % num_of_players_;
+                    current_player = players_->at(game_start_->current_player_index_);
                     //each time the game is played by all players, increment the counter
                     ++current_turn;
                     if(current_turn == max_num_turns_per_game_) {
