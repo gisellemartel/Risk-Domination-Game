@@ -21,7 +21,7 @@ private:
 
     //private helper functions
     template <class V>
-    static vector<int> GenerateRandomizedIndicesForVector(const vector<std::shared_ptr<V>>& vector_to_randomize);
+    static vector<int> GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize);
 
 public:
     int current_player_index_;
@@ -37,10 +37,10 @@ public:
     void SetNumberOfArmies(int number_of_players);
 
     //Methods
-    void RandomlyDeterminePlayerOrder(vector<std::shared_ptr<Player>>* players);
-    void AssignCountriesToAllPlayers(vector<std::shared_ptr<Player>>* players, vector<Country*>* countries_to_assign);
-    void AutoAssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>* players);
-    void AssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>* players);
+    void RandomlyDeterminePlayerOrder(vector<Player*>* players);
+    void AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign);
+    void AutoAssignArmiesToAllPlayers(vector<Player*>* players);
+    void AssignArmiesToAllPlayers(vector<Player*>* players);
 };
 
 

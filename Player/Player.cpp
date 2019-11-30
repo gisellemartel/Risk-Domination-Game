@@ -16,6 +16,8 @@ Player::Player(string player_name) : player_id_(ID()) {
     is_human_ = false;
     is_random_ = false;
     is_cheater_ = false;
+    is_benevolant_ = false;
+    is_aggressive_ = false;
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
@@ -35,6 +37,8 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_engine) : pla
     is_human_ = false;
     is_random_ = false;
     is_cheater_ = false;
+    is_benevolant_ = false;
+    is_aggressive_ = false;
     countries_ = new vector<Country*>;
     risk_cards_ = nullptr;
     dice_roll_ = nullptr;
@@ -50,6 +54,8 @@ Player::Player(string player_name, vector<Country*>* countries_to_assign_to_play
     is_human_ = false;
     is_random_ = false;
     is_cheater_ = false;
+    is_benevolant_ = false;
+    is_aggressive_ = false;
     //countries to be assigned to each player are chosen randomly at start-up phase
     countries_ = countries_to_assign_to_player;
     risk_cards_ = nullptr;
@@ -68,6 +74,8 @@ Player::Player(const Player &player) : player_id_(player.player_id_){
     is_human_ = player.is_human_;
     is_random_ = player.is_random_;
     is_cheater_ = player.is_cheater_;
+    is_benevolant_ = player.is_benevolant_;
+    is_aggressive_ = player.is_aggressive_;
 
     *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
@@ -124,6 +132,8 @@ Player& Player::operator=(const Player &player) {
         is_human_ = player.is_human_;
         is_random_ = player.is_random_;
         is_cheater_ = player.is_cheater_;
+        is_benevolant_ = player.is_benevolant_;
+        is_aggressive_ = player.is_aggressive_;
 
         *countries_ = *player.countries_;
         for(size_t i = 0; i < player.countries_->size(); ++i) {
@@ -164,7 +174,9 @@ bool Player::operator==(const Player& player) {
             && player_id_ == player.player_id_
             && is_human_ == player.is_human_
             && is_random_ == player.is_random_
-            && is_cheater_ == player.is_cheater_;
+            && is_cheater_ == player.is_cheater_
+            && is_aggressive_ == player.is_aggressive_
+            && is_benevolant_ == player.is_benevolant_;
 
     return is_equal;
 }
@@ -210,6 +222,14 @@ bool Player::IsRandom() const {
 
 bool Player::IsCheater() const {
     return is_cheater_;
+}
+
+bool Player::IsAggressive() const {
+    return is_aggressive_;
+}
+
+bool Player::IsBenevolant() const {
+    return is_benevolant_;
 }
 
 Country* Player::GetCountryById(int id) const {
@@ -309,6 +329,13 @@ void Player::SetAsCheater() {
     is_cheater_ = true;
 }
 
+void Player::SetAsAggressive() {
+    is_aggressive_ = true;
+}
+
+void Player::SetAsBenevolent() {
+    is_benevolant_ = true;
+}
 void Player::AddCountryToCollection(Country *country) {
     if(!countries_) {
         countries_ = new vector<Country*>;

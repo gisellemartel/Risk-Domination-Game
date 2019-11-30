@@ -34,6 +34,8 @@ class Player {
 private:
     bool is_player_turn_;
     bool is_human_;
+    bool is_aggressive_;
+    bool is_benevolant_;
     bool is_random_;
     bool is_cheater_;
     const int player_id_;
@@ -81,6 +83,8 @@ public:
     void SetAsHuman();
     void SetAsRandom();
     void SetAsCheater();
+    void SetAsAggressive();
+    void SetAsBenevolent();
 
     int GetPlayerID() const;
     vector<Country*>* GetPlayersCountries() const;
@@ -102,6 +106,8 @@ public:
     bool IsHuman() const;
     bool IsRandom() const;
     bool IsCheater() const;
+    bool IsAggressive() const;
+    bool IsBenevolant() const;
 
     int Find(Country* country) const;
 

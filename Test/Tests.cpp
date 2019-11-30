@@ -30,9 +30,9 @@ public:
 
         for(auto& player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
-                human = player.get();
+                human = player;
             } else {
-                bot = player.get();
+                bot = player;
             }
         }
 
@@ -74,9 +74,9 @@ public:
 
         for(auto& player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
-                human = player.get();
+                human = player;
             } else {
-                bot = player.get();
+                bot = player;
             }
         }
 
@@ -123,12 +123,12 @@ public:
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 0 ,0, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
-        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
+        for(Player* player : *new_game->GetPlayers()) {
             cout << *player->GetPlayerName() << endl;
             player->DisplayCountries();
         }
 
-        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
+        for(Player* player : *new_game->GetPlayers()) {
             player->DisplayCountries();
             player->Reinforce();
             player->DisplayCountries();

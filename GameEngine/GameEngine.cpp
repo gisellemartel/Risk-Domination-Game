@@ -28,7 +28,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         game_start_->AutoAssignArmiesToAllPlayers(players_);
     }
 
-    for(std::shared_ptr<Player> player : *players_) {
+    for(Player* player : *players_) {
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
 
@@ -83,7 +83,7 @@ string GameEngine::SelectFileForTournament() {
 GameEngine::GameEngine() {
     loaded_map_ = nullptr;
     cards_deck_ = nullptr;
-    players_ = new vector<std::shared_ptr<Player>>;
+    players_ = new vector<Player*>;
     //2 players by default
     num_of_players_ = 2;
     num_of_human_players_ = 0;
@@ -246,9 +246,9 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 
 //getters
 Player* GameEngine::GetPlayerByID(int id) const {
-    for(std::shared_ptr<Player> player : *players_) {
+    for(Player* player : *players_) {
         if(id == player->GetPlayerID()) {
-            return player.get();
+            return player;
         }
     }
 
@@ -263,7 +263,7 @@ Deck* GameEngine::GetCardsDeck() const {
     return cards_deck_;
 }
 
-vector<std::shared_ptr<Player>>* GameEngine::GetPlayers() const {
+vector<Player*>* GameEngine::GetPlayers() const {
     return players_;
 }
 
@@ -426,7 +426,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
 
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
 
-        std::shared_ptr<Player> player (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsHuman();
         players_->push_back(player);
@@ -436,8 +436,9 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Aggressive Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
-        std::shared_ptr<Player> player (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
+        player->SetAsAggressive();
         players_->push_back(player);
     }
 
@@ -445,16 +446,17 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Benevolant Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
-        std::shared_ptr<Player> player (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
-        players_->push_back(player);
+        player->SetAsBenevolent();
+        players_->push_back((new Player(player_name, loaded_map->GetParsedMap(), this)));
     }
 
     for(size_t i = 0; i < num_random_players_; ++i) {
         string player_name = "Random Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new RandomComputerPlayerStrategy();
-        std::shared_ptr<Player> player (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsRandom();
         players_->push_back(player);
@@ -464,7 +466,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Cheater Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new CheaterComputerPlayerStrategy();
-        std::shared_ptr<Player> player (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsCheater();
         players_->push_back(player);
@@ -473,8 +475,8 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
     game_start_->SetNumberOfArmies(num_of_players_);
 }
 
-void GameEngine::AssignDiceToPlayers() {
 
+void GameEngine::AssignDiceToPlayers() {
     if(players_->empty()) {
 
         cout << "No Player created to assign dice to! Please try again\n";
@@ -482,7 +484,8 @@ void GameEngine::AssignDiceToPlayers() {
     }
 
     cout << "Assigning dice rolling mechanism for each player...\n";
-    for(const std::shared_ptr<Player>& player: *players_) {
+
+    for(Player* player : *players_) {
         player->SetPlayerDice(new Dice);
     }
 
@@ -496,7 +499,8 @@ void GameEngine::AssignHandOfCardsToPlayers() {
     }
 
     cout << "Assigning empty hand of cards for each player...\n";
-    for(const std::shared_ptr<Player>& player: *players_) {
+
+    for(Player* player: *players_) {
         player->SetPlayerHand(new Hand);
     }
 }
@@ -515,7 +519,7 @@ void GameEngine::CreateCardsDeck(MapLoader* loaded_map) {
 
 void GameEngine::DisplayCurrentGame() {
     cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
-    for(const std::shared_ptr<Player> player : *players_) {
+    for(Player* player : *players_) {
         player->DisplayPlayerStats();
         cout << endl;
     }
@@ -552,7 +556,7 @@ void GameEngine::StartGameLoop() {
         cout << "Something went wrong! aborting game loop" << endl;
     }
 
-    for(std::shared_ptr<Player> player : *players_) {
+    for(Player* player : *players_) {
         cout << *player->GetPlayerName() << endl;
         player->DisplayCountries();
     }
@@ -562,13 +566,13 @@ void GameEngine::StartGameLoop() {
     int num_iterations = 0;
     int current_index = game_start_->current_player_index_;
 
-    std::shared_ptr<Player> current_player = players_->at(current_index);
+    Player* current_player = players_->at(current_index);
 
     if(!current_player) {
         return;
     }
 
-    while(!PlayerHasWon(current_player.get()) && num_of_players_ > 1){
+    while(!PlayerHasWon(current_player) && num_of_players_ > 1){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -604,7 +608,7 @@ void GameEngine::StartGameLoop() {
 
     Notify(game_over);
 
-    for(std::shared_ptr<Player> player : *players_) {
+    for(Player* player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
         player->DisplayCountries();
     }
@@ -745,83 +749,108 @@ void GameEngine::SetUpTournament() {
 void GameEngine::StartTournament() {
 
     // iterate through all the chosen game maps and execute the game M number of times
-    for(auto& game : game_maps_) {
+    for (auto &game : game_maps_) {
         int num_games = game.first;
-        MapLoader* current_map = new MapLoader(game.second);
+        MapLoader *current_map = new MapLoader(game.second);
 
-        if(!current_map) {
-            cout << "\nSomething went wrong! unable to load map " << game.second << ". Aborting game\n";
-            continue;
-        }
+        if(current_map->ParseMap()) {
+            loaded_map_ = current_map;
 
-
-        //current map will be played for num_games
-        for(int i = 0; i < num_games; ++i) {
-            CreatePlayersForMap(current_map);
-            CreateCardsDeck(current_map);
-            AssignHandOfCardsToPlayers();
-            AssignDiceToPlayers();
-            game_start_->RandomlyDeterminePlayerOrder(players_);
-            game_start_->AssignCountriesToAllPlayers(players_, current_map->GetParsedMap()->GetCountries());
-            game_start_->AutoAssignArmiesToAllPlayers(players_);
+            vector<GameResult> game_results;
+            //current map will be played for num_games
+            for (int i = 0; i < num_games; ++i) {
+                CreatePlayersForMap(current_map);
+                CreateCardsDeck(current_map);
+                AssignHandOfCardsToPlayers();
+                AssignDiceToPlayers();
+                game_start_->RandomlyDeterminePlayerOrder(players_);
+                game_start_->AssignCountriesToAllPlayers(players_, current_map->GetParsedMap()->GetCountries());
+                game_start_->AutoAssignArmiesToAllPlayers(players_);
 
 
-            int current_turn = 0;
-            int current_index = game_start_->current_player_index_;
+                int current_turn = 0;
+                int current_index = game_start_->current_player_index_;
 
-            Player* current_player = players_->at(current_index).get();
+                Player *current_player = players_->at(current_index);
 
-            if(!current_player) {
-                return;
-            }
 
-            while(!PlayerHasWon(current_player) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_){
-                current_player = players_->at(current_index).get();
-                if(!current_player) {
-                    break;
+                if (!current_player) {
+                    return;
                 }
-                cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently " << *current_player->GetPlayerName() << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
 
-                if(!current_player->GetPlayersCountries()->empty()){
+                //flag that will tack when game is a draw.
+                bool is_draw = false;
 
-                    current_player->Reinforce();
-                    cout << *current_player->GetPlayerName() << endl;
-                    current_player->DisplayCountries();
-                    current_player->Attack();
-                    if(num_of_players_ < 2) {
+                //start the game loop for current game
+                while (!PlayerHasWon(current_player) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_) {
+                    current_player = players_->at(current_index);
+                    if (!current_player) {
                         break;
                     }
-                    current_player->Fortify();
+                    cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently "
+                         << *current_player->GetPlayerName()
+                         << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+
+                    if (!current_player->GetPlayersCountries()->empty()) {
+
+                        current_player->Reinforce();
+                        cout << *current_player->GetPlayerName() << endl;
+                        current_player->DisplayCountries();
+                        current_player->Attack();
+                        if (num_of_players_ < 2) {
+                            while (!PlayerHasWon(current_player) && num_of_players_ > 1 &&
+                                   current_turn < max_num_turns_per_game_) {
+                                current_player = players_->at(current_index);
+                                if (!current_player) {
+                                    break;
+                                }
+                                current_player->Fortify();
+                            }
+
+                            current_index = (current_index + 1) % num_of_players_;
+                            current_player = players_->at(game_start_->current_player_index_);
+                            //each time the game is played by all players, increment the counter
+                            ++current_turn;
+
+                            if(current_turn == max_num_turns_per_game_) {
+                                is_draw = true;
+                            }
+                        }
+                    }
+
                 }
 
-                current_index = (current_index + 1) % num_of_players_;
-                current_player = players_->at(game_start_->current_player_index_).get();
+                //TODO: need to track if game ends via win or draw and print appropriate message
 
-                //each time the game is played by all players, increment the counter
-                ++current_turn;
-            }
+                string game_over = "############################################################################# GAME OVER #############################################################################\n";
 
-            //TODO: need to track if game ends via win or draw and print appropriate message
+                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n");
 
-//                string game_over = "############################################################################# GAME OVER #############################################################################\n";
-//
-//                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n");
-//
-//                if(current_player) {
-//                    game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
-//                }
-//
-//                Notify(game_over);
-//
+                if(current_player && !is_draw) {
+                    if(current_player->IsRandom()) {
+                        game_results.push_back(GameResult::RandomWin);
+                    } else if (current_player->IsCheater()) {
+                        game_results.push_back(GameResult::CheaterWin);
+                    } else if(current_player->IsAggressive()) {
+                        game_results.push_back(GameResult::AggressiveWin);
+                    }
+                    game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
+                } else {
+                    game_over.append("The game was a draw!!\n\n");
+                    game_results.push_back(GameResult::Draw);
+                }
+
+                Notify(game_over);
+
 //                for(Player* player : *players_) {
 //                    cout << *player->GetPlayerName() << "'s countries: ";
 //                    player->DisplayCountries();
 //                }
+            }
 
-//            }
-
+            //store the map and the results of each game
+            game_results_.insert({current_map->GetParsedMap(), game_results});
         }
-
     }
 }
 
@@ -870,12 +899,12 @@ void GameEngine::CreateNewGame() {
             game_start_->AutoAssignArmiesToAllPlayers(players_);
         }
 
-        for(const std::shared_ptr<Player>& player : *players_) {
+        for(Player* player : *players_) {
             player->SetGameMap(loaded_map_->GetParsedMap());
         }
         //repeat game loop 2 times
         for(int i = 0; i < 2; ++i) {
-            for(const std::shared_ptr<Player>& player : *players_) {
+            for(Player* player : *players_) {
                 player->Reinforce();
                 player->Attack();
                 player->Fortify();
@@ -925,5 +954,3 @@ void GameEngine::RemovePlayer(Player *player) {
 
     --num_of_players_;
 }
-
-

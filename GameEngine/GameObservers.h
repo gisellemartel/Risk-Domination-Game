@@ -95,7 +95,7 @@ public:
 class GameStatisticObserver: public Observer {
 
 private:
-    vector<std::shared_ptr<Player>>* players_;
+    vector<Player*>* players_;
     void DisplayStats();
     int CardExchangesCompleted();
     void DisplayActivePlayerStats();
@@ -105,7 +105,7 @@ public:
     // Dont forget everytime you have one or more pointer data member you absolutely need to also make your own copy constructor and assignment operator
     // I added them here for you
     GameStatisticObserver();
-    explicit GameStatisticObserver(vector<std::shared_ptr<Player>>* players);
+    explicit GameStatisticObserver(vector<Player*>* players);
     GameStatisticObserver(const GameStatisticObserver& game_statistic_observer);
     ~GameStatisticObserver() override;
 

@@ -36,7 +36,7 @@ enum GameResult {
 class GameEngine : public PhaseSubject, public StatisticsSubject {
 
 private:
-    vector<std::shared_ptr<Player>>* players_;
+    vector<Player*>* players_;
     StartupPhase* game_start_;
     MapLoader* loaded_map_;
     Deck* cards_deck_;
@@ -54,7 +54,7 @@ private:
     bool exit_game_;
 
     map<int, string> game_maps_;  //key is # game per map, val is filename of map
-    map<Map, vector<GameResult>> game_results_; //data structure that will store the results of all games for each map
+    map<Map*, vector<GameResult>> game_results_; //data structure that will store the results of all games for each map
 
     vector<Observer*>* observers_;
 
@@ -85,7 +85,7 @@ public:
     MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
     GamePhase GetCurrentPhase() const;
-    vector<std::shared_ptr<Player>>* GetPlayers() const;
+    vector<Player*>* GetPlayers() const;
     int GetNumPlayers() const;
     bool ExitGameSelected() const;
     StartupPhase* GetGameStart() const;
@@ -98,14 +98,13 @@ public:
     bool PlayerHasWon(Player* current_player);
 
     void CreatePlayersForMap(MapLoader* loaded_map);
+
     void AssignDiceToPlayers();
     void AssignHandOfCardsToPlayers();
     void CreateCardsDeck(MapLoader* loaded_map);
     void DisplayCurrentGame();
 
     void StartGameLoop();
-
-
     void CreateNewGame();
 
     void Register(Observer* observer) override;
