@@ -607,6 +607,7 @@ void Player::Attack() {
 
                 msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
                 Notify(this, GamePhase::Attack, msg, false, false);
+                Notify(msg, *game_engine_->GetPlayers());
 
                 //if the player is human then they select their own number of dice otherwise it is randomly generated for computer players
                 if(defender->IsHuman()) {

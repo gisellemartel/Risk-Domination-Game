@@ -35,6 +35,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
     Notify("Starting New Game...\n", *players_);
 }
 
+
 //private helper methods
 MapLoader* GameEngine::SelectFile() {
 
@@ -58,26 +59,243 @@ MapLoader* GameEngine::SelectFile() {
 }
 
 string GameEngine::SelectFileForTournament() {
-
-    cout << "\nTo select a file, enter its corresponding number here: (enter -1 to exit) ";
-    int user_selection = 0;
-    while(!(cin >> user_selection) || user_selection < 1 || user_selection > file_paths_->size()) {
-        if(user_selection == -1) {
-            exit_game_ = true;
-            return nullptr;
-        }
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Error! Please enter a valid file number: ";
-    }
+    cout << "\nTo select a file, enter its corresponding number here:";
+    int user_selection = Utility::PromptUserNumericalInput(1, file_paths_->size());
 
     string file_to_load = (*file_paths_)[user_selection - 1].string();
+    cout << "Selected map file: " << file_to_load << "..." << endl;
 
-    cout << "Now loading map file: " << file_to_load << "..." << endl;
-    //Load the map file
     return file_to_load;
 }
 
+void GameEngine::SetUpTournament() {
+
+    // Ask the user to specify and load the maps they wish to use
+    cout << "\nHow many maps would you like to include in the tournament? You may choose between 1-5: ";
+    num_unqiue_maps_ = Utility::PromptUserNumericalInput(1, 5);
+    cout << "\nYou have chosen " << num_unqiue_maps_ << " maps for the tournament" << endl;
+
+    //prompt the user to select the map files to be loaded
+    for(int i = 0; i < num_unqiue_maps_; ++i) {
+        string map_file_name = AutoSelectMap("../MapLoader/domination-map-files");
+        if(!map_file_name.empty()) {
+            tournament_maps_->push_back(new string(map_file_name));
+        }
+    }
+
+    //prompt the user to specify the number of games to be played for each map
+    cout << "\nPlease enter the number of games you like to player per Map (between 1-5): ";
+    num_games_tournament_ = Utility::PromptUserNumericalInput(1, 5);
+
+
+    //prompt the user to specify the max number of turns for each game
+    cout << "\nPlease enter the maximum number of turns allowed per game (between 10-50): ";
+    max_num_turns_per_game_ = Utility::PromptUserNumericalInput(10, 50);
+
+
+    // prompt the user for the number of different strategies they would like to include
+    cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
+    num_games_tournament_ = Utility::PromptUserNumericalInput(2, 4);
+
+    //Create the games
+    num_of_human_players_ = 0;
+    num_of_players_ = num_strategies_;
+
+    //prompt the user to select the number of players for each strategy type
+    while((num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_) < num_of_players_) {
+        PromptUserToSelectNumPlayers(PlayerType::Aggressive);
+        PromptUserToSelectNumPlayers(PlayerType::Benevolant);
+        PromptUserToSelectNumPlayers(PlayerType::Random);
+        PromptUserToSelectNumPlayers(PlayerType::Cheater);
+    }
+
+    //start playing the tournament!
+    StartTournament();
+}
+
+void GameEngine::StartTournament() {
+    // iterate through all the chosen game maps and execute the game M number of times
+    for (string* map_file_name : *tournament_maps_) {
+        MapLoader *current_map = new MapLoader(*map_file_name);
+
+        if(current_map->ParseMap()) {
+            loaded_map_ = current_map;
+
+            vector<GameResult> game_results;
+            //current map will be played for num_games
+            for (int i = 0; i < num_games_tournament_; ++i) {
+                CreatePlayersForMap(current_map);
+                CreateCardsDeck(current_map);
+                AssignHandOfCardsToPlayers();
+                AssignDiceToPlayers();
+                game_start_->RandomlyDeterminePlayerOrder(players_);
+                game_start_->AssignCountriesToAllPlayers(players_, current_map->GetParsedMap()->GetCountries());
+                game_start_->AutoAssignArmiesToAllPlayers(players_);
+
+
+                int current_turn = 0;
+                int current_index = game_start_->current_player_index_;
+
+                Player *current_player = players_->at(current_index);
+
+
+                if (!current_player) {
+                    return;
+                }
+
+                //flag that will track when game is a draw.
+                bool is_draw = false;
+
+                //start the game loop for current game
+                while (!PlayerHasWon(current_player) && num_of_players_ > 1) {
+                    Notify("\nCurrent Map: " + *current_map->GetParsedMap()->GetMapName()  + "\nCurrent game: " + to_string(i + 1) + "\nCurrent turn: " + to_string(current_turn + 1) + "\n", *players_);
+                    current_player = players_->at(current_index);
+                    if (!current_player) {
+                        break;
+                    }
+                    cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently "
+                         << *current_player->GetPlayerName()
+                         << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
+
+                    if(!current_player->GetPlayersCountries()->empty()){
+
+                        current_player->Reinforce();
+                        cout << *current_player->GetPlayerName() << endl;
+                        current_player->DisplayCountries();
+                        current_player->Attack();
+                        if(num_of_players_ < 2) {
+                            break;
+                        }
+                        current_player->Fortify();
+                    }
+
+                    current_index = (current_index + 1) % num_of_players_;
+                    current_player = players_->at(game_start_->current_player_index_);
+                    //each time the game is played by all players, increment the counter
+                    ++current_turn;
+                    if(current_turn == max_num_turns_per_game_) {
+                        is_draw = true;
+                        break;
+                    }
+                }
+
+                string game_over = "############################################################################# GAME OVER #############################################################################\n";
+
+                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the current game * * * * * * * * * * * * * * * \n\n");
+
+                if(current_player && !is_draw) {
+                    if(current_player->IsRandom()) {
+                        game_results.push_back(GameResult::RandomWin);
+                    } else if (current_player->IsCheater()) {
+                        game_results.push_back(GameResult::CheaterWin);
+                    } else if(current_player->IsAggressive()) {
+                        game_results.push_back(GameResult::AggressiveWin);
+                    }
+                    game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
+                } else {
+                    game_over.append("The game was a draw!!\n\n");
+                    game_results.push_back(GameResult::Draw);
+                }
+
+                Notify(game_over, *players_);
+            }
+
+            //store the map and the results of each game
+            tournament_results_.insert({current_map->GetParsedMap(), game_results});
+        } else {
+            Notify("\nMap file " + Utility::StripString(*map_file_name, "/", "") + " failed to load! Skipping this map...\n", *players_);
+        }
+    }
+
+    PrintFinalTournamentResult();
+}
+
+void GameEngine::PrintFinalTournamentResult() {
+    //print the final result of the tournament
+    string result = "\"############################################################################# TOURNAMENT OVER #############################################################################\n\n";
+    result.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the Tournament  * * * * * * * * * * * * * * * \n\n");
+
+    //Maps
+    result.append("M: ");
+    if(tournament_results_.empty()) {
+        result.append("none");
+    } else {
+        for(auto& entry : tournament_results_){
+            Map* game_map = entry.first;
+
+            if(game_map){
+                result.append(*game_map->GetMapName() + ", ");
+            }
+        }
+        result.pop_back();
+    }
+
+    //Strategies
+    result.append("\nP: ");
+    if(tournament_strategies_->empty()) {
+        result.append("none");
+    } else {
+        for(PlayerType strategy : *tournament_strategies_) {
+            switch(strategy) {
+                case PlayerType::Aggressive :
+                    result.append("Aggressive, ");
+                    break;
+                case PlayerType::Random :
+                    result.append("Random, ");
+                    break;
+                case PlayerType::Cheater :
+                    result.append("Cheater, ");
+                    break;
+                case PlayerType::Benevolant :
+                    result.append("Benevolant, ");
+                    break;
+                default:
+                    break;
+            }
+        }
+        result.pop_back();
+    }
+
+    //# games per map
+    result.append("\nG: " + to_string(num_games_tournament_));
+
+    //# num turns per game
+    result.append("\nD: " + to_string(max_num_turns_per_game_));
+
+
+    for(auto& entry : tournament_results_) {
+        Map* game_map = entry.first;
+
+        if(game_map) {
+
+            result.append(*game_map->GetMapName());
+            vector<GameResult> game_results = entry.second;
+
+            for(GameResult game_result : game_results) {
+
+                switch(game_result) {
+                    case GameResult::AggressiveWin :
+                        result.append("Aggressive\t");
+                        break;
+                    case GameResult ::CheaterWin :
+                        result.append("Cheater\t");
+                        break;
+                    case GameResult::RandomWin :
+                        result.append("Random\t");
+                        break;
+                    case GameResult::Draw :
+                        result.append("Draw\t");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            result.append("\n\n");
+        }
+    }
+    Utility::ClearScreen();
+    cout << result;
+}
 
 //constructors
 GameEngine::GameEngine() {
@@ -91,20 +309,24 @@ GameEngine::GameEngine() {
     num_benevolant_players_ = 0;
     num_random_players_ = 0;
     num_cheater_players_ = 0;
+
     exit_game_ = false;
     file_paths_ = new vector<filesystem::path>;
     game_start_ = new StartupPhase;
     current_phase_ = GamePhase::Startup;
     observers_ = new vector<Observer*>;
+
     num_unqiue_maps_ = 0;
+    num_games_tournament_ = 0;
     max_num_turns_per_game_ = 0;
     num_strategies_ = 2;
+    tournament_strategies_ = new vector<PlayerType>;
+    tournament_maps_ = new vector<string*>;
 }
 
 GameEngine::GameEngine(const GameEngine& game_engine) {
 
     *loaded_map_ = *game_engine.loaded_map_;
-
     *cards_deck_ = *game_engine.cards_deck_;
 
     *players_ = *game_engine.players_;
@@ -128,20 +350,33 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
 
     *game_start_ = *game_engine.game_start_;
 
-    game_maps_.clear();
-    for(auto& entry : game_engine.game_maps_) {
-        game_maps_.insert({entry.first, entry.second});
+    tournament_results_.clear();
+    for(auto& entry : game_engine.tournament_results_) {
+        tournament_results_.insert({entry.first, entry.second});
     }
 
-    game_results_.clear();
-    for(auto& entry : game_engine.game_results_) {
-//        game_results_.insert({entry.first, entry.second});
+    tournament_strategies_ = new vector<PlayerType>;
+    *tournament_strategies_ = *game_engine.tournament_strategies_;
+    for(int i = 0; i < game_engine.tournament_strategies_->size(); ++i) {
+        (*tournament_strategies_)[i] = (*game_engine.tournament_strategies_)[i];
+    }
+
+    tournament_maps_ = new vector<string*>;
+    *tournament_maps_ = *game_engine.tournament_maps_;
+    for(int i = 0; i < game_engine.tournament_maps_->size(); ++i) {
+        (*tournament_maps_)[i] = (*game_engine.tournament_maps_)[i];
+        delete (*game_engine.tournament_maps_)[i];
+        (*game_engine.tournament_maps_)[i] = nullptr;
     }
 
     num_strategies_ = game_engine.num_strategies_;
     num_unqiue_maps_ = game_engine.max_num_turns_per_game_;
     max_num_turns_per_game_ = game_engine.max_num_turns_per_game_;
+    num_games_tournament_ = game_engine.num_games_tournament_;
 
+
+    delete game_engine.tournament_strategies_;
+    delete game_engine.tournament_maps_;
     delete game_engine.loaded_map_;
     delete game_engine.cards_deck_;
     delete game_engine.game_start_;
@@ -166,6 +401,13 @@ GameEngine::~GameEngine() {
         observer = nullptr;
     }
 
+    for(string* tournament_map : *tournament_maps_) {
+        delete tournament_map;
+        tournament_map = nullptr;
+    }
+
+    delete tournament_maps_;
+    delete tournament_strategies_;
     delete players_;
     delete file_paths_;
     delete cards_deck_;
@@ -173,6 +415,8 @@ GameEngine::~GameEngine() {
     delete observers_;
     delete loaded_map_;
 
+    tournament_maps_ = nullptr;
+    tournament_strategies_ = nullptr;
     loaded_map_ = nullptr;
     cards_deck_ = nullptr;
     players_ = nullptr;
@@ -186,7 +430,6 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 
     if(this != &game_engine) {
         *loaded_map_ = *game_engine.loaded_map_;
-
         *cards_deck_ = *game_engine.cards_deck_;
 
         *players_ = *game_engine.players_;
@@ -210,20 +453,33 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 
         *game_start_ = *game_engine.game_start_;
 
-        game_maps_.clear();
-        for(auto& entry : game_engine.game_maps_) {
-            game_maps_.insert({entry.first, entry.second});
+        tournament_results_.clear();
+        for(auto& entry : game_engine.tournament_results_) {
+            tournament_results_.insert({entry.first, entry.second});
         }
 
-        game_results_.clear();
-        for(auto& entry : game_engine.game_results_) {
-//            game_results_.insert({entry.first, entry.second});
+        tournament_strategies_ = new vector<PlayerType>;
+        *tournament_strategies_ = *game_engine.tournament_strategies_;
+        for(int i = 0; i < game_engine.tournament_strategies_->size(); ++i) {
+            (*tournament_strategies_)[i] = (*game_engine.tournament_strategies_)[i];
+        }
+
+        tournament_maps_ = new vector<string*>;
+        *tournament_maps_ = *game_engine.tournament_maps_;
+        for(int i = 0; i < game_engine.tournament_maps_->size(); ++i) {
+            (*tournament_maps_)[i] = (*game_engine.tournament_maps_)[i];
+            delete (*game_engine.tournament_maps_)[i];
+            (*game_engine.tournament_maps_)[i] = nullptr;
         }
 
         num_strategies_ = game_engine.num_strategies_;
         num_unqiue_maps_ = game_engine.max_num_turns_per_game_;
         max_num_turns_per_game_ = game_engine.max_num_turns_per_game_;
+        num_games_tournament_ = game_engine.num_games_tournament_;
 
+
+        delete game_engine.tournament_strategies_;
+        delete game_engine.tournament_maps_;
         delete game_engine.loaded_map_;
         delete game_engine.cards_deck_;
         delete game_engine.game_start_;
@@ -251,7 +507,6 @@ Player* GameEngine::GetPlayerByID(int id) const {
             return player;
         }
     }
-
     return nullptr;
 }
 
@@ -266,23 +521,6 @@ Deck* GameEngine::GetCardsDeck() const {
 vector<Player*>* GameEngine::GetPlayers() const {
     return players_;
 }
-
-int GameEngine::GetNumPlayers() const {
-    return num_of_players_;
-}
-
-StartupPhase* GameEngine::GetGameStart() const {
-    return game_start_;
-}
-
-bool GameEngine::ExitGameSelected() const {
-    return exit_game_;
-}
-
-GamePhase GameEngine::GetCurrentPhase() const {
-    return current_phase_;
-}
-
 
 //class methods
 bool GameEngine::SelectMap() {
@@ -340,50 +578,39 @@ bool GameEngine::SelectMap() {
 }
 
 string GameEngine::AutoSelectMap(const string& dir) {
-    exit_game_ = false;
     string path;
     string map_file_name;
+    filesystem::directory_iterator iterator;
 
-    do {
-        filesystem::directory_iterator iterator;
-
-        try {
+    try {
+        if(file_paths_->empty()) {
             iterator = filesystem::directory_iterator(dir);
-
             for (const auto& entry : iterator) {
                 if (entry.path().extension() == ".map") {
                     file_paths_->push_back(entry.path());
                 }
             }
-
-            if(file_paths_->empty()) {
-                cout << "No files of .map type found in directory! Invalid directory.";
-                cin.clear();
-                cin.ignore(132,'\n');
-            } else {
-                cout << "\n\nHere are the entries found in directory \"" << dir << "\"\n\n";
-
-                int counter = 1;
-                for(const auto& map_filepath : *file_paths_) {
-                    cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
-                    ++counter;
-                }
-
-                //Load the map file
-                map_file_name = SelectFileForTournament();
-
-                return map_file_name;
-            }
         }
-        catch (filesystem::filesystem_error& error) {
-            cout << "Invalid directory.";
-            cin.clear();
-            cin.ignore(132,'\n');
-        }
-        cout << endl << endl;
-    } while (!exit_game_);
+    }
+    catch (filesystem::filesystem_error& error) {
+        cout << "Error. Invalid directory.\n";
+    }
 
-    return "";
+
+    if(file_paths_->empty()) {
+        cout << "No files of .map type found in directory! Invalid directory.\n\n";
+        return "";
+    } else {
+        cout << "\n\nHere are the entries found in directory \"" << dir << "\"\n\n";
+        int counter = 1;
+        for(const auto& map_filepath : *file_paths_) {
+            cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
+            ++counter;
+        }
+        //Load the map file
+        map_file_name = SelectFileForTournament();
+        return map_file_name;
+    }
 }
 
 bool GameEngine::LoadSelectedMap() {
@@ -413,6 +640,8 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         return;
     }
 
+    players_ = new vector<Player*>;
+
     if(num_of_players_ < 2 || num_of_players_ > 6) {
         //something went wrong. Set number of players to default value of 2
         num_of_players_ = 2;
@@ -440,6 +669,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsAggressive();
         players_->push_back(player);
+        tournament_strategies_->push_back(PlayerType::Aggressive);
     }
 
     for(size_t i = 0; i < num_benevolant_players_; ++i) {
@@ -450,6 +680,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsBenevolent();
         players_->push_back((new Player(player_name, loaded_map->GetParsedMap(), this)));
+        tournament_strategies_->push_back(PlayerType::Benevolant);
     }
 
     for(size_t i = 0; i < num_random_players_; ++i) {
@@ -460,6 +691,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsRandom();
         players_->push_back(player);
+        tournament_strategies_->push_back(PlayerType::Random);
     }
 
     for(size_t i = 0; i < num_cheater_players_; ++i) {
@@ -470,6 +702,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsCheater();
         players_->push_back(player);
+        tournament_strategies_->push_back(PlayerType::Cheater);
     }
 
     game_start_->SetNumberOfArmies(num_of_players_);
@@ -515,40 +748,6 @@ void GameEngine::CreateCardsDeck(MapLoader* loaded_map) {
     cards_deck_ = new Deck();
     int num_cards = loaded_map->GetParsedMap()->GetNumCountries();
     cards_deck_ ->CreateDeck(num_cards);
-}
-
-void GameEngine::DisplayCurrentGame() {
-    cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
-    for(Player* player : *players_) {
-        player->DisplayPlayerStats();
-        cout << endl;
-    }
-
-    cout << "There are " << loaded_map_->GetParsedMap()->GetNumCountries() << " countries in the loaded map and " << cards_deck_->GetNumberOfCardsInDeck() << " cards in the created deck\n\n";
-
-    cout << "Verifying that each country only has one single owner\n";
-    cout << setw(20) << left <<  "Country" << setw(30) << right << "Owner"<< endl;
-
-    for(const Country* country : *loaded_map_->GetParsedMap()->GetCountries()) {
-        string country_name = *country->GetCountryName();
-        string owner_name = (GetPlayerByID(country->GetOwnerID())) ? *GetPlayerByID(country->GetOwnerID())->GetPlayerName() : "";
-
-        if(!owner_name.empty() && !country_name.empty()) {
-            cout << setw(20) << left <<country_name << setw(30) << right << owner_name << endl;
-        }
-    }
-
-//    cout << "Displaying generated deck of cards:\n";
-//    cards_deck_->DisplayDeck();
-//
-//    cout << endl;
-//
-//    cout << "\nDisplaying Countries of map:" << endl;
-//    game_map_->GetParsedMap()->DisplayCountries();
-//
-//    cout << "\n\nDisplaying Continents of map:" << endl;
-//    game_map_->GetParsedMap()->DisplayContinents();
-    cout << endl;
 }
 
 void GameEngine::StartGameLoop() {
@@ -677,170 +876,6 @@ void GameEngine::PromptUserToSelectNumPlayers(PlayerType player_type) {
     }
 }
 
-void GameEngine::SetUpTournament() {
-    int num_maps;
-    cout << "\nHow many maps would you like to include in the tournament? You may choose between 1-5: ";
-
-    while(!(cin >> num_maps) || num_maps < 1 || num_maps > 5) {
-        cin.clear();
-        cin.ignore(132,'\n');
-        cout << "Invalid selection! Please try again:";
-    }
-
-    num_unqiue_maps_ = num_maps;
-
-    cout << "\nYou have chosen " << num_unqiue_maps_ << endl;
-
-    // Ask the user to specify and load the maps they wish to use
-    for(int i = 0; i < num_unqiue_maps_; ++i) {
-
-        string map_file_name = AutoSelectMap("../MapLoader/domination-map-files");
-        if(!map_file_name.empty()) {
-            // Prompt the user for the number of games they wish to play per map
-            int num_games;
-            cout << "\nPlease enter the number of games you would like to play for map " << (i+1)<< " (1 - 5 allowed): ";
-            while (!(cin >> num_games) || num_games < 1 || num_games > 5) {
-                cin.clear();
-                cin.ignore(132, '\n');
-                cout << "Invalid number of strategies entered. Please try again: ";
-            }
-
-            //store the desired map and number of games
-            game_maps_.insert({num_games, map_file_name});
-        }
-    }
-
-    //prompt the user to specify the max number of turns for each game
-    int num_turns_per_game;
-    cout << "\nPlease enter the maximum number of turns allowed per game (between 10-50): ";
-    while(!(cin >> num_turns_per_game) || num_turns_per_game < 10 || num_turns_per_game > 50) {
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Invalid number entered. Please try again: ";
-    }
-    max_num_turns_per_game_ = num_turns_per_game;
-
-
-    // prompt the user for the number of different strategies they would like to include
-    int num_strategies;
-    cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
-    while(!(cin >> num_strategies) || num_strategies < 2 || num_strategies > 4) {
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Invalid number of strategies entered. Please try again: ";
-    }
-    num_strategies_ = num_strategies;
-
-
-    //Create the games
-    num_of_human_players_ = 0;
-    num_of_players_ = num_strategies_;
-
-    while((num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_) < num_of_players_) {
-        PromptUserToSelectNumPlayers(PlayerType::Aggressive);
-        PromptUserToSelectNumPlayers(PlayerType::Benevolant);
-        PromptUserToSelectNumPlayers(PlayerType::Random);
-        PromptUserToSelectNumPlayers(PlayerType::Cheater);
-    }
-
-    StartTournament();
-}
-
-void GameEngine::StartTournament() {
-
-    // iterate through all the chosen game maps and execute the game M number of times
-    for (auto &game : game_maps_) {
-        int num_games = game.first;
-        MapLoader *current_map = new MapLoader(game.second);
-
-        if(current_map->ParseMap()) {
-            loaded_map_ = current_map;
-
-            vector<GameResult> game_results;
-            //current map will be played for num_games
-            for (int i = 0; i < num_games; ++i) {
-                CreatePlayersForMap(current_map);
-                CreateCardsDeck(current_map);
-                AssignHandOfCardsToPlayers();
-                AssignDiceToPlayers();
-                game_start_->RandomlyDeterminePlayerOrder(players_);
-                game_start_->AssignCountriesToAllPlayers(players_, current_map->GetParsedMap()->GetCountries());
-                game_start_->AutoAssignArmiesToAllPlayers(players_);
-
-
-                int current_turn = 0;
-                int current_index = game_start_->current_player_index_;
-
-                Player *current_player = players_->at(current_index);
-
-
-                if (!current_player) {
-                    return;
-                }
-
-                //flag that will tack when game is a draw.
-                bool is_draw = false;
-
-                //start the game loop for current game
-                while (!PlayerHasWon(current_player) && num_of_players_ > 1) {
-                    Notify("\nCurrent Map: " + *current_map->GetParsedMap()->GetMapName()  + "\nCurrent game: " + to_string(i + 1) + "\nCurrent turn " + to_string(current_turn) + "\n", *players_);
-                    current_player = players_->at(current_index);
-                    if (!current_player) {
-                        break;
-                    }
-                    cout << "\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * Currently "
-                         << *current_player->GetPlayerName()
-                         << "'s turn * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n";
-
-                    if(!current_player->GetPlayersCountries()->empty()){
-
-                        current_player->Reinforce();
-                        cout << *current_player->GetPlayerName() << endl;
-                        current_player->DisplayCountries();
-                        current_player->Attack();
-                        if(num_of_players_ < 2) {
-                            break;
-                        }
-                        current_player->Fortify();
-                    }
-
-                    current_index = (current_index + 1) % num_of_players_;
-                    current_player = players_->at(game_start_->current_player_index_);
-                    //each time the game is played by all players, increment the counter
-                    ++current_turn;
-                    if(current_turn == max_num_turns_per_game_) {
-                        is_draw = true;
-                        break;
-                    }
-                }
-
-                string game_over = "############################################################################# GAME OVER #############################################################################\n";
-
-                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the current game * * * * * * * * * * * * * * * \n\n");
-
-                if(current_player && !is_draw) {
-                    if(current_player->IsRandom()) {
-                        game_results.push_back(GameResult::RandomWin);
-                    } else if (current_player->IsCheater()) {
-                        game_results.push_back(GameResult::CheaterWin);
-                    } else if(current_player->IsAggressive()) {
-                        game_results.push_back(GameResult::AggressiveWin);
-                    }
-                    game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
-                } else {
-                    game_over.append("The game was a draw!!\n\n");
-                    game_results.push_back(GameResult::Draw);
-                }
-
-                Notify(game_over, *players_);
-            }
-
-            //store the map and the results of each game
-            game_results_.insert({current_map->GetParsedMap(), game_results});
-        }
-    }
-}
-
 void GameEngine::CreateNewGame() {
     bool is_tournament;
     cout << "Please enter 0 to play single game, or 1 to play tournament" << endl;
@@ -858,16 +893,18 @@ void GameEngine::CreateNewGame() {
     } else {
         game_start_ = new StartupPhase;
 
-        SelectMap();
-        LoadSelectedMap();
+        string map_file_name = AutoSelectMap("../MapLoader/domination-map-files");
+        loaded_map_ = new MapLoader(map_file_name);
+
+        if(!loaded_map_) {
+            cout << "Failed to load selected map! Aborting\n";
+            return;
+        }
+
         if(loaded_map_->ParseMap()) {
 
             cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
-            while(!(cin >> num_of_players_) || num_of_players_ < 2 || num_of_players_ > 6) {
-                cout << "Invalid number of players entered. Please try again: ";
-                cin.clear();
-                cin.ignore(132, '\n');
-            }
+            num_of_players_ = Utility::PromptUserNumericalInput(2, 6);
 
             while(num_of_human_players_ + num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_ < num_of_players_) {
                 PromptUserToSelectNumPlayers(PlayerType::Human);
@@ -884,18 +921,21 @@ void GameEngine::CreateNewGame() {
             game_start_->RandomlyDeterminePlayerOrder(players_);
             game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
             game_start_->AutoAssignArmiesToAllPlayers(players_);
-        }
 
-        for(Player* player : *players_) {
-            player->SetGameMap(loaded_map_->GetParsedMap());
-        }
-        //repeat game loop 2 times
-        for(int i = 0; i < 2; ++i) {
             for(Player* player : *players_) {
-                player->Reinforce();
-                player->Attack();
-                player->Fortify();
+                player->SetGameMap(loaded_map_->GetParsedMap());
             }
+
+            //repeat game loop 2 times
+//            for(int i = 0; i < 2; ++i) {
+//                for(Player* player : *players_) {
+//                    player->Reinforce();
+//                    player->Attack();
+//                    player->Fortify();
+//                }
+//            }
+
+            StartGameLoop();
         }
     }
 }
@@ -913,11 +953,13 @@ void GameEngine::Unregister(Observer *observer) {
     }
 }
 
+//PhaseObserver
 void GameEngine::Notify(Player* current_player, int current_phase, string current_phase_action_description, bool phase_start, bool phase_over) {
     for (Observer *observer : *observers_) {
         observer->Update(current_player, current_phase, current_phase_action_description, phase_start, phase_over);
     }
 }
+
 //GameStatisticObserver
 void GameEngine::Notify(string msg, const vector<Player*>& players){
     for(Observer* observer : *observers_){

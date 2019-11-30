@@ -8,6 +8,16 @@ int Utility::GenerateRandomNumInRange(int lower_bound, int upper_bound) {
     return distribution(generator);
 }
 
+int Utility::PromptUserNumericalInput(int lower_bound, int upper_bound) {
+    int user_selection = -1;
+    while (!(cin >> user_selection) || user_selection < lower_bound || user_selection > upper_bound) {
+        cout << "Invalid selection! Please try again: ";
+        cin.clear();
+        cin.ignore(132, '\n');
+    }
+    return user_selection;
+}
+
 //returns true if finds passed value within passed vector
 bool Utility::HasValue(const vector<int>& values, const int value) {
     for(int i : values) {

@@ -50,12 +50,15 @@ private:
     int num_cheater_players_;
     int num_unqiue_maps_;
     int num_strategies_;
+    int num_games_tournament_;
     int max_num_turns_per_game_;
     bool exit_game_;
 
-    map<int, string> game_maps_;  //key is # game per map, val is filename of map
-    map<Map*, vector<GameResult>> game_results_; //data structure that will store the results of all games for each map
+    vector<PlayerType>* tournament_strategies_;
+    vector<string*>* tournament_maps_;
+    map<Map*, vector<GameResult>> tournament_results_; //data structure that will store the results of all games for each map
 
+    //for phase and statistics observers
     vector<Observer*>* observers_;
 
     //used to store contents of current directory so that user may reattempt file selection if another fails to load
@@ -65,9 +68,9 @@ private:
     MapLoader* SelectFile();
     string SelectFileForTournament();
     void PromptUserToSelectNumPlayers(PlayerType player_type);
-
     void SetUpTournament();
     void StartTournament();
+    void PrintFinalTournamentResult();
 
 public:
     // Function to test Player functions within game
@@ -84,11 +87,7 @@ public:
     //Getters
     MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
-    GamePhase GetCurrentPhase() const;
     vector<Player*>* GetPlayers() const;
-    int GetNumPlayers() const;
-    bool ExitGameSelected() const;
-    StartupPhase* GetGameStart() const;
     Player* GetPlayerByID(int id) const;
 
     //Methods
@@ -102,7 +101,6 @@ public:
     void AssignDiceToPlayers();
     void AssignHandOfCardsToPlayers();
     void CreateCardsDeck(MapLoader* loaded_map);
-    void DisplayCurrentGame();
 
     void StartGameLoop();
     void CreateNewGame();

@@ -142,7 +142,7 @@ int GameStatisticObserver::CardExchangesCompleted(const vector<Player*>& players
 void GameStatisticObserver::DisplayActivePlayerStats(const vector<Player*>& players){
 
     if(players.empty()) {
-        cout << "Error has occurred! No players found in game" << endl;
+        cout << "No players found in current game" << endl;
         return;
     }
 
