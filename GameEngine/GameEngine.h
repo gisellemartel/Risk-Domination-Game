@@ -53,8 +53,8 @@ private:
     int max_num_turns_per_game_;
     bool exit_game_;
 
-    map<int, MapLoader*>* game_maps_;  //key is # game per map
-    map<Map*, vector<GameResult>>* game_results_; //data structure that will store the results of all games for each map
+    map<int, string> game_maps_;  //key is # game per map, val is filename of map
+    map<Map, vector<GameResult>> game_results_; //data structure that will store the results of all games for each map
 
     vector<Observer*>* observers_;
 
@@ -63,8 +63,10 @@ private:
 
     //private helper functions
     MapLoader* SelectFile();
+    string SelectFileForTournament();
     void PromptUserToSelectNumPlayers(PlayerType player_type);
 
+    void SetUpTournament();
     void StartTournament();
 
 public:
@@ -91,25 +93,20 @@ public:
 
     //Methods
     bool SelectMap();
-    bool AutoSelectMap(string dir);
+    string AutoSelectMap(const string& dir);
     bool LoadSelectedMap();
     bool PlayerHasWon(Player* current_player);
 
-    void SelectNumOfHumanPlayers();
-    void SelectNumOfAggressivePlayers();
-    void SelectNumOfBenevolantPlayers();
-    void CreatePlayers();
+    void CreatePlayersForMap(MapLoader* loaded_map);
     void AssignDiceToPlayers();
     void AssignHandOfCardsToPlayers();
-    void CreateCardsDeck();
+    void CreateCardsDeck(MapLoader* loaded_map);
     void DisplayCurrentGame();
 
     void StartGameLoop();
 
 
-    //TODO: code added for A4
     void CreateNewGame();
-    //
 
     void Register(Observer* observer) override;
     void Unregister(Observer* observer) override;
