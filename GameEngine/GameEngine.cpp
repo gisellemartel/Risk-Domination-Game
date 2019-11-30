@@ -95,7 +95,7 @@ void GameEngine::SetUpTournament() {
 
     // prompt the user for the number of different strategies they would like to include
     cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
-    num_games_tournament_ = Utility::PromptUserNumericalInput(2, 4);
+    num_strategies_ = Utility::PromptUserNumericalInput(2, 4);
 
     //Create the games
     num_of_human_players_ = 0;
@@ -228,6 +228,7 @@ void GameEngine::PrintFinalTournamentResult() {
             }
         }
         result.pop_back();
+        result.pop_back();
     }
 
     //Strategies
@@ -254,13 +255,14 @@ void GameEngine::PrintFinalTournamentResult() {
             }
         }
         result.pop_back();
+        result.pop_back();
     }
 
     //# games per map
     result.append("\nG: " + to_string(num_games_tournament_));
 
     //# num turns per game
-    result.append("\nD: " + to_string(max_num_turns_per_game_));
+    result.append("\nD: " + to_string(max_num_turns_per_game_) + "\n\n");
 
 
     for(auto& entry : tournament_results_) {
