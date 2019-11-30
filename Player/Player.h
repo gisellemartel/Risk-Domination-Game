@@ -8,9 +8,12 @@
 #define PLAYER_H
 
 #include "../Map/Country.h"
+#include "../Cards/Hand.h"
 #include "../Cards/Cards.h"
 #include "PlayerStrategies.h"
-#include "Phases.h"
+#include "FortifyPhase.h"
+#include "AttackPhase.h"
+#include "ReinforcePhase.h"
 
 #include <iostream>
 #include <vector>

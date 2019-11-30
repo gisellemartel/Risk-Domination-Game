@@ -17,8 +17,8 @@ Adapter::Adapter(const Adapter &adapter) : MapLoader(adapter) {
 }
 
 Adapter::~Adapter() {
-    conquest_map_loader_ = nullptr;
     delete conquest_map_loader_;
+    conquest_map_loader_ = nullptr;
 }
 
 Adapter &Adapter::operator=(const Adapter &adapter) {

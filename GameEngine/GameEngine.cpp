@@ -76,7 +76,7 @@ GameEngine::GameEngine() {
     current_phase_ = GamePhase::Startup;
     observers_ = new vector<Observer*>;
 
-    game_maps_ = new map<int, Map*>;  //key is # game per map
+    game_maps_ = new map<int, MapLoader*>;  //key is # game per map
     game_results_ = new map<Map*, vector<GameResult>>;
     num_unqiue_maps_ = 0;
     max_num_turns_per_game_ = 0;
@@ -91,8 +91,8 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
         (*players_)[i] = (*game_engine.players_)[i];
-        (*game_engine.players_)[i] = nullptr;
         delete (*game_engine.players_)[i];
+        (*game_engine.players_)[i] = nullptr;
     }
 
     *file_paths_ = *game_engine.file_paths_;
@@ -104,21 +104,21 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     *observers_ = *game_engine.observers_;
     for(int i = 0; i < game_engine.observers_->size(); ++i) {
         (*observers_)[i] = (*game_engine.observers_)[i];
-        (*game_engine.observers_)[i] = nullptr;
         delete (*game_engine.observers_)[i];
+        (*game_engine.observers_)[i] = nullptr;
     }
 
     *game_start_ = *game_engine.game_start_;
 
-    game_maps_ = new map<int, Map*>;
+    game_maps_ = new map<int, MapLoader*>;
     for(auto& entry : *game_engine.game_maps_) {
         game_maps_->insert({entry.first, entry.second});
 
-        entry.second = nullptr;
         delete entry.second;
+        entry.second = nullptr;
     }
 
-    delete[] game_engine.game_maps_;
+    delete game_engine.game_maps_;
 
     game_results_ = new map<Map*, vector<GameResult>>;
     for(auto& entry : *game_engine.game_results_) {
@@ -126,7 +126,7 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
         delete entry.first;
     }
 
-    delete[] game_engine.game_results_;
+    delete game_engine.game_results_;
 
     num_strategies_ = game_engine.num_strategies_;
     num_unqiue_maps_ = game_engine.max_num_turns_per_game_;
@@ -135,9 +135,9 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     delete game_engine.loaded_map_;
     delete game_engine.cards_deck_;
     delete game_engine.game_start_;
-    delete[] game_engine.players_;
-    delete[] game_engine.file_paths_;
-    delete[] game_engine.observers_;
+    delete game_engine.players_;
+    delete game_engine.file_paths_;
+    delete game_engine.observers_;
 
     num_of_players_ = game_engine.num_of_players_;
     num_of_human_players_ = game_engine.num_of_human_players_;
@@ -152,36 +152,23 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
 GameEngine::~GameEngine() {
 
     for (auto& player : *players_) {
-        player = nullptr;
         delete player;
-    }
-
-    for (auto& filepath : *file_paths_) {
-        filepath = nullptr;
+        player = nullptr;
     }
 
     for (Observer* observer : *observers_) {
-        observer = nullptr;
         delete observer;
+        observer = nullptr;
     }
 
     for(auto& entry : *game_maps_) {
-        entry.second = nullptr;
         delete entry.second;
+        entry.second = nullptr;
     }
 
     for(auto& entry : *game_results_) {
         delete entry.first;
     }
-
-    game_results_ = nullptr;
-    game_maps_ = nullptr;
-    loaded_map_ = nullptr;
-    cards_deck_ = nullptr;
-    players_ = nullptr;
-    file_paths_ = nullptr;
-    game_start_ = nullptr;
-    observers_ = nullptr;
 
     delete players_;
     delete file_paths_;
@@ -191,6 +178,14 @@ GameEngine::~GameEngine() {
     delete observers_;
     delete game_results_;
     delete game_maps_;
+    game_results_ = nullptr;
+    game_maps_ = nullptr;
+    loaded_map_ = nullptr;
+    cards_deck_ = nullptr;
+    players_ = nullptr;
+    file_paths_ = nullptr;
+    game_start_ = nullptr;
+    observers_ = nullptr;
 }
 
 
@@ -203,8 +198,8 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
         (*players_)[i] = (*game_engine.players_)[i];
-        (*game_engine.players_)[i] = nullptr;
         delete (*game_engine.players_)[i];
+        (*game_engine.players_)[i] = nullptr;
     }
 
     *file_paths_ = *game_engine.file_paths_;
@@ -216,8 +211,8 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     *observers_ = *game_engine.observers_;
     for(int i = 0; i < game_engine.observers_->size(); ++i) {
         (*observers_)[i] = (*game_engine.observers_)[i];
-        (*game_engine.observers_)[i] = nullptr;
         delete (*game_engine.observers_)[i];
+        (*game_engine.observers_)[i] = nullptr;
     }
 
     *game_start_ = *game_engine.game_start_;
@@ -226,15 +221,15 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     max_num_turns_per_game_ = game_engine.max_num_turns_per_game_;
     num_strategies_ = game_engine.num_strategies_;
 
-    game_maps_ = new map<int, Map*>;
+    game_maps_ = new map<int, MapLoader*>;
     for(auto& entry : *game_engine.game_maps_) {
         game_maps_->insert({entry.first, entry.second});
 
-        entry.second = nullptr;
         delete entry.second;
+        entry.second = nullptr;
     }
 
-    delete[] game_engine.game_maps_;
+    delete game_engine.game_maps_;
 
     game_results_ = new map<Map*, vector<GameResult>>;
     for(auto& entry : *game_engine.game_results_) {
@@ -242,14 +237,14 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
         delete entry.first;
     }
 
-    delete[] game_engine.game_results_;
+    delete game_engine.game_results_;
 
     delete game_engine.loaded_map_;
     delete game_engine.cards_deck_;
     delete game_engine.game_start_;
-    delete[] game_engine.players_;
-    delete[] game_engine.file_paths_;
-    delete[] game_engine.observers_;
+    delete game_engine.players_;
+    delete game_engine.file_paths_;
+    delete game_engine.observers_;
 
     num_of_players_ = game_engine.num_of_players_;
     num_of_human_players_ = game_engine.num_of_human_players_;
@@ -324,6 +319,52 @@ bool GameEngine::SelectMap() {
                 cin.ignore(132,'\n');
             } else {
                 cout << "\n\nHere are the entries found in directory \"" << path << "\"\n\n";
+
+                int counter = 1;
+                for(const auto& map_filepath : *file_paths_) {
+                    cout << "File " << counter << ": " << map_filepath.filename().string() << endl;
+                    ++counter;
+                }
+
+                //Load the map file
+                loaded_map_ = SelectFile();
+
+                return loaded_map_ != nullptr;
+            }
+        }
+        catch (filesystem::filesystem_error& error) {
+            cout << "Invalid directory.";
+            cin.clear();
+            cin.ignore(132,'\n');
+        }
+        cout << endl << endl;
+    } while (!exit_game_);
+
+    return false;
+}
+
+bool GameEngine::AutoSelectMap(string dir) {
+    exit_game_ = false;
+    string path;
+
+    do {
+        filesystem::directory_iterator iterator;
+
+        try {
+            iterator = filesystem::directory_iterator(dir);
+
+            for (const auto& entry : iterator) {
+                if (entry.path().extension() == ".map") {
+                    file_paths_->push_back(entry.path());
+                }
+            }
+
+            if(file_paths_->empty()) {
+                cout << "No files of .map type found in directory! Invalid directory.";
+                cin.clear();
+                cin.ignore(132,'\n');
+            } else {
+                cout << "\n\nHere are the entries found in directory \"" << dir << "\"\n\n";
 
                 int counter = 1;
                 for(const auto& map_filepath : *file_paths_) {
@@ -593,7 +634,7 @@ void GameEngine::StartGameLoop() {
         return;
     }
 
-    while(!PlayerHasWon(current_player) && num_of_players_ > 1 && num_iterations < max_num_turns_per_game_){
+    while(!PlayerHasWon(current_player) && num_of_players_ > 1){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -715,28 +756,32 @@ void GameEngine::StartTournament() {
 
     // Ask the user to specify and load the maps they wish to use
     for(int i = 0; i < num_unqiue_maps_; ++i) {
-        SelectMap();
-        LoadSelectedMap();
+        if(AutoSelectMap("../MapLoader/domination-map-files")) {
 
-        // Prompt the user for the number of games they wish to play per map
-        int num_games;
-        cout << "\nPlease enter the number of games you would like to play for map " << i << " : ";
-        while(!(cin >> num_games) || num_games < 1 || num_games > 5) {
-            cout << "Invalid number of strategies entered. Please try again: ";
-            cin.clear();
-            cin.ignore(132, '\n');
+            LoadSelectedMap();
+
+            // Prompt the user for the number of games they wish to play per map
+            int num_games;
+            cout << "\nPlease enter the number of games you would like to play for map (1-5) " << i << " : ";
+            while (!(cin >> num_games) || num_games < 1 || num_games > 5) {
+                cin.clear();
+                cin.ignore(132, '\n');
+                cout << "Invalid number of strategies entered. Please try again: ";
+            }
+            if (loaded_map_->ParseMap()) {
+                MapLoader game_map = MapLoader(*loaded_map_);
+                game_maps_->insert({num_games, &game_map});
+            }
         }
-        Map* game_map = loaded_map_->GetParsedMap();
-        game_maps_->insert({num_games, game_map});
     }
 
     //prompt the user to specify the max number of turns for each game
     int num_turns_per_game;
     cout << "\nPlease enter the maximum number of turns allowed per game (between 10-50): ";
     while(!(cin >> num_turns_per_game) || num_turns_per_game < 10 || num_turns_per_game > 50) {
-        cout << "Invalid number entered. Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
+        cout << "Invalid number entered. Please try again: ";
     }
     max_num_turns_per_game_ = num_turns_per_game;
 
@@ -745,9 +790,9 @@ void GameEngine::StartTournament() {
     int num_strategies;
     cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
     while(!(cin >> num_strategies) || num_strategies < 2 || num_strategies > 4) {
-        cout << "Invalid number of strategies entered. Please try again: ";
         cin.clear();
         cin.ignore(132, '\n');
+        cout << "Invalid number of strategies entered. Please try again: ";
     }
     num_strategies_ = num_strategies;
 
@@ -763,15 +808,18 @@ void GameEngine::StartTournament() {
         PromptUserToSelectNumPlayers(PlayerType::Cheater);
     }
 
+
     // iterate through all the chosen game maps and execute the game M number of times
     for(auto& game : *game_maps_) {
         int num_games = game.first;
-        Map* current_map = game.second;
+        MapLoader* current_map = game.second;
 
         if(!current_map) {
             cout << "\nSomething went wrong! unable to load a game map. Aborting game\n";
             continue;
         }
+
+        loaded_map_ = current_map;
 
         //current map will be played for num_games
         for(int i = 0; i < num_games; ++i) {
@@ -838,6 +886,7 @@ void GameEngine::StartTournament() {
 //                }
 
 //            }
+
         }
 
     }
@@ -850,6 +899,8 @@ void GameEngine::CreateNewGame() {
     cout << "Please enter 0 to play single game, or 1 to play tournament" << endl;
 
     while(!(cin >> is_tournament)) {
+        cin.clear();
+        cin.ignore(132, '\n');
         cout << "Invalid entry! Please try again" << endl;
     }
 
@@ -891,10 +942,6 @@ void GameEngine::CreateNewGame() {
         for(Player* player : *players_) {
             player->SetGameMap(loaded_map_->GetParsedMap());
         }
-        Notify("Starting New Game...\n");
-        Observer* observer = new GameStatisticObserver;
-        Register(observer);
-
         //repeat game loop 2 times
         for(int i = 0; i < 2; ++i) {
             for(Player* player : *players_) {
@@ -903,8 +950,6 @@ void GameEngine::CreateNewGame() {
                 player->Fortify();
             }
         }
-
-        Unregister(observer);
     }
 
 

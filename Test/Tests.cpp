@@ -105,11 +105,6 @@ public:
 
         new_game->Unregister(observer);
 
-        observer = nullptr;
-        strategies1 = nullptr;
-        strategies2 = nullptr;
-        new_game = nullptr;
-
         delete strategies1;
         delete strategies2;
         delete observer;
@@ -144,8 +139,6 @@ public:
 
         new_game->Unregister(observer);
 
-        observer = nullptr;
-        new_game = nullptr;
         delete observer;
         delete new_game;
     }
@@ -167,9 +160,6 @@ public:
         new_game->Notify("Game Test Over");
 
         new_game->Unregister(observer);
-
-        new_game = nullptr;
-        observer = nullptr;
 
         delete new_game;
         delete observer;
@@ -233,12 +223,13 @@ public:
     static void TestGameTournament() {
         cout << "\n\nTesting Game Tournament...\n\n";
         GameEngine* new_game = new GameEngine();
-
+        Observer* observer = new GameStatisticObserver;
+        new_game->Register(observer);
         new_game->CreateNewGame();
+        new_game->Unregister(observer);
 
         cout << "\n\nFinished Testing Game Tournament...\n\n";
 
-        new_game = nullptr;
         delete new_game;
     }
 

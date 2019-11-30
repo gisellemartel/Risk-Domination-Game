@@ -53,7 +53,7 @@ private:
     int max_num_turns_per_game_;
     bool exit_game_;
 
-    map<int, Map*>* game_maps_;  //key is # game per map
+    map<int, MapLoader*>* game_maps_;  //key is # game per map
     map<Map*, vector<GameResult>>* game_results_; //data structure that will store the results of all games for each map
 
     vector<Observer*>* observers_;
@@ -90,6 +90,7 @@ public:
 
     //Methods
     bool SelectMap();
+    bool AutoSelectMap(string dir);
     bool LoadSelectedMap();
     bool PlayerHasWon(Player* current_player);
 

@@ -18,6 +18,8 @@ using namespace std;
 #include "../MapLoader/ConquestMapLoader.h"
 #include "../Dice/Dice.h"
 #include "../Cards/Cards.h"
+#include "../Cards/Deck.h"
+#include "../Cards/Hand.h"
 #include "../Utility/Utility.h"
 #include "../Player/Player.h"
 #include "StartupPhase.h"

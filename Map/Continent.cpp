@@ -24,21 +24,34 @@ Continent::Continent(const Continent &continent) {
     *countries_in_continent_ = *continent.countries_in_continent_;
     for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
         (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
-        (*continent.countries_in_continent_)[i] = nullptr;
         delete (*continent.countries_in_continent_)[i];
+        (*continent.countries_in_continent_)[i] = nullptr;
     }
 
     delete continent.continent_name_;
     delete continent.color_;
-    delete[] continent.countries_in_continent_;
+    delete continent.countries_in_continent_;
 }
 
 Continent::~Continent() {
-    for(size_t i = 0; i < countries_in_continent_->size(); ++i) {
-        delete (&countries_in_continent_[i]);
+    if(continent_name_ && !continent_name_->empty()) {
+        delete continent_name_;
+        continent_name_ = nullptr;
     }
 
-    delete[] countries_in_continent_;
+    if(color_){
+        delete color_;
+        color_ = nullptr;
+    }
+
+    if(!continent_name_) {
+        return;
+    }
+
+    if(!countries_in_continent_->empty()) {
+        delete countries_in_continent_;
+        countries_in_continent_ = nullptr;
+    }
 }
 
 Continent& Continent::operator=(const Continent &continent) {
@@ -47,16 +60,18 @@ Continent& Continent::operator=(const Continent &continent) {
     army_value_ = continent.army_value_;
     *color_ = *continent.color_;
 
-    *countries_in_continent_ = *continent.countries_in_continent_;
-    for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
-        (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
-        (*continent.countries_in_continent_)[i] = nullptr;
-        delete (*continent.countries_in_continent_)[i];
+    if(countries_in_continent_) {
+        *countries_in_continent_ = *continent.countries_in_continent_;
+        for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
+            (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
+            delete (*continent.countries_in_continent_)[i];
+            (*continent.countries_in_continent_)[i] = nullptr;
+        }
+        delete continent.countries_in_continent_;
     }
 
     delete continent.continent_name_;
     delete continent.color_;
-    delete[] continent.countries_in_continent_;
 
     return *this;
 }

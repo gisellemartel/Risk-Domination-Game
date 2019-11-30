@@ -40,7 +40,8 @@ StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
 }
 
 StartupPhase::~StartupPhase() {
-    delete [] player_order_;
+    delete player_order_;
+    player_order_ = nullptr;
 }
 
 

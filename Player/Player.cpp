@@ -72,8 +72,8 @@ Player::Player(const Player &player) {
     *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
         (*countries_)[i] = (*player.countries_)[i];
-        (*player.countries_)[i] = nullptr;
         delete (*player.countries_)[i];
+        (*player.countries_)[i] = nullptr;
     }
 
     *risk_cards_ = *player.risk_cards_;
@@ -95,23 +95,15 @@ Player::Player(const Player &player) {
     delete player.attack_phase_;
     delete player.fortify_phase_;
     delete player.game_engine_;
-    delete[] player.countries_;
+    delete player.countries_;
 }
 
 Player::~Player() {
 
     for(Country* country : *countries_) {
-        country = nullptr;
         delete country;
+        country = nullptr;
     }
-
-    player_name_ = nullptr;
-    risk_cards_ = nullptr;
-    countries_ = nullptr;
-    dice_roll_ = nullptr;
-    game_map_ = nullptr;
-    player_strategy_ = nullptr;
-    attack_phase_ = nullptr;
 
     delete player_name_;
     delete risk_cards_;
@@ -122,6 +114,14 @@ Player::~Player() {
     delete attack_phase_;
     delete reinforce_phase_;
     delete fortify_phase_;
+
+    player_name_ = nullptr;
+    risk_cards_ = nullptr;
+    countries_ = nullptr;
+    dice_roll_ = nullptr;
+    game_map_ = nullptr;
+    player_strategy_ = nullptr;
+    attack_phase_ = nullptr;
 }
 
 Player& Player::operator=(const Player &player) {
@@ -134,8 +134,8 @@ Player& Player::operator=(const Player &player) {
     *countries_ = *player.countries_;
     for(size_t i = 0; i < player.countries_->size(); ++i) {
         (*countries_)[i] = (*player.countries_)[i];
-        (*player.countries_)[i] = nullptr;
         delete (*player.countries_)[i];
+        (*player.countries_)[i] = nullptr;
     }
 
     *risk_cards_ = *player.risk_cards_;
@@ -157,7 +157,7 @@ Player& Player::operator=(const Player &player) {
     delete player.attack_phase_;
     delete player.fortify_phase_;
     delete player.game_engine_;
-    delete[] player.countries_;
+    delete player.countries_;
 
     return *this;
 }

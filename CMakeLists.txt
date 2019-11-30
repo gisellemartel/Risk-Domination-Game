@@ -13,7 +13,7 @@ add_executable(Test
         Cards/Cards.cpp
         Dice/Dice.cpp
         Player/PlayerStrategies.cpp
-        Player/Phases.cpp
+        Player/FortifyPhase.cpp
         Player/Player.cpp
         MapLoader/Adapter.cpp
         MapLoader/MapLoader.cpp
@@ -21,4 +21,4 @@ add_executable(Test
         GameEngine/GameObservers.cpp
         GameEngine/StartupPhase.cpp
         GameEngine/GameEngine.cpp
-        )
+        Cards/Hand.cpp Cards/Hand.h Cards/Deck.cpp Cards/Deck.h Player/AttackPhase.cpp Player/AttackPhase.h Player/ReinforcePhase.cpp Player/ReinforcePhase.h)

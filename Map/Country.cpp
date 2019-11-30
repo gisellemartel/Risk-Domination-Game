@@ -47,13 +47,21 @@ Country::Country(const Country &country) {
 
 Country::~Country() {
 
-    country_owner_ = nullptr;
-    country_name_ = nullptr;
-    continent_ = nullptr;
+    if(country_owner_) {
+        delete country_owner_;
+        country_owner_ = nullptr;
+    }
 
-    delete country_owner_;
-    delete country_name_;
-    delete continent_;
+    if(country_name_) {
+        delete country_name_;
+        country_name_ = nullptr;
+    }
+
+
+    if(continent_) {
+        delete continent_;
+        continent_ = nullptr;
+    }
 }
 
 Country& Country::operator=(const Country &country) {

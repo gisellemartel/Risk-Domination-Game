@@ -21,8 +21,8 @@ ConquestMapLoader::ConquestMapLoader(const ConquestMapLoader &conquest_map_loade
 }
 
 ConquestMapLoader::~ConquestMapLoader() {
-    parsed_map_ = nullptr;
     delete parsed_map_;
+    parsed_map_ = nullptr;
 }
 
 ConquestMapLoader &ConquestMapLoader::operator=(const ConquestMapLoader &conquest_map_loader) {

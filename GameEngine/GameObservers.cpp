@@ -128,11 +128,11 @@ GameStatisticObserver::GameStatisticObserver(vector<Player*>* players){
 GameStatisticObserver::~GameStatisticObserver(){
 
     for(Player* player : *players_) {
-        player = nullptr;
         delete player;
+        player = nullptr;
     }
-    players_ = nullptr;
     delete players_;
+    players_ = nullptr;
 }
 
 void GameStatisticObserver::Update(string msg) {
@@ -177,7 +177,7 @@ int GameStatisticObserver::CardExchangesCompleted(){
 void GameStatisticObserver::DisplayActivePlayerStats(){
 
     if(!players_ || players_->empty()) {
-        cout << "game_players error" << endl;
+        cout << "game_plgame_players error" << endl;
         return;
     }
 

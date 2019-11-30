@@ -21,15 +21,14 @@ Dice::Dice(const Dice &dice) {
     *total_rolls_ = *dice.total_rolls_;
 
     delete dice.total_rolls_;
-    delete[] dice.roll_num_stats_;
+    delete dice.roll_num_stats_;
 }
 
 Dice::~Dice() {
+    delete roll_num_stats_;
+    delete total_rolls_;
     roll_num_stats_ = nullptr;
     total_rolls_ = nullptr;
-
-    delete roll_num_stats_;
-    delete[] total_rolls_;
 }
 
 Dice& Dice::operator=(const Dice &dice) {
@@ -41,7 +40,7 @@ Dice& Dice::operator=(const Dice &dice) {
     *total_rolls_ = *dice.total_rolls_;
 
     delete dice.total_rolls_;
-    delete[] dice.roll_num_stats_;
+    delete dice.roll_num_stats_;
 
     return *this;
 }
