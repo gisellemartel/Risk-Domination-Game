@@ -14,9 +14,9 @@ private:
 
 public:
     Adapter() = default;
-    Adapter(ConquestMapLoader* conquest_map_loader);
+    explicit Adapter(ConquestMapLoader* conquest_map_loader);
     Adapter(const Adapter& adapter);
-    ~Adapter();
+    ~Adapter() override;
 
     Adapter& operator=(const Adapter& adapter);
 

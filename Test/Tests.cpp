@@ -25,14 +25,14 @@ public:
         //test with 1 human players and an aggressive player
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 1, 0);
 
-        std::shared_ptr<Player> human = nullptr;
-        std::shared_ptr<Player> bot = nullptr;
+        Player* human = nullptr;
+        Player* bot = nullptr;
 
-        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
+        for(auto& player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
-                human = player;
+                human = player.get();
             } else {
-                bot = player;
+                bot = player.get();
             }
         }
 
@@ -70,15 +70,16 @@ public:
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 0, 1);
 
         human = nullptr;
-        std::shared_ptr<Player> cheater = nullptr;
+        Player* cheater = nullptr;
 
-        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
+        for(auto& player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
-                human = player;
+                human = player.get();
             } else {
-                bot = player;
+                bot = player.get();
             }
         }
+
 
         if(!human || !bot) {
             return;
@@ -108,7 +109,6 @@ public:
         delete strategies1;
         delete strategies2;
         delete observer;
-        delete new_game;
 
         cout << "\n\nFinished Testing dynamic behaviours...\n\n";
         Utility::ClearScreen();
@@ -120,7 +120,7 @@ public:
         Observer* observer = new PhaseObserver();
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,1, 1, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 0 ,0, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
         for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {

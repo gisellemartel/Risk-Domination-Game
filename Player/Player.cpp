@@ -112,6 +112,8 @@ Player::~Player() {
     dice_roll_ = nullptr;
     player_strategy_ = nullptr;
     attack_phase_ = nullptr;
+    reinforce_phase_ = nullptr;
+    fortify_phase_ = nullptr;
 }
 
 Player& Player::operator=(const Player &player) {

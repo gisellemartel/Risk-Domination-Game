@@ -43,10 +43,6 @@ Continent::~Continent() {
         delete color_;
         color_ = nullptr;
     }
-
-    if(!continent_name_) {
-        return;
-    }
 }
 
 Continent& Continent::operator=(const Continent &continent) {
