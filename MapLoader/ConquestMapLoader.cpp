@@ -26,9 +26,12 @@ ConquestMapLoader::~ConquestMapLoader() {
 }
 
 ConquestMapLoader &ConquestMapLoader::operator=(const ConquestMapLoader &conquest_map_loader) {
-    file_name_ = conquest_map_loader.file_name_;
-    *parsed_map_ = *conquest_map_loader.parsed_map_;
-    delete conquest_map_loader.parsed_map_;
+
+    if(this != &conquest_map_loader) {
+        file_name_ = conquest_map_loader.file_name_;
+        *parsed_map_ = *conquest_map_loader.parsed_map_;
+        delete conquest_map_loader.parsed_map_;
+    }
     return *this;
 }
 

@@ -40,7 +40,7 @@ public:
     virtual void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) = 0;
 
     // to be overidden by GameStatistics Observer
-    virtual void Update(string msg) = 0;
+    virtual void Update(string msg, const vector<Player*>& players) = 0;
 };
 
 //StatisticsSubject interface ----------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ public:
     virtual void Unregister(Observer* observer) = 0;
 
     // you may need to add parameters to this function as needed (see PhaseSubject for example)
-    virtual void Notify(string msg) = 0;
+    virtual void Notify(string msg, const vector<Player*>& players) = 0;
 };
 
 
@@ -88,31 +88,25 @@ public:
     PhaseObserver& operator=(const PhaseObserver& phase_observer);
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override;
-    void Update(string msg) override {};
+    void Update(string msg, const vector<Player*>& players) override {};
 };
 
 //------------------------------------GameStatisticObserver-----------------------------
 class GameStatisticObserver: public Observer {
 
 private:
-    vector<Player*>* players_;
-    void DisplayStats();
-    int CardExchangesCompleted();
-    void DisplayActivePlayerStats();
+    void DisplayStats(const vector<Player*>& players);
+    void DisplayActivePlayerStats(const vector<Player*>& players);
+
+    int CardExchangesCompleted(const vector<Player*>& players);
 
 
 public:
-    // Dont forget everytime you have one or more pointer data member you absolutely need to also make your own copy constructor and assignment operator
-    // I added them here for you
-    GameStatisticObserver();
-    explicit GameStatisticObserver(vector<Player*>* players);
-    GameStatisticObserver(const GameStatisticObserver& game_statistic_observer);
-    ~GameStatisticObserver() override;
-
-    GameStatisticObserver& operator=(const GameStatisticObserver& game_statistic_observer);
+    GameStatisticObserver() = default;
+    ~GameStatisticObserver() override = default;
 
     void Update(Player* current_player, int current_phase, string current_action_description, bool phase_start, bool phase_over) override {}
-    void Update(string msg) override;
+    void Update(string msg, const vector<Player*>& players) override;
 
 };
 #endif //GAMEOBSERVERS_H

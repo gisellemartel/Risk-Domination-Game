@@ -420,7 +420,7 @@ string Player::AttackerConquersDefeatedCountry() {
 
     //GameStatisticObserver: notify that a player has lost a country
     if(!defender->GetPlayersCountries()->empty()) {
-        Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName());
+        Notify(*player_name_+" has conquered " + *defender->GetPlayerName() + "'s country " + *defending_country->GetCountryName(), *game_engine_->GetPlayers());
     }
 
     // Draw card once country has been conquered
@@ -450,7 +450,7 @@ void Player::RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* def
     game_engine_->RemovePlayer(defender);
 
     //GameStatisticObserver: notify that a player has been defeated
-    Notify(msg);
+    Notify(msg, *game_engine_->GetPlayers());
 
     //PhaseObserver
     Notify(this, GamePhase::Attack, msg, false, false);
@@ -865,6 +865,6 @@ void Player::Notify(Player* current_player, int current_phase, const string& cur
 }
 
 //notify of statistic subject for GameStatisticObserver
-void Player::Notify(string msg){
-    game_engine_->Notify(msg);
+void Player::Notify(string msg, const vector<Player*>& players){
+    game_engine_->Notify(msg, players);
 }

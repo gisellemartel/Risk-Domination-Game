@@ -85,46 +85,47 @@ Map::~Map() {
 }
 
 
-Map& Map::operator=(const Map &map)
-{
-    *map_name_ = *map.map_name_;
-    num_countries_ = map.num_countries_;
-    num_continents_ = map.num_continents_;
+Map& Map::operator=(const Map &map) {
+    if(this != &map) {
+        *map_name_ = *map.map_name_;
+        num_countries_ = map.num_countries_;
+        num_continents_ = map.num_continents_;
 
-    continents_ = new vector<Continent*>;
-    countries_ = new vector<Country*>;
+        continents_ = new vector<Continent*>;
+        countries_ = new vector<Country*>;
 
-    if(continents_ && map.continents_) {
-        *continents_ = *map.continents_;
-        for(int i = 0; i < map.continents_->size(); ++i) {
-            (*continents_)[i] = (*map.continents_)[i];
-            delete (*map.continents_)[i];
-            (*map.continents_)[i] = nullptr;
-        }
-        delete map.continents_;
-    }
-
-
-    if(countries_ && map.countries_) {
-        *countries_ = *map.countries_;
-        for(int i = 0; i < map.countries_->size(); ++i) {
-            (*countries_)[i] = (*map.countries_)[i];
-            delete  (*map.countries_)[i];
-            (*map.countries_)[i] = nullptr;
-        }
-
-        adjacency_matrix_ = map.adjacency_matrix_;
-        for(size_t i = 0; i < map.num_countries_; ++i) {
-            adjacency_matrix_[i] = map.adjacency_matrix_[i];
-
-            for(size_t j = 0; j < map.num_countries_; ++j) {
-                adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
+        if(continents_ && map.continents_) {
+            *continents_ = *map.continents_;
+            for(int i = 0; i < map.continents_->size(); ++i) {
+                (*continents_)[i] = (*map.continents_)[i];
+                delete (*map.continents_)[i];
+                (*map.continents_)[i] = nullptr;
             }
+            delete map.continents_;
         }
-        delete map.countries_;
-    }
 
-    delete map.map_name_;
+
+        if(countries_ && map.countries_) {
+            *countries_ = *map.countries_;
+            for(int i = 0; i < map.countries_->size(); ++i) {
+                (*countries_)[i] = (*map.countries_)[i];
+                delete  (*map.countries_)[i];
+                (*map.countries_)[i] = nullptr;
+            }
+
+            adjacency_matrix_ = map.adjacency_matrix_;
+            for(size_t i = 0; i < map.num_countries_; ++i) {
+                adjacency_matrix_[i] = map.adjacency_matrix_[i];
+
+                for(size_t j = 0; j < map.num_countries_; ++j) {
+                    adjacency_matrix_[i][j] = map.adjacency_matrix_[i][j];
+                }
+            }
+            delete map.countries_;
+        }
+
+        delete map.map_name_;
+    }
 
     return *this;
 }

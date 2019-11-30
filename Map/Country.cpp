@@ -48,15 +48,17 @@ Country::~Country() {
 }
 
 Country& Country::operator=(const Country &country) {
-    *country_name_ = *country.country_name_;
-    continent_ID_ = country.continent_ID_;
-    country_ID_ = country.country_ID_;
-    number_of_armies_ = country.number_of_armies_;
-    coordinate_x_ = country.coordinate_x_;
-    coordinate_y_ = country.coordinate_y_;
-    owner_id_ = country.owner_id_;
+   if(this != &country) {
+       *country_name_ = *country.country_name_;
+       continent_ID_ = country.continent_ID_;
+       country_ID_ = country.country_ID_;
+       number_of_armies_ = country.number_of_armies_;
+       coordinate_x_ = country.coordinate_x_;
+       coordinate_y_ = country.coordinate_y_;
+       owner_id_ = country.owner_id_;
 
-    delete country.country_name_;
+       delete country.country_name_;
+   }
 
     return *this;
 }

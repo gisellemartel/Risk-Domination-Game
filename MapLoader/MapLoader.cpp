@@ -30,9 +30,11 @@ MapLoader::~MapLoader() {
 }
 
 MapLoader &MapLoader::operator=(const MapLoader &map) {
-    file_name_ = map.file_name_;
-    *parsed_map_ = *map.parsed_map_;
-    delete map.parsed_map_;
+    if(this != &map) {
+        file_name_ = map.file_name_;
+        *parsed_map_ = *map.parsed_map_;
+        delete map.parsed_map_;
+    }
 
     return *this;
 };

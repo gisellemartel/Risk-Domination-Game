@@ -40,22 +40,24 @@ ReinforcePhase::ReinforcePhase(const ReinforcePhase& reinforce){
 }
 
 ReinforcePhase& ReinforcePhase::operator=(const ReinforcePhase& reinforce){
-    num_of_swaps_ = reinforce.num_of_swaps_;
-    divider_ = reinforce.divider_;
-    reinforcement_army_ = reinforce.reinforcement_army_;
+    if(this != &reinforce) {
+        num_of_swaps_ = reinforce.num_of_swaps_;
+        divider_ = reinforce.divider_;
+        reinforcement_army_ = reinforce.reinforcement_army_;
 
-    *reinforce_values_ = *reinforce.reinforce_values_;
-    for(int i = 0; i < reinforce.reinforce_values_->size(); ++i) {
-        reinforce_values_[i] = reinforce.reinforce_values_[i];
+        *reinforce_values_ = *reinforce.reinforce_values_;
+        for(int i = 0; i < reinforce.reinforce_values_->size(); ++i) {
+            reinforce_values_[i] = reinforce.reinforce_values_[i];
+        }
+
+        *countries_to_reinforce_ = *reinforce.countries_to_reinforce_;
+        for(int i = 0; i < reinforce.countries_to_reinforce_->size(); ++i) {
+            countries_to_reinforce_[i] = reinforce.countries_to_reinforce_[i];
+        }
+
+        delete reinforce.reinforce_values_;
+        delete reinforce.countries_to_reinforce_;
     }
-
-    *countries_to_reinforce_ = *reinforce.countries_to_reinforce_;
-    for(int i = 0; i < reinforce.countries_to_reinforce_->size(); ++i) {
-        countries_to_reinforce_[i] = reinforce.countries_to_reinforce_[i];
-    }
-
-    delete reinforce.reinforce_values_;
-    delete reinforce.countries_to_reinforce_;
 
     return *this;
 }

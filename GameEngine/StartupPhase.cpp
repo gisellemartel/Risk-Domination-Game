@@ -41,12 +41,15 @@ StartupPhase::~StartupPhase() = default;
 
 //operator overloader
 StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
-    player_order_ = startup_phase.player_order_;
 
-    for(const auto& it : startup_phase.player_order_) {
-        player_order_.insert(it);
+    if(this != &startup_phase) {
+        player_order_ = startup_phase.player_order_;
+
+        for(const auto& it : startup_phase.player_order_) {
+            player_order_.insert(it);
+        }
+        current_player_index_ = startup_phase.current_player_index_;
     }
-    current_player_index_ = startup_phase.current_player_index_;
 
     return *this;
 }

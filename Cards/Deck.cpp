@@ -36,17 +36,19 @@ Deck::~Deck() {
 }
 
 Deck& Deck::operator=(const Deck &deck) {
-    num_exchanges = deck.num_exchanges;
-    num_cards_deck_ = deck.num_cards_deck_;
-    *cards_ = *deck.cards_;
+   if(this != &deck) {
+       num_exchanges = deck.num_exchanges;
+       num_cards_deck_ = deck.num_cards_deck_;
+       *cards_ = *deck.cards_;
 
-    for(int i = 0; i < deck.cards_->size(); ++i) {
-        (*cards_)[i] = (*deck.cards_)[i];
-        delete (*deck.cards_)[i];
-        (*deck.cards_)[i] = nullptr;
-    }
+       for(int i = 0; i < deck.cards_->size(); ++i) {
+           (*cards_)[i] = (*deck.cards_)[i];
+           delete (*deck.cards_)[i];
+           (*deck.cards_)[i] = nullptr;
+       }
 
-    delete deck.cards_;
+       delete deck.cards_;
+   }
 
     return *this;
 }

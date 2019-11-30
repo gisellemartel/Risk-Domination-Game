@@ -25,11 +25,14 @@ PhaseObserver::PhaseObserver(const PhaseObserver &phase_observer) {
 }
 
 PhaseObserver& PhaseObserver::operator=(const PhaseObserver &phase_observer) {
-    current_player_name_ = phase_observer.current_player_name_;
-    current_phase_ = phase_observer.current_phase_;
-    current_action_description_ = phase_observer.current_action_description_;
-    phase_over_ = phase_observer.phase_over_;
-    phase_start_ = phase_observer.phase_start_;
+    if(this != &phase_observer) {
+        current_player_name_ = phase_observer.current_player_name_;
+        current_phase_ = phase_observer.current_phase_;
+        current_action_description_ = phase_observer.current_action_description_;
+        phase_over_ = phase_observer.phase_over_;
+        phase_start_ = phase_observer.phase_start_;
+
+    }
 
     return *this;
 }
@@ -96,63 +99,33 @@ void PhaseObserver::DisplayPhaseHeader() {
 
 
 // GameStatisticObserver -----------------------------------------------------------------------------------------------
-GameStatisticObserver::GameStatisticObserver() {
-   players_= nullptr;
-}
 
-GameStatisticObserver::GameStatisticObserver(const GameStatisticObserver &game_statistic_observer) {
-    players_ = game_statistic_observer.players_;
-
-    for(int i = 0; i < game_statistic_observer.players_->size(); ++i) {
-        players_[i] = game_statistic_observer.players_[i];
-    }
-}
-
-GameStatisticObserver& GameStatisticObserver::operator=(const GameStatisticObserver &game_statistic_observer) {
-    players_ = game_statistic_observer.players_;
-
-    for(int i = 0; i < game_statistic_observer.players_->size(); ++i) {
-        players_[i] = game_statistic_observer.players_[i];
-    }
-    return *this;
-}
-
-GameStatisticObserver::GameStatisticObserver(vector<Player*>* players){
-    players_ = players;
-
-    for(int i = 0; i < players->size(); ++i) {
-        players_[i] = players[i];
-    }
-}
-
-GameStatisticObserver::~GameStatisticObserver() = default;
-
-void GameStatisticObserver::Update(string msg) {
+void GameStatisticObserver::Update(string msg, const vector<Player*>& players) {
     Utility::ClearScreen();
     cout << msg << endl;
-    DisplayStats();
+    DisplayStats(players);
 
     //put thread to sleep to allow smoother visual transition
     std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 }
 
-void GameStatisticObserver::DisplayStats(){
+void GameStatisticObserver::DisplayStats(const vector<Player*>& players){
     cout << "+++++++++++ Current Game Statistics +++++++++++" << endl
     << "Current Number of Card Swaps: "
-    << CardExchangesCompleted()
+    << CardExchangesCompleted(players)
     << endl << endl
     << "List of Active Players: " << endl << endl;
 
-    DisplayActivePlayerStats();
+    DisplayActivePlayerStats(players);
 }
 
-int GameStatisticObserver::CardExchangesCompleted(){
+int GameStatisticObserver::CardExchangesCompleted(const vector<Player*>& players){
 
-    if(!players_) {
+    if(players.empty()) {
         return 0;
     }
 
-    Player* current = players_->at(0);
+    Player* current = players[0];
     if(!current) {
         return 0;
     }
@@ -166,14 +139,14 @@ int GameStatisticObserver::CardExchangesCompleted(){
     return 0;
 }
 
-void GameStatisticObserver::DisplayActivePlayerStats(){
+void GameStatisticObserver::DisplayActivePlayerStats(const vector<Player*>& players){
 
-    if(!players_ || players_->empty()) {
+    if(players.empty()) {
         cout << "Error has occurred! No players found in game" << endl;
         return;
     }
 
-    for(Player* player : *players_) {
+    for(Player* player : players) {
 
         vector<Country*>* player_countries = player->GetPlayersCountries();
         if(!player_countries){

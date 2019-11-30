@@ -53,26 +53,28 @@ AttackPhase::AttackPhase(const AttackPhase& attack) {
 }
 
 AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
-    *attacking_country_ = *attack.attacking_country_;
-    *defending_country_ = *attack.defending_country_;
-    *defender_ = *attack.defender_;
-    *attacker_ = *attack.attacker_;
-    *game_map_ = *attack.game_map_;
-    rand_player_num_attacks_ = attack.rand_player_num_attacks_;
+   if(this != &attack) {
+       *attacking_country_ = *attack.attacking_country_;
+       *defending_country_ = *attack.defending_country_;
+       *defender_ = *attack.defender_;
+       *attacker_ = *attack.attacker_;
+       *game_map_ = *attack.game_map_;
+       rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
-    *opponent_neighbours_ = *attack.opponent_neighbours_;
-    for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
-        (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
-        delete (*attack.opponent_neighbours_)[i];
-        (*attack.opponent_neighbours_)[i] = nullptr;
-    }
+       *opponent_neighbours_ = *attack.opponent_neighbours_;
+       for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
+           (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
+           delete (*attack.opponent_neighbours_)[i];
+           (*attack.opponent_neighbours_)[i] = nullptr;
+       }
 
-    delete attack.attacking_country_;
-    delete attack.defending_country_;
-    delete attack.attacker_;
-    delete attack.defender_;
-    delete attack.game_map_;
-    delete attack.opponent_neighbours_;
+       delete attack.attacking_country_;
+       delete attack.defending_country_;
+       delete attack.attacker_;
+       delete attack.defender_;
+       delete attack.game_map_;
+       delete attack.opponent_neighbours_;
+   }
 
     return *this;
 }

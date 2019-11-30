@@ -32,7 +32,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
 
-    Notify("Starting New Game...\n");
+    Notify("Starting New Game...\n", *players_);
 }
 
 //private helper methods
@@ -606,7 +606,7 @@ void GameEngine::StartGameLoop() {
         game_over.append(*current_player->GetPlayerName() + " has won!!\n\n");
     }
 
-    Notify(game_over);
+    Notify(game_over, *players_);
 
     for(Player* player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
@@ -782,7 +782,8 @@ void GameEngine::StartTournament() {
                 bool is_draw = false;
 
                 //start the game loop for current game
-                while (!PlayerHasWon(current_player) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_) {
+                while (!PlayerHasWon(current_player) && num_of_players_ > 1) {
+                    Notify("\nCurrent Map: " + *current_map->GetParsedMap()->GetMapName()  + "\nCurrent game: " + to_string(i + 1) + "\nCurrent turn " + to_string(current_turn) + "\n", *players_);
                     current_player = players_->at(current_index);
                     if (!current_player) {
                         break;
@@ -809,22 +810,20 @@ void GameEngine::StartTournament() {
 
                             current_index = (current_index + 1) % num_of_players_;
                             current_player = players_->at(game_start_->current_player_index_);
-                            //each time the game is played by all players, increment the counter
-                            ++current_turn;
-
-                            if(current_turn == max_num_turns_per_game_) {
-                                is_draw = true;
-                            }
                         }
                     }
 
+                    //each time the game is played by all players, increment the counter
+                    ++current_turn;
+                    if(current_turn == max_num_turns_per_game_) {
+                        is_draw = true;
+                        break;
+                    }
                 }
-
-                //TODO: need to track if game ends via win or draw and print appropriate message
 
                 string game_over = "############################################################################# GAME OVER #############################################################################\n";
 
-                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the game * * * * * * * * * * * * * * * \n\n");
+                game_over.append("\n\n* * * * * * * * * * * * * * * Here are the final results of the current game * * * * * * * * * * * * * * * \n\n");
 
                 if(current_player && !is_draw) {
                     if(current_player->IsRandom()) {
@@ -840,12 +839,7 @@ void GameEngine::StartTournament() {
                     game_results.push_back(GameResult::Draw);
                 }
 
-                Notify(game_over);
-
-//                for(Player* player : *players_) {
-//                    cout << *player->GetPlayerName() << "'s countries: ";
-//                    player->DisplayCountries();
-//                }
+                Notify(game_over, *players_);
             }
 
             //store the map and the results of each game
@@ -932,9 +926,9 @@ void GameEngine::Notify(Player* current_player, int current_phase, string curren
     }
 }
 //GameStatisticObserver
-void GameEngine::Notify(string msg){
+void GameEngine::Notify(string msg, const vector<Player*>& players){
     for(Observer* observer : *observers_){
-        observer->Update(msg);
+        observer->Update(msg, players);
     }
 }
 

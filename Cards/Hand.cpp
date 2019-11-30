@@ -35,16 +35,18 @@ Hand::~Hand() {
 }
 
 Hand& Hand::operator=(const Hand &hand) {
-    *cards_in_hand_ = *hand.cards_in_hand_;
+   if(this != &hand) {
+       *cards_in_hand_ = *hand.cards_in_hand_;
 
-    for(int i = 0; i < hand.cards_in_hand_->size(); ++i) {
-        (*cards_in_hand_)[i] = (*hand.cards_in_hand_)[i];
+       for(int i = 0; i < hand.cards_in_hand_->size(); ++i) {
+           (*cards_in_hand_)[i] = (*hand.cards_in_hand_)[i];
 
-        delete (*hand.cards_in_hand_)[i];
-        (*hand.cards_in_hand_)[i] = nullptr;
-    }
+           delete (*hand.cards_in_hand_)[i];
+           (*hand.cards_in_hand_)[i] = nullptr;
+       }
 
-    delete hand.cards_in_hand_;
+       delete hand.cards_in_hand_;
+   }
     return *this;
 }
 

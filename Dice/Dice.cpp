@@ -32,15 +32,17 @@ Dice::~Dice() {
 }
 
 Dice& Dice::operator=(const Dice &dice) {
-    *roll_num_stats_ = *dice.roll_num_stats_;
-    for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
-        (*roll_num_stats_)[i] = (*dice.roll_num_stats_)[i];
+    if(this != &dice) {
+        *roll_num_stats_ = *dice.roll_num_stats_;
+        for (size_t i = 0; i < dice.roll_num_stats_->size(); ++i) {
+            (*roll_num_stats_)[i] = (*dice.roll_num_stats_)[i];
+        }
+
+        *total_rolls_ = *dice.total_rolls_;
+
+        delete dice.total_rolls_;
+        delete dice.roll_num_stats_;
     }
-
-    *total_rolls_ = *dice.total_rolls_;
-
-    delete dice.total_rolls_;
-    delete dice.roll_num_stats_;
 
     return *this;
 }

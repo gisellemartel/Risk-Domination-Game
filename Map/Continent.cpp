@@ -46,23 +46,26 @@ Continent::~Continent() {
 }
 
 Continent& Continent::operator=(const Continent &continent) {
-    *continent_name_ = *continent.continent_name_;
-    continent_ID_ = continent.continent_ID_;
-    army_value_ = continent.army_value_;
-    *color_ = *continent.color_;
 
-    if(countries_in_continent_) {
-        *countries_in_continent_ = *continent.countries_in_continent_;
-        for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
-            (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
-            delete (*continent.countries_in_continent_)[i];
-            (*continent.countries_in_continent_)[i] = nullptr;
+    if(this != &continent) {
+        *continent_name_ = *continent.continent_name_;
+        continent_ID_ = continent.continent_ID_;
+        army_value_ = continent.army_value_;
+        *color_ = *continent.color_;
+
+        if(countries_in_continent_) {
+            *countries_in_continent_ = *continent.countries_in_continent_;
+            for(size_t i = 0; i < continent.countries_in_continent_->size(); ++i) {
+                (*countries_in_continent_)[i] = (*continent.countries_in_continent_)[i];
+                delete (*continent.countries_in_continent_)[i];
+                (*continent.countries_in_continent_)[i] = nullptr;
+            }
+            delete continent.countries_in_continent_;
         }
-        delete continent.countries_in_continent_;
-    }
 
-    delete continent.continent_name_;
-    delete continent.color_;
+        delete continent.continent_name_;
+        delete continent.color_;
+    }
 
     return *this;
 }

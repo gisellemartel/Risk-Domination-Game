@@ -22,8 +22,12 @@ Adapter::~Adapter() {
 }
 
 Adapter &Adapter::operator=(const Adapter &adapter) {
-    *conquest_map_loader_ = *adapter.conquest_map_loader_;
-    delete adapter.conquest_map_loader_;
+
+    if(this != &adapter) {
+        *conquest_map_loader_ = *adapter.conquest_map_loader_;
+        delete adapter.conquest_map_loader_;
+    }
+
     return *this;
 }
 

@@ -148,7 +148,7 @@ public:
 
         GameEngine* new_game = new GameEngine;
 
-        Observer* observer = new GameStatisticObserver(new_game->GetPlayers());
+        Observer* observer = new GameStatisticObserver;
 
         new_game->Register(observer);
 
@@ -157,7 +157,7 @@ public:
         new_game->StartGameLoop();
 
         //Should pass message to notify: "as soon as a player owns all the countries, the game statistics view updates itself and displays a celebratory message"
-        new_game->Notify("Game Test Over");
+        new_game->Notify("Game Test Over", *new_game->GetPlayers());
 
         new_game->Unregister(observer);
 
