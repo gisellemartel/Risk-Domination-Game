@@ -117,7 +117,7 @@ GameStatisticObserver& GameStatisticObserver::operator=(const GameStatisticObser
     return *this;
 }
 
-GameStatisticObserver::GameStatisticObserver(vector<Player*>* players){
+GameStatisticObserver::GameStatisticObserver(vector<std::shared_ptr<Player>>* players){
     players_ = players;
 
     for(int i = 0; i < players->size(); ++i) {
@@ -126,11 +126,6 @@ GameStatisticObserver::GameStatisticObserver(vector<Player*>* players){
 }
 
 GameStatisticObserver::~GameStatisticObserver(){
-
-    for(Player* player : *players_) {
-        delete player;
-        player = nullptr;
-    }
     delete players_;
     players_ = nullptr;
 }
@@ -160,7 +155,7 @@ int GameStatisticObserver::CardExchangesCompleted(){
         return 0;
     }
 
-    Player* current = players_->at(0);
+    std::shared_ptr<Player> current = players_->at(0);
     if(!current) {
         return 0;
     }
@@ -181,7 +176,7 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
         return;
     }
 
-    for(Player* player : *players_) {
+    for(const std::shared_ptr<Player>& player : *players_) {
 
         vector<Country*>* player_countries = player->GetPlayersCountries();
         if(!player_countries){

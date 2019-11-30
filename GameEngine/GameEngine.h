@@ -36,7 +36,7 @@ enum GameResult {
 class GameEngine : public PhaseSubject, public StatisticsSubject {
 
 private:
-    vector<Player*>* players_;
+    vector<std::shared_ptr<Player>>* players_;
     StartupPhase* game_start_;
     MapLoader* loaded_map_;
     Deck* cards_deck_;
@@ -83,7 +83,7 @@ public:
     MapLoader* GetLoadedMap() const;
     Deck* GetCardsDeck() const;
     GamePhase GetCurrentPhase() const;
-    vector<Player*>* GetPlayers() const;
+    vector<std::shared_ptr<Player>>* GetPlayers() const;
     int GetNumPlayers() const;
     bool ExitGameSelected() const;
     StartupPhase* GetGameStart() const;

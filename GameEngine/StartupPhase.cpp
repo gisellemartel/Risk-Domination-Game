@@ -10,7 +10,7 @@
 // generic function which randomized order of passed vector.
 // used to randomize both order of players, order in which countries are assigned
 template<class V>
-vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& vector_to_randomize) {
+vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<std::shared_ptr<V>>& vector_to_randomize) {
     int random = Utility::GenerateRandomNumInRange(0, vector_to_randomize.size()-1);
     vector<int> random_order;
     //randomize the order for the indices in the players vector
@@ -25,7 +25,7 @@ vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<V*>& v
 
 // class constructors
 StartupPhase::StartupPhase() {
-    player_order_ = new map<Player*, int>;
+    player_order_ = new map<std::shared_ptr<Player>, int>;
     current_player_index_ = 0;
 }
 
@@ -80,19 +80,19 @@ void StartupPhase::SetNumberOfArmies(int number_of_players) {
 
 
 //class methods
-void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
+void StartupPhase::RandomlyDeterminePlayerOrder(vector<std::shared_ptr<Player>>* players) {
     cout << "Assigning random order to determine turn of each player at game start:\n";
     //generate vector of indices which will contain randomized order of players
     vector<int> random_order = GenerateRandomizedIndicesForVector(*players);
 
     //assign the generated random order to each player
     for (int i = 0; i < players->size(); ++i) {
-        player_order_->insert(std::pair<Player*, int>((*players)[random_order[i]], i));
+        player_order_->insert(std::pair<std::shared_ptr<Player>, int>((*players)[random_order[i]], i));
     }
 
     //print the players in the generated order
-    for(map<Player*, int>::iterator it = player_order_->begin(); it != player_order_->end(); ++it) {
-        Player* player = dynamic_cast<Player*>(it->first);
+    for(map<std::shared_ptr<Player> , int>::iterator it = player_order_->begin(); it != player_order_->end(); ++it) {
+        std::shared_ptr<Player>  player = it->first;
 
         for(int i = 0; i < players->size(); ++i ) {
             if(player && *player == *(*players)[i]) {
@@ -107,7 +107,7 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
     cout << endl;
 }
 
-void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<Country*>* countries_to_assign) {
+void StartupPhase::AssignCountriesToAllPlayers(vector<std::shared_ptr<Player>>* players, vector<Country*>* countries_to_assign) {
     if(players->empty() || countries_to_assign->empty()) {
         return;
     }
@@ -116,8 +116,14 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
 
     int num_countries = countries_to_assign->size();
 
+    vector<std::shared_ptr<Country>>* countries = new vector<std::shared_ptr<Country>>;
+
+    for(Country* country : *countries_to_assign) {
+        std::shared_ptr<Country> ptr (country);
+        countries->push_back(ptr);
+    }
     //generate vector of indices which will contain randomized order of countries
-    vector<int> random_order = GenerateRandomizedIndicesForVector(*countries_to_assign);
+    vector<int> random_order = GenerateRandomizedIndicesForVector(*countries);
     //index used to track current position within countries vector after each loop iteration
     size_t current_index = 0;
     //assign countries to each player in round robin fashion
@@ -135,7 +141,7 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
                 //debug string
                 cout << "Assigning " << *(*countries_to_assign)[current_random_index]->GetCountryName() << " to " << *(it.first->GetPlayerName()) << endl;
 
-                it.first->AddCountryToCollection((*countries_to_assign)[current_random_index]);
+                it.first->AddCountryToCollection(countries_to_assign->at(current_random_index));
                 it.first->SetPlayersTurn(false);
                 //update position of current index
                 ++current_index;
@@ -149,7 +155,7 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
     cout << endl;
 }
 
-void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
+void StartupPhase::AssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>* players) {
 
     if(players->empty()) {
         return;
@@ -227,7 +233,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
     cout << endl;
 }
 
-void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
+void StartupPhase::AutoAssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>* players) {
 
     if(players->empty()) {
         return;

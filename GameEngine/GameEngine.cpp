@@ -28,7 +28,7 @@ void GameEngine::TestAutoLoadMapAndCreateGame(string file_path, int num_human_pl
         game_start_->AutoAssignArmiesToAllPlayers(players_);
     }
 
-    for(Player* player : *players_) {
+    for(std::shared_ptr<Player> player : *players_) {
         player->SetGameMap(loaded_map_->GetParsedMap());
     }
 
@@ -62,7 +62,7 @@ MapLoader* GameEngine::SelectFile() {
 GameEngine::GameEngine() {
     loaded_map_ = nullptr;
     cards_deck_ = nullptr;
-    players_ = new vector<Player*>;
+    players_ = new vector<std::shared_ptr<Player>>;
     //2 players by default
     num_of_players_ = 2;
     num_of_human_players_ = 0;
@@ -91,7 +91,6 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
     *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
         (*players_)[i] = (*game_engine.players_)[i];
-        delete (*game_engine.players_)[i];
         (*game_engine.players_)[i] = nullptr;
     }
 
@@ -151,11 +150,6 @@ GameEngine::GameEngine(const GameEngine& game_engine) {
 
 GameEngine::~GameEngine() {
 
-    for (auto& player : *players_) {
-        delete player;
-        player = nullptr;
-    }
-
     for (Observer* observer : *observers_) {
         delete observer;
         observer = nullptr;
@@ -198,7 +192,6 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
     *players_ = *game_engine.players_;
     for (size_t i = 0; i < game_engine.players_->size(); ++i) {
         (*players_)[i] = (*game_engine.players_)[i];
-        delete (*game_engine.players_)[i];
         (*game_engine.players_)[i] = nullptr;
     }
 
@@ -260,9 +253,9 @@ GameEngine& GameEngine::operator=(const GameEngine& game_engine) {
 
 //getters
 Player* GameEngine::GetPlayerByID(int id) const {
-    for(Player* player : *players_) {
+    for(std::shared_ptr<Player> player : *players_) {
         if(id == player->GetPlayerID()) {
-            return player;
+            return player.get();
         }
     }
 
@@ -277,7 +270,7 @@ Deck* GameEngine::GetCardsDeck() const {
     return cards_deck_;
 }
 
-vector<Player*>* GameEngine::GetPlayers() const {
+vector<std::shared_ptr<Player>>* GameEngine::GetPlayers() const {
     return players_;
 }
 
@@ -494,7 +487,8 @@ void GameEngine::CreatePlayers() {
         string player_name = "Human Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+
+        std::shared_ptr<Player> player (new Player(player_name, loaded_map_->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsHuman();
         players_->push_back(player);
@@ -504,7 +498,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Aggressive Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        std::shared_ptr<Player> player (new Player(player_name, loaded_map_->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -513,7 +507,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Benevolant Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        std::shared_ptr<Player> player (new Player(player_name, loaded_map_->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         players_->push_back(player);
     }
@@ -522,7 +516,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Random Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new RandomComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        std::shared_ptr<Player> player (new Player(player_name, loaded_map_->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsRandom();
         players_->push_back(player);
@@ -532,7 +526,7 @@ void GameEngine::CreatePlayers() {
         string player_name = "Cheater Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new CheaterComputerPlayerStrategy();
-        Player* player = new Player(player_name, loaded_map_->GetParsedMap(), this);
+        std::shared_ptr<Player> player (new Player(player_name, loaded_map_->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsCheater();
         players_->push_back(player);
@@ -554,7 +548,7 @@ void GameEngine::AssignDiceToPlayers() {
     }
 
     cout << "Assigning dice rolling mechanism for each player...\n";
-    for(Player* player: *players_) {
+    for(std::shared_ptr<Player> player: *players_) {
         player->SetPlayerDice(new Dice);
     }
 
@@ -572,7 +566,7 @@ void GameEngine::AssignHandOfCardsToPlayers() {
     }
 
     cout << "Assigning empty hand of cards for each player...\n";
-    for(Player* player: *players_) {
+    for(std::shared_ptr<Player> player: *players_) {
         player->SetPlayerHand(new Hand);
     }
 }
@@ -591,7 +585,7 @@ void GameEngine::CreateCardsDeck() {
 
 void GameEngine::DisplayCurrentGame() {
     cout << "There are " << num_of_players_ << " players participating in this game. Here are their stats:\n";
-    for(const Player* player : *players_) {
+    for(const std::shared_ptr<Player> player : *players_) {
         player->DisplayPlayerStats();
         cout << endl;
     }
@@ -628,7 +622,7 @@ void GameEngine::StartGameLoop() {
         cout << "Something went wrong! aborting game loop" << endl;
     }
 
-    for(Player* player : *players_) {
+    for(std::shared_ptr<Player> player : *players_) {
         cout << *player->GetPlayerName() << endl;
         player->DisplayCountries();
     }
@@ -638,13 +632,13 @@ void GameEngine::StartGameLoop() {
     int num_iterations = 0;
     int current_index = game_start_->current_player_index_;
 
-    Player* current_player = players_->at(current_index);
+    std::shared_ptr<Player> current_player = players_->at(current_index);
 
     if(!current_player) {
         return;
     }
 
-    while(!PlayerHasWon(current_player) && num_of_players_ > 1){
+    while(!PlayerHasWon(current_player.get()) && num_of_players_ > 1){
         current_player = players_->at(current_index);
         if(!current_player) {
             break;
@@ -680,7 +674,7 @@ void GameEngine::StartGameLoop() {
 
     Notify(game_over);
 
-    for(Player* player : *players_) {
+    for(std::shared_ptr<Player> player : *players_) {
         cout << *player->GetPlayerName() << "'s countries: ";
         player->DisplayCountries();
     }
@@ -846,13 +840,13 @@ void GameEngine::StartTournament() {
 
                 int current_index = game_start_->current_player_index_;
 
-                Player* current_player = players_->at(current_index);
+                std::shared_ptr<Player>current_player = players_->at(current_index);
 
                 if(!current_player) {
                     return;
                 }
 
-                while(!PlayerHasWon(current_player) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_){
+                while(!PlayerHasWon(current_player.get()) && num_of_players_ > 1 && current_turn < max_num_turns_per_game_){
                     current_player = players_->at(current_index);
                     if(!current_player) {
                         break;
@@ -949,12 +943,12 @@ void GameEngine::CreateNewGame() {
             game_start_->AutoAssignArmiesToAllPlayers(players_);
         }
 
-        for(Player* player : *players_) {
+        for(std::shared_ptr<Player> player : *players_) {
             player->SetGameMap(loaded_map_->GetParsedMap());
         }
         //repeat game loop 2 times
         for(int i = 0; i < 2; ++i) {
-            for(Player* player : *players_) {
+            for(std::shared_ptr<Player> player : *players_) {
                 player->Reinforce();
                 player->Attack();
                 player->Fortify();

@@ -25,10 +25,10 @@ public:
         //test with 1 human players and an aggressive player
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 1, 0);
 
-        Player* human = nullptr;
-        Player* bot = nullptr;
+        std::shared_ptr<Player> human = nullptr;
+        std::shared_ptr<Player> bot = nullptr;
 
-        for(Player* player : *new_game->GetPlayers()) {
+        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
                 human = player;
             } else {
@@ -70,9 +70,9 @@ public:
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 1, 0 ,0, 0, 1);
 
         human = nullptr;
-        Player* cheater = nullptr;
+        std::shared_ptr<Player> cheater = nullptr;
 
-        for(Player* player : *new_game->GetPlayers()) {
+        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
             if(player->IsHuman()) {
                 human = player;
             } else {
@@ -123,12 +123,12 @@ public:
         new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 1, 1 ,1, 1, 1);
 
         new_game->GetLoadedMap()->GetParsedMap()->DisplayAdjacencyMatrix();
-        for(Player* player : *new_game->GetPlayers()) {
+        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
             cout << *player->GetPlayerName() << endl;
             player->DisplayCountries();
         }
 
-        for(Player* player : *new_game->GetPlayers()) {
+        for(std::shared_ptr<Player> player : *new_game->GetPlayers()) {
             player->DisplayCountries();
             player->Reinforce();
             player->DisplayCountries();
