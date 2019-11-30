@@ -152,7 +152,7 @@ public:
 
         new_game->Register(observer);
 
-        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/kosova.map", 0, 0, 0, 1, 1);
+        new_game->TestAutoLoadMapAndCreateGame("../MapLoader/domination-map-files/generaltest.map", 0, 0, 0, 1, 1);
 
         new_game->StartGameLoop();
 

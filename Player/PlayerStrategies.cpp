@@ -87,15 +87,15 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
     }
 
     player->GetAttackPhase()->SetDefendingCountry(nullptr);
-    Country* defending_country = attack_phase->GetDefendingCountry().get();
+    Country* defending_country = attack_phase->GetDefendingCountry();
 
     attack_phase->FindOpponentNeighboursToAttackingCountry();
 
     //Display neighboring countries
     cout << "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
-    for (std::shared_ptr<Country> country : *attack_phase->GetOpponentNeighbours()) {
-        string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country.get());
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list = player->GetGameMap()->GenerateListOfNeighboringCountries(country);
 
         //just to be safe to ensure player doesnt attack their own country
         if(player->DoesPlayerOwnCountry(country->GetCountryID()) || player->GetPlayerID() == country->GetOwnerID()){
@@ -103,8 +103,8 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         }
 
         cout << setw(25)  << left << country->GetCountryID() <<
-        setw(25) <<  *country->GetCountryName()
-        << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
+             setw(25) <<  *country->GetCountryName()
+             << setw(25) << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
     }
 
@@ -124,11 +124,8 @@ bool HumanPlayerStrategy::SelectCountryToAttack(Player* player) {
         }
     }
 
-    std::shared_ptr<Country> ptr (defending_country);
-    attack_phase->SetDefendingCountry(ptr);
-
-    std::shared_ptr<Player> player_ptr (player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
-    attack_phase->SetDefender(player_ptr);
+    attack_phase->SetDefendingCountry(defending_country);
+    attack_phase->SetDefender(player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
 
     return defending_country != nullptr;
 }
@@ -149,8 +146,8 @@ bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
         player->Notify(player, GamePhase::Attack, msg, false, false);
         return false;
     }
-    std::shared_ptr<Country> attacker (player->PromptPlayerToSelectCountry());
-    phase->SetAttackingCountry(attacker);
+
+    phase->SetAttackingCountry(player->PromptPlayerToSelectCountry());
 
 
     //if nothing was selected somehow fatal error return false
@@ -161,8 +158,7 @@ bool HumanPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
     //keep looping until select the country with 2 or more armies
     while(phase->GetAttackingCountry()->GetNumberOfArmies() < 2) {
         cout << "You do not have enough armies in country " + *phase->GetAttackingCountry()->GetCountryName() + ". Please Try Again.\n";
-        std::shared_ptr<Country> selected_attacker (player->PromptPlayerToSelectCountry());
-        phase->SetAttackingCountry(selected_attacker);
+        phase->SetAttackingCountry(player->PromptPlayerToSelectCountry());
     }
 
     return true;
@@ -255,8 +251,8 @@ bool HumanPlayerStrategy::SelectSourceCountry(Player *player) {
         cout << "You do not have enough armies in selected country. Please Try Again." << endl;
         selected_country = player->PromptPlayerToSelectCountry();
     }
-    std::shared_ptr<Country> ptr (selected_country);
-    fortify_phase->SetSourceCountry(ptr);
+
+    fortify_phase->SetSourceCountry(selected_country);
     return fortify_phase->GetSourceCountry() != nullptr;
 }
 
@@ -278,8 +274,7 @@ bool HumanPlayerStrategy::SelectTargetCountry(Player *player) {
         cin.ignore(132, '\n');
     }
 
-    std::shared_ptr<Country> ptr (target);
-    fortify_phase->SetTargetCountry(ptr);
+    fortify_phase->SetTargetCountry(target);
 
     return fortify_phase->GetTargetCountry() != nullptr;
 }
@@ -348,24 +343,24 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
         return false;
     }
 
-    std::shared_ptr<Country> defending_country = nullptr;
+    Country* defending_country = nullptr;
 
     //Display neighboring countries
-   string msg = "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
+    string msg = "\n\nHere are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
 
-   player->Notify(player, GamePhase::Attack, msg, false, false);
+    player->Notify(player, GamePhase::Attack, msg, false, false);
 
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
-    for (std::shared_ptr<Country> country : *attack_phase->GetOpponentNeighbours()) {
-        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country.get());
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
         cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
-        << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
+             << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
     }
 
     attack_phase->FindOpponentNeighboursToAttackingCountry();
     //iterate over all opponents until one is found
-    for(std::shared_ptr<Country> opponent : *attack_phase->GetOpponentNeighbours()) {
+    for(Country* opponent : *attack_phase->GetOpponentNeighbours()) {
         defending_country = opponent;
 
         if(player->DoesPlayerOwnCountry(defending_country->GetCountryID()) || player->GetPlayerID() == defending_country->GetOwnerID()) {
@@ -379,8 +374,7 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
 
     if(defending_country) {
         attack_phase->SetDefendingCountry(defending_country);
-        std::shared_ptr<Player> ptr (player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
-        attack_phase->SetDefender(ptr);
+        attack_phase->SetDefender(player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
     }
 
     return defending_country != nullptr;
@@ -398,18 +392,18 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
     }
 
     phase->SetAttackingCountry(nullptr);
-    vector<std::shared_ptr<Country>> countries_with_enemies;
+    vector<Country*> countries_with_enemies;
     vector<Country*>& countries = *player->GetPlayersCountries();
 
     //sort countries by number of armies.
-   for(Country* country : countries) {
-       if(country->GetNumberOfArmies() < 2) {
-           continue;
-       }
+    for(Country* country : countries) {
+        if(country->GetNumberOfArmies() < 2) {
+            continue;
+        }
 
-       vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
-       bool has_enemy = false;
-       //make sure current country has at least one neighbour opponent to attack
+        vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
+        bool has_enemy = false;
+        //make sure current country has at least one neighbour opponent to attack
         for(Country* neighbour : *neighbours) {
             if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && player->GetPlayerID() != neighbour->GetOwnerID()) {
                 has_enemy = true;
@@ -418,29 +412,28 @@ bool AggressiveComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player)
 
         //as long as the current country has opposing countries with armies
         if(has_enemy) {
-            std::shared_ptr<Country> ptr (country);
-            countries_with_enemies.push_back(ptr);
+            countries_with_enemies.push_back(country);
         }
-   }
+    }
 
-   if(countries_with_enemies.empty()) {
-       string msg = "Currently no country exists that can attack right now\n";
-       player->Notify(player, GamePhase::Attack, msg, false, false);
-       return false;
-   }
+    if(countries_with_enemies.empty()) {
+        string msg = "Currently no country exists that can attack right now\n";
+        player->Notify(player, GamePhase::Attack, msg, false, false);
+        return false;
+    }
 
-   std::shared_ptr<Country> strongest_country (countries_with_enemies[0]);
-   for(const std::shared_ptr<Country>& attacker : countries_with_enemies) {
-       if(!attacker) {
-           continue;
-       } else if (attacker->GetNumberOfArmies() > strongest_country->GetNumberOfArmies()) {
-           strongest_country = attacker;
-           break;
-       }
-   }
+    Country* strongest_country = countries_with_enemies[0];
+    for(Country* attacker : countries_with_enemies) {
+        if(!attacker) {
+            continue;
+        } else if (attacker->GetNumberOfArmies() > strongest_country->GetNumberOfArmies()) {
+            strongest_country = attacker;
+            break;
+        }
+    }
 
-   phase->SetAttackingCountry(strongest_country);
-   return phase->GetAttackingCountry() != nullptr;
+    phase->SetAttackingCountry(strongest_country);
+    return phase->GetAttackingCountry() != nullptr;
 }
 
 void AggressiveComputerPlayerStrategy::AttackerSelectNumberOfDice(Player* player, const int MAX_NUM_OF_DICE_ATTACKER,  int& attacker_num_dice)  {
@@ -507,8 +500,7 @@ bool AggressiveComputerPlayerStrategy::SelectSourceCountry(Player *player) {
     //there needs to be at least one neighbour to the strongest country that has armies and belongs to current player
     for(Country* country : *neighbours_of_stongest_country) {
         if(player->DoesPlayerOwnCountry(country->GetCountryID()) && player->GetPlayerID() == country->GetOwnerID() && country->GetNumberOfArmies() > 0) {
-            std::shared_ptr<Country> ptr (country);
-            fortify_phase->SetSourceCountry(ptr);
+            fortify_phase->SetSourceCountry(country);
         }
     }
 
@@ -537,15 +529,14 @@ bool AggressiveComputerPlayerStrategy::SelectTargetCountry(Player *player) {
     int max_num_armies = 0;
     int country_id = 1;
 
-    for(std::shared_ptr<Country> neighbour : *fortify_phase->GetNeighboursToFortify()) {
+    for(Country* neighbour : *fortify_phase->GetNeighboursToFortify()) {
         if(neighbour->GetNumberOfArmies() > max_num_armies) {
             max_num_armies = neighbour->GetNumberOfArmies();
             country_id = neighbour->GetCountryID();
         }
     }
 
-    std::shared_ptr<Country> ptr (player->GetCountryById(country_id));
-    fortify_phase->SetTargetCountry(ptr);
+    fortify_phase->SetTargetCountry(player->GetCountryById(country_id));
 
     return fortify_phase->GetTargetCountry() != nullptr;
 }
@@ -602,12 +593,12 @@ bool BenevolantComputerPlayerStrategy::PromptPlayerToAttack(Player* player) {
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttack(Player* player) {
-   // benevolant players never attack
+    // benevolant players never attack
     return false;
 }
 
 bool BenevolantComputerPlayerStrategy::SelectCountryToAttackFrom(Player* player) {
-   //benevolant players never attack
+    //benevolant players never attack
     return false;
 }
 
@@ -651,8 +642,7 @@ bool BenevolantComputerPlayerStrategy::SelectSourceCountry(Player *player) {
         return false;
     }
 
-    std::shared_ptr<Country> ptr (player->GetCountryById(country_id));
-    fortify_phase->SetSourceCountry(ptr);
+    fortify_phase->SetSourceCountry(player->GetCountryById(country_id));
 
     return fortify_phase->GetSourceCountry() != nullptr;
 }
@@ -674,15 +664,14 @@ bool BenevolantComputerPlayerStrategy::SelectTargetCountry(Player *player) {
     int min_num_armies = fortify_phase->GetSourceCountry()->GetNumberOfArmies();
     int weakest_country_id = 1;
 
-    for(std::shared_ptr<Country> country : *fortify_phase->GetNeighboursToFortify()) {
+    for(Country* country : *fortify_phase->GetNeighboursToFortify()) {
         if(country->GetNumberOfArmies() < min_num_armies) {
             min_num_armies = country->GetNumberOfArmies();
             weakest_country_id = country->GetCountryID();
         }
     }
 
-    std::shared_ptr<Country> ptr (player->GetCountryById(weakest_country_id));
-    fortify_phase->SetTargetCountry(ptr);
+    fortify_phase->SetTargetCountry(player->GetCountryById(weakest_country_id));
 
     return fortify_phase->GetTargetCountry() != nullptr;
 }
@@ -792,8 +781,7 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
     //Randomly select an attacking country from the list
     int random_country_to_attack_from = Utility::GenerateRandomNumInRange(0, (int)list_of_attackers.size() - 1);
 
-    std::shared_ptr<Country> attacker (list_of_attackers.at(random_country_to_attack_from));
-
+    Country* attacker = list_of_attackers.at(random_country_to_attack_from);
     attack_phase->SetAttackingCountry(attacker);
 
     return attack_phase->GetAttackingCountry() != nullptr;
@@ -805,7 +793,7 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
         return false;
     }
 
-    std::shared_ptr<Country> defending_country = nullptr;
+    Country* defending_country = nullptr;
 
     //Display neighboring countries
     string msg = "Here are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
@@ -813,8 +801,8 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     player->Notify(player, GamePhase::Attack, msg, false, false);
 
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
-    for (std::shared_ptr<Country> country : *attack_phase->GetOpponentNeighbours()) {
-        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country.get());
+    for (Country *country : *attack_phase->GetOpponentNeighbours()) {
+        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
         cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
              << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
@@ -823,7 +811,7 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     attack_phase->FindOpponentNeighboursToAttackingCountry();
 
 
-    vector<std::shared_ptr<Country>>* opponents = attack_phase->GetOpponentNeighbours();
+    vector<Country*>* opponents = attack_phase->GetOpponentNeighbours();
 
     if(!opponents || opponents->empty()) {
         cout << "There are no opposing neighbours to " << attack_phase->GetAttackingCountry();
@@ -841,8 +829,7 @@ bool RandomComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     }
 
     attack_phase->SetDefendingCountry(defending_country);
-    std::shared_ptr<Player> ptr (player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
-    attack_phase->SetDefender(ptr);
+    attack_phase->SetDefender(player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
 
     return defending_country != nullptr;
 }
@@ -910,8 +897,7 @@ bool RandomComputerPlayerStrategy::SelectSourceCountry(Player *player) {
                 continue;
             }
 
-            std::shared_ptr<Country> ptr (country);
-            fortify_phase->GetCountriesWithArmies()->push_back(ptr);
+            fortify_phase->GetCountriesWithArmies()->push_back(country);
         }
     }
 
@@ -1026,8 +1012,8 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttackFrom(Player *player) {
     //Randomly select an attacking country from the list
     int random_country_to_attack_from = Utility::GenerateRandomNumInRange(0, (int)list_of_attackers.size() - 1);
 
-    std::shared_ptr<Country> ptr (list_of_attackers.at(random_country_to_attack_from));
-    attack_phase->SetAttackingCountry(ptr);
+    Country* attacker = list_of_attackers.at(random_country_to_attack_from);
+    attack_phase->SetAttackingCountry(attacker);
 
     return attack_phase->GetAttackingCountry() != nullptr;
 }
@@ -1039,7 +1025,7 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
         return false;
     }
 
-    std::shared_ptr<Country> defending_country = nullptr;
+    Country* defending_country = nullptr;
 
     //Display neighboring countries
     string msg = "Here are the neighbouring opponent countries to " + *attack_phase->GetAttackingCountry()->GetCountryName() + "\n";
@@ -1047,12 +1033,12 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     player->Notify(player, GamePhase::Attack, msg, false, false);
 
     attack_phase->FindOpponentNeighboursToAttackingCountry();
-    vector<std::shared_ptr<Country>>* opponents = attack_phase->GetOpponentNeighbours();
+    vector<Country*>* opponents = attack_phase->GetOpponentNeighbours();
 
 
     cout << endl << setw(25)  << left << "Country ID" << setw(25)  << "Name" << setw(25) <<  "Number of Armies" << setw(10) << right << "Neighbours" << endl;
-    for (std::shared_ptr<Country> country : *opponents) {
-        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country.get());
+    for (Country *country : *opponents) {
+        string neighbours_list =  player->GetGameMap()->GenerateListOfNeighboringCountries(country);
         cout << setw(25)  << left << country->GetCountryID() << setw(25) <<  *country->GetCountryName() << setw(25)
              << country->GetNumberOfArmies()  << setw(10) << right << neighbours_list << endl;
         cout << endl;
@@ -1077,14 +1063,13 @@ bool CheaterComputerPlayerStrategy::SelectCountryToAttack(Player *player) {
     }
 
     attack_phase->SetDefendingCountry(defending_country);
-    std::shared_ptr<Player> ptr (player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
-    attack_phase->SetDefender(ptr);
+    attack_phase->SetDefender(player->GetGameEngine()->GetPlayerByID(defending_country->GetOwnerID()));
 
     return attack_phase->GetDefendingCountry() != nullptr && (attack_phase->GetDefendingCountry()->GetOwnerID() != player->GetPlayerID());
 }
 
 void CheaterComputerPlayerStrategy::AttackerSelectNumberOfDice(Player *player, const int MAX_NUM_OF_DICE_ATTACKER, int &attacker_num_dice) {
-   // Cheaters don't roll dice since they defeat their opponents automatically
+    // Cheaters don't roll dice since they defeat their opponents automatically
 }
 
 // similar behaviour to random player for decisions
@@ -1115,7 +1100,7 @@ bool CheaterComputerPlayerStrategy::PromptPlayerToFortify(Player *player) {
 
 bool CheaterComputerPlayerStrategy::SelectSourceCountry(Player *player) {
     //Cheater doesn't use a source country to fortify its countries
-   return true;
+    return true;
 }
 
 bool CheaterComputerPlayerStrategy::SelectTargetCountry(Player *player) {
@@ -1124,7 +1109,7 @@ bool CheaterComputerPlayerStrategy::SelectTargetCountry(Player *player) {
         return false;
     }
 
-    vector<std::shared_ptr<Country>> countries_to_fortify;
+    vector<Country*> countries_to_fortify;
     //the cheater will select a country that has at least one enemy neighbour to fortify
     for(Country* country : *player->GetPlayersCountries()) {
         vector<Country*>* neighbours = player->GetGameMap()->GetNeighbouringCountries(country);
@@ -1132,8 +1117,7 @@ bool CheaterComputerPlayerStrategy::SelectTargetCountry(Player *player) {
         for(Country* neighbour : *neighbours) {
             // if we find at least 1 enemy neighbour, then add the country to the list of possible countries to fortify
             if(!player->DoesPlayerOwnCountry(neighbour->GetCountryID()) && player->GetPlayerID() != country->GetOwnerID()) {
-                std::shared_ptr<Country> ptr (country);
-                countries_to_fortify.push_back(ptr);
+                countries_to_fortify.push_back(country);
             }
         }
     }

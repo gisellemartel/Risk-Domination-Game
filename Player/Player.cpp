@@ -99,17 +99,9 @@ Player::Player(const Player &player) : player_id_(player.player_id_){
 }
 
 Player::~Player() {
-
-    for(Country* country : *countries_) {
-        delete country;
-        country = nullptr;
-    }
-
     delete player_name_;
     delete risk_cards_;
-    delete countries_;
     delete dice_roll_;
-    delete game_map_;
     delete player_strategy_;
     delete attack_phase_;
     delete reinforce_phase_;
@@ -117,9 +109,7 @@ Player::~Player() {
 
     player_name_ = nullptr;
     risk_cards_ = nullptr;
-    countries_ = nullptr;
     dice_roll_ = nullptr;
-    game_map_ = nullptr;
     player_strategy_ = nullptr;
     attack_phase_ = nullptr;
 }
@@ -230,10 +220,10 @@ Country* Player::GetCountryById(int id) const {
     return nullptr;
 }
 
-Country* Player::GetCountryInVectorById(vector<std::shared_ptr<Country>>* countries, int country_id) {
-    for(std::shared_ptr<Country> country : *countries) {
+Country* Player::GetCountryInVectorById(vector<Country*>* countries, int country_id) {
+    for(Country* country : *countries) {
         if(country->GetCountryID() == country_id) {
-            return country.get();
+            return country;
         }
     }
     return nullptr;
@@ -370,9 +360,9 @@ void Player::DisplayCountries() const {
     cout << endl;
 }
 
-void Player::AttackerConquersDefeatedCountry() {
-    std::shared_ptr<Country> attacking_country = attack_phase_->GetAttackingCountry();
-    std::shared_ptr<Country> defending_country = attack_phase_->GetDefendingCountry();
+string Player::AttackerConquersDefeatedCountry() {
+    Country* attacking_country = attack_phase_->GetAttackingCountry();
+    Country* defending_country = attack_phase_->GetDefendingCountry();
     Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
     string msg;
@@ -386,12 +376,14 @@ void Player::AttackerConquersDefeatedCountry() {
 
     msg = "";
 
-    defender->RemoveCountryFromCollection(defending_country.get());
+
+    string display_info = defending_country->GetDisplayInfo();
+    defender->RemoveCountryFromCollection(defending_country);
     //defender has lost. Its country will now be transferred to the attacker
-    AddCountryToCollection(defending_country.get());
+    AddCountryToCollection(defending_country);
 
 
-    player_strategy_->MoveArmiesAfterAttack(this, attacking_country.get(), defending_country.get());
+    player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
 
     defending_country->SetCountryOwner(player_id_);
     attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
@@ -405,17 +397,20 @@ void Player::AttackerConquersDefeatedCountry() {
     // Draw card once country has been conquered
     Deck* game_deck_ = game_engine_->GetCardsDeck();
     if(!game_deck_) {
-        return;
+        return "";
     }
 
     Cards* card = game_deck_->Draw();
     if(card) {
         risk_cards_->AddCardToHand(card);
     }
+
     //check to see if player has no more countries
     if(defender->GetPlayersCountries()->empty()) {
-        RemoveDefeatedPlayerFromGame(defending_country.get(), defender);
+        RemoveDefeatedPlayerFromGame(defending_country, defender);
     }
+
+    return display_info;
 }
 
 void Player::RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* defender) {
@@ -491,8 +486,7 @@ void Player::Attack() {
         return;
     }
 
-    std::shared_ptr<Player> ptr (this);
-    attack_phase_ = new AttackPhase(ptr);
+    attack_phase_ = new AttackPhase(this);
 
     int countries_conquered = 0;
 
@@ -557,16 +551,18 @@ void Player::Attack() {
             msg = *player_name_ + " has selected " + *attack_phase_->GetDefendingCountry()->GetCountryName() + " to attack\n";
             Notify(this, GamePhase::Attack, msg, false, false);
 
-            std::shared_ptr<Country> attacking_country = attack_phase_->GetAttackingCountry();
-            std::shared_ptr<Country> defending_country = attack_phase_->GetDefendingCountry();
+            Country* attacking_country = attack_phase_->GetAttackingCountry();
+            Country* defending_country = attack_phase_->GetDefendingCountry();
             Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
 
+            string defender_name = *defender->GetPlayerName();
+            string defending_country_info = "";
             // if the defending country has no armies or if the current player is in cheat mode, they are defeated automatically
             if(defending_country->GetNumberOfArmies() == 0 || is_cheater_) {
                 //function will return true when player is removed from game
                 ++countries_conquered;
-                 AttackerConquersDefeatedCountry();
+                 defending_country_info = AttackerConquersDefeatedCountry();
             } else { //otherwise the players will roll their dice and the attack will occur
                 int attacker_num_dice = 0;
                 int defender_num_dice = 0;
@@ -644,7 +640,7 @@ void Player::Attack() {
                         if(defending_country->GetNumberOfArmies() == 0) {
                             //function will return true when player is removed from game
                             ++countries_conquered;
-                            AttackerConquersDefeatedCountry();
+                            defending_country_info = AttackerConquersDefeatedCountry();
                             break;
                         }
                     }
@@ -653,15 +649,16 @@ void Player::Attack() {
                 Notify(this, GamePhase::Attack, msg, false, false);
             }
 
-            msg = "Result:\n\n";
-            msg.append(*player_name_ + "\n");
-            msg.append(attacking_country->GetDisplayInfo());
-            msg.append("\n" +  *defender->GetPlayerName() + "\n");
-            msg.append(defending_country->GetDisplayInfo());
+            if(attacking_country) {
+                msg = "Result:\n\n";
+                msg.append(*player_name_ + "\n");
+                msg.append(attacking_country->GetDisplayInfo());
+                msg.append("\n" +  defender_name + "\n");
+                msg.append(defending_country_info);
 
-            Notify(this, GamePhase::Attack, msg, false, false);
+                Notify(this, GamePhase::Attack, msg, false, false);
+            }
         } else {
-            DisplayCountries();
             break;
         }
 
@@ -722,7 +719,7 @@ void Player::Fortify() {
                 return;
             }
 
-            Country* source_country = fortify_phase_->GetSourceCountry().get();
+            Country* source_country = fortify_phase_->GetSourceCountry();
 
 
             cout << "Please select which target country you wish to fortify:\n";
@@ -739,8 +736,7 @@ void Player::Fortify() {
             //find all the neighbours of the source country that belong to the current player
             for (Country *country : *neighbours) {
                 if (DoesPlayerOwnCountry(country->GetCountryID()) && player_id_ == country->GetOwnerID()) {
-                    std::shared_ptr<Country> ptr (country);
-                    fortify_phase_->GetNeighboursToFortify()->push_back(ptr);
+                    fortify_phase_->GetNeighboursToFortify()->push_back(country);
                 }
             }
 
@@ -757,7 +753,7 @@ void Player::Fortify() {
             cout << "\nHere are the neighbouring countries to " << *source_country->GetCountryName() << endl;
             cout << endl << setw(25) << left << "Country ID" << setw(25) << "Name" << setw(25) << right
                  << "Number of Armies" << endl;
-            for (const std::shared_ptr<Country> country : *fortify_phase_->GetNeighboursToFortify()) {
+            for (const Country* country : *fortify_phase_->GetNeighboursToFortify()) {
                 cout << setw(25) << left << country->GetCountryID() << setw(25) << *country->GetCountryName()
                      << setw(25) << right << country->GetNumberOfArmies() << endl;
                 cout << endl;
@@ -772,7 +768,7 @@ void Player::Fortify() {
                 return;
             }
 
-            std::shared_ptr<Country> target_country = fortify_phase_->GetTargetCountry();
+            Country* target_country = fortify_phase_->GetTargetCountry();
 
             msg = "There are " + to_string(source_country->GetNumberOfArmies()) + " armies in " +
                   *source_country->GetCountryName() + ".\n";

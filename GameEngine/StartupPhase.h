@@ -16,7 +16,7 @@ using namespace std;
 class StartupPhase {
 
 private:
-    map<std::shared_ptr<Player>, int>* player_order_;
+    map<Player*, int> player_order_;
     int number_of_armies_;
 
     //private helper functions

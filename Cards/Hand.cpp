@@ -187,6 +187,9 @@ int Hand::AcquireArmy(int exchanges_done) {
 }
 
 bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3) {
+    if(!card_1 || !card_2 || !card_3) {
+        return false;
+    }
     return
             (
                     card_1->GetCardType() == card_2->GetCardType() &&
@@ -231,6 +234,8 @@ size_t Hand::Min(size_t index_1, size_t index_2, size_t index_3) {
 void Hand::DisplayHand() {
     for(size_t i = 0; i < cards_in_hand_->size(); ++i){
         cout << "card #" << i << ": ";
-        cards_in_hand_->at(i)->DisplayCard();
+        if(cards_in_hand_->at(i)) {
+            cards_in_hand_->at(i)->DisplayCard();
+        }
     }
 }

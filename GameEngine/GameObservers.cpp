@@ -125,10 +125,7 @@ GameStatisticObserver::GameStatisticObserver(vector<std::shared_ptr<Player>>* pl
     }
 }
 
-GameStatisticObserver::~GameStatisticObserver(){
-    delete players_;
-    players_ = nullptr;
-}
+GameStatisticObserver::~GameStatisticObserver() = default;
 
 void GameStatisticObserver::Update(string msg) {
     Utility::ClearScreen();
@@ -185,7 +182,12 @@ void GameStatisticObserver::DisplayActivePlayerStats(){
         }
 
         vector<Country*>* map_countries = player->GetGameMap()->GetCountries();
+
+
         Hand* player_hand = player->GetPlayersCards();
+        if(!map_countries || !player_hand) {
+            return;
+        }
         //Display the stats of players with at least 1 country
         if(!player_countries->empty() && !map_countries->empty()){
             cout << "Player: "

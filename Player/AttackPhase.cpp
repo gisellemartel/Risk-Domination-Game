@@ -12,43 +12,43 @@ AttackPhase::AttackPhase() {
     defending_country_ = nullptr;
     defender_ = nullptr;
     attacker_ = nullptr;
-    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
+    game_map_ = nullptr;
+    opponent_neighbours_ = new vector<Country*>;
     rand_player_num_attacks_ = 0;
 }
 
-AttackPhase::AttackPhase(std::shared_ptr<Player> player) {
+AttackPhase::AttackPhase(Player* player) {
     attacking_country_ = nullptr;
     defending_country_ = nullptr;
     defender_ = nullptr;
     attacker_ = player;
-    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
+    game_map_ = player->GetGameMap();
+    opponent_neighbours_ = new vector<Country*>;
     rand_player_num_attacks_ = 0;
 }
 
-AttackPhase::~AttackPhase() {
-
-    attacking_country_ = nullptr;
-    defending_country_ = nullptr;
-    defender_ = nullptr;
-    attacker_ = nullptr;
-
-    delete opponent_neighbours_;
-    opponent_neighbours_ = nullptr;
-}
+AttackPhase::~AttackPhase() = default;
 
 AttackPhase::AttackPhase(const AttackPhase& attack) {
     *attacking_country_ = *attack.attacking_country_;
     *defending_country_ = *attack.defending_country_;
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
+    *game_map_ = *attack.game_map_;
     rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
         (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
+        delete (*attack.opponent_neighbours_)[i];
         (*attack.opponent_neighbours_)[i] = nullptr;
     }
 
+    delete attack.attacking_country_;
+    delete attack.defending_country_;
+    delete attack.attacker_;
+    delete attack.defender_;
+    delete attack.game_map_;
     delete attack.opponent_neighbours_;
 }
 
@@ -57,14 +57,21 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     *defending_country_ = *attack.defending_country_;
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
+    *game_map_ = *attack.game_map_;
     rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
         (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
+        delete (*attack.opponent_neighbours_)[i];
         (*attack.opponent_neighbours_)[i] = nullptr;
     }
 
+    delete attack.attacking_country_;
+    delete attack.defending_country_;
+    delete attack.attacker_;
+    delete attack.defender_;
+    delete attack.game_map_;
     delete attack.opponent_neighbours_;
 
     return *this;
@@ -74,15 +81,15 @@ int AttackPhase::GetRandPlayerNumAttacks() const {
     return rand_player_num_attacks_;
 }
 
-std::shared_ptr<Country> AttackPhase::GetAttackingCountry() const {
+Country* AttackPhase::GetAttackingCountry() const {
     return attacking_country_;
 }
 
-std::shared_ptr<Country> AttackPhase::GetDefendingCountry() const {
+Country* AttackPhase::GetDefendingCountry() const {
     return defending_country_;
 }
 
-vector<std::shared_ptr<Country>>* AttackPhase::GetOpponentNeighbours() const {
+vector<Country*>* AttackPhase::GetOpponentNeighbours() const {
     return opponent_neighbours_;
 }
 
@@ -90,16 +97,15 @@ void AttackPhase::SetRandPlayerNumAttacks(int num_attacks) {
     rand_player_num_attacks_ = num_attacks;
 }
 
-void AttackPhase::SetAttackingCountry(std::shared_ptr<Country> attacking_country) {
+void AttackPhase::SetAttackingCountry(Country *attacking_country) {
     attacking_country_ = attacking_country;
 }
 
-void AttackPhase::SetDefender(std::shared_ptr<Player> defender) {
-
+void AttackPhase::SetDefender(Player* defender) {
     defender_ = defender;
 }
 
-void AttackPhase::SetDefendingCountry(std::shared_ptr<Country> defending_country) {
+void AttackPhase::SetDefendingCountry(Country* defending_country) {
     defending_country_ = defending_country;
 }
 
@@ -107,7 +113,7 @@ void AttackPhase::UpdateNumAttacks() {
     --rand_player_num_attacks_;
 }
 
-void AttackPhase::RemoveDefeatedCountryFromOpponents(std::shared_ptr<Country> defeated_country) {
+void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) {
     if(!defeated_country || !opponent_neighbours_ || opponent_neighbours_->empty()) {
         return;
     }
@@ -128,8 +134,8 @@ void AttackPhase::RemoveDefeatedCountryFromOpponents(std::shared_ptr<Country> de
 }
 
 void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
-    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
-    vector<Country*>* neighbours = attacker_->GetGameMap()->GetNeighbouringCountries(attacking_country_.get());
+    opponent_neighbours_ = new vector<Country*>;
+    vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(attacking_country_);
     defending_country_ = nullptr;
 
     if(neighbours->empty()) {
@@ -140,8 +146,7 @@ void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
 
     for(Country* neighbour : *neighbours) {
         if(!attacker_->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
-            std::shared_ptr<Country> ptr (neighbour);
-            opponent_neighbours_->push_back(ptr);
+            opponent_neighbours_->push_back(neighbour);
         }
     }
 
@@ -156,7 +161,7 @@ bool AttackPhase::DoesOpposingCountryExist() {
     bool has_enemy = false;
     for(Country* country : *attacker_->GetPlayersCountries()) {
         //Get all the neighbouring countries
-        vector<Country*>* neighbouring_countries = attacker_->GetGameMap()->GetNeighbouringCountries(country);
+        vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(country);
 
         if(!neighbouring_countries->empty()) {
             //if there is a neighbour that has an army, then verify the country belongs to an opponent

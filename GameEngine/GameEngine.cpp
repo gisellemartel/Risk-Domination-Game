@@ -164,14 +164,15 @@ GameEngine::~GameEngine() {
         delete entry.first;
     }
 
+    delete game_results_;
+    delete game_maps_;
     delete players_;
     delete file_paths_;
     delete cards_deck_;
-    delete loaded_map_;
     delete game_start_;
     delete observers_;
-    delete game_results_;
-    delete game_maps_;
+    delete loaded_map_;
+
     game_results_ = nullptr;
     game_maps_ = nullptr;
     loaded_map_ = nullptr;
@@ -943,12 +944,12 @@ void GameEngine::CreateNewGame() {
             game_start_->AutoAssignArmiesToAllPlayers(players_);
         }
 
-        for(std::shared_ptr<Player> player : *players_) {
+        for(const std::shared_ptr<Player>& player : *players_) {
             player->SetGameMap(loaded_map_->GetParsedMap());
         }
         //repeat game loop 2 times
         for(int i = 0; i < 2; ++i) {
-            for(std::shared_ptr<Player> player : *players_) {
+            for(const std::shared_ptr<Player>& player : *players_) {
                 player->Reinforce();
                 player->Attack();
                 player->Fortify();

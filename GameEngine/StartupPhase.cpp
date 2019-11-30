@@ -25,36 +25,29 @@ vector<int> StartupPhase::GenerateRandomizedIndicesForVector(const vector<std::s
 
 // class constructors
 StartupPhase::StartupPhase() {
-    player_order_ = new map<std::shared_ptr<Player>, int>;
     current_player_index_ = 0;
 }
 
 StartupPhase::StartupPhase(const StartupPhase& startup_phase) {
-    *player_order_ = *startup_phase.player_order_;
+    player_order_ = startup_phase.player_order_;
 
-    for(const auto& it : *startup_phase.player_order_) {
-        player_order_->insert(it);
+    for(const auto& it : startup_phase.player_order_) {
+        player_order_.insert(it);
     }
     current_player_index_ = startup_phase.current_player_index_;
-    delete startup_phase.player_order_;
 }
 
-StartupPhase::~StartupPhase() {
-    delete player_order_;
-    player_order_ = nullptr;
-}
-
+StartupPhase::~StartupPhase() = default;
 
 //operator overloader
 StartupPhase& StartupPhase::operator=(const StartupPhase& startup_phase) {
-    *player_order_ = *startup_phase.player_order_;
+    player_order_ = startup_phase.player_order_;
 
-    for(const auto& it : *startup_phase.player_order_) {
-        player_order_->insert(it);
+    for(const auto& it : startup_phase.player_order_) {
+        player_order_.insert(it);
     }
     current_player_index_ = startup_phase.current_player_index_;
 
-    delete startup_phase.player_order_;
     return *this;
 }
 
@@ -87,12 +80,12 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<std::shared_ptr<Player>>*
 
     //assign the generated random order to each player
     for (int i = 0; i < players->size(); ++i) {
-        player_order_->insert(std::pair<std::shared_ptr<Player>, int>((*players)[random_order[i]], i));
+        player_order_.insert(std::pair<Player*, int>((*players)[random_order[i]].get(), i));
     }
 
     //print the players in the generated order
-    for(map<std::shared_ptr<Player> , int>::iterator it = player_order_->begin(); it != player_order_->end(); ++it) {
-        std::shared_ptr<Player>  player = it->first;
+    for(map<Player* , int>::iterator it = player_order_.begin(); it != player_order_.end(); ++it) {
+        Player*  player = it->first;
 
         for(int i = 0; i < players->size(); ++i ) {
             if(player && *player == *(*players)[i]) {
@@ -132,7 +125,7 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<std::shared_ptr<Player>>* 
         //debug string
         cout << "Current turn: " << (current_player_index_ + 1) << ".\n";
 
-        for (auto &it : *player_order_) {
+        for (auto &it : player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_player_index_) {
                 it.first->SetPlayersTurn(true);
@@ -171,7 +164,7 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>* pla
 
     //assign countries to each player in round robin fashion
     while(!Utility::ContainsAllZeros(num_armies)) {
-        for (auto &it : *player_order_) {
+        for (auto &it : player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_player_index_) {
                 //debug string
@@ -251,7 +244,7 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<std::shared_ptr<Player>>*
 
     //assign countries to each player in round robin fashion
     while(!Utility::ContainsAllZeros(num_armies)) {
-        for (auto &it : *player_order_) {
+        for (auto &it : player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_player_index_) {
                 //debug string

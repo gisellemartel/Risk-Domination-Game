@@ -126,10 +126,15 @@ void Country::DisplayInfo() const{
 }
 
 string Country::GetDisplayInfo() const {
-    return "Country ID: " + to_string(GetCountryID()) + "\n"
-           + "Country Name: " + *GetCountryName() + "\n"
-           + "Occupying Army Value: " + to_string(GetNumberOfArmies()) + "\n"
-           + "Continent: " + to_string(GetContinentID()) + "\n";
+    if(country_name_) {
+        return "Country ID: " + to_string(GetCountryID()) + "\n"
+               + "Country Name: " + *country_name_  + "\n"
+               + "Occupying Army Value: " + to_string(GetNumberOfArmies()) + "\n"
+               + "Continent: " + to_string(GetContinentID()) + "\n";
+    } else {
+        return "";
+    }
+
 }
 
 // END OF COUNTRY CLASS ----------------------------------------------------------------------------------------

@@ -47,11 +47,6 @@ Continent::~Continent() {
     if(!continent_name_) {
         return;
     }
-
-    if(!countries_in_continent_->empty()) {
-        delete countries_in_continent_;
-        countries_in_continent_ = nullptr;
-    }
 }
 
 Continent& Continent::operator=(const Continent &continent) {

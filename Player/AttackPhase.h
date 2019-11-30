@@ -15,35 +15,36 @@ class Map;
 class AttackPhase {
 
 private:
-    std::shared_ptr<Player> attacker_;
-    std::shared_ptr<Player> defender_;
-    std::shared_ptr<Country>attacking_country_;
-    std::shared_ptr<Country> defending_country_;
-    vector<std::shared_ptr<Country>>* opponent_neighbours_;
+    Player* attacker_;
+    Player* defender_;
+    Map* game_map_;
+    Country* attacking_country_;
+    Country* defending_country_;
+    vector<Country*>* opponent_neighbours_;
     int rand_player_num_attacks_;
 
 public:
     static const int RAND_PLAYER_MAX_NUM_ATTACKS = 20;
 
     explicit AttackPhase();
-    explicit AttackPhase(std::shared_ptr<Player> player);
+    explicit AttackPhase(Player *player);
     AttackPhase(const AttackPhase& attack);
     ~AttackPhase();
 
     AttackPhase& operator=(const AttackPhase& attack);
 
-    std::shared_ptr<Country> GetAttackingCountry() const;
-    std::shared_ptr<Country> GetDefendingCountry() const;
-    vector<std::shared_ptr<Country>>* GetOpponentNeighbours() const;
+    Country* GetAttackingCountry() const;
+    Country* GetDefendingCountry() const;
+    vector<Country*>* GetOpponentNeighbours() const;
     int GetRandPlayerNumAttacks() const;
 
-    void SetAttackingCountry(std::shared_ptr<Country>attacking_country);
-    void SetDefendingCountry(std::shared_ptr<Country> defending_country);
-    void SetDefender(std::shared_ptr<Player> defender);
+    void SetAttackingCountry(Country* attacking_country);
+    void SetDefendingCountry(Country* defending_country);
+    void SetDefender(Player* defender);
     void SetRandPlayerNumAttacks(int num_attacks);
 
     void UpdateNumAttacks();
-    void RemoveDefeatedCountryFromOpponents(std::shared_ptr<Country> defeated_country);
+    void RemoveDefeatedCountryFromOpponents(Country* defeated_country);
 
     bool DoesOpposingCountryExist();
     bool PlayerHasCountryWithEnoughArmiesToAttack();
