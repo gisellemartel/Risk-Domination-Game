@@ -95,7 +95,7 @@ public:
     string* GetPlayerName() const;
 
     Country* PromptPlayerToSelectCountry() const;
-    Country* GetCountryInVectorById(vector<Country*>* countries, int country_id);
+    Country* GetCountryInVectorById(vector<std::shared_ptr<Country>>* countries, int country_id);
 
     bool DoesPlayerOwnCountry(int id) const;
     bool IsCurrentlyPlayersTurn() const;

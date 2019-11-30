@@ -230,10 +230,10 @@ Country* Player::GetCountryById(int id) const {
     return nullptr;
 }
 
-Country* Player::GetCountryInVectorById(vector<Country*>* countries, int country_id) {
-    for(Country* country : *countries) {
+Country* Player::GetCountryInVectorById(vector<std::shared_ptr<Country>>* countries, int country_id) {
+    for(std::shared_ptr<Country> country : *countries) {
         if(country->GetCountryID() == country_id) {
-            return country;
+            return country.get();
         }
     }
     return nullptr;
@@ -371,8 +371,8 @@ void Player::DisplayCountries() const {
 }
 
 void Player::AttackerConquersDefeatedCountry() {
-    Country* attacking_country = attack_phase_->GetAttackingCountry();
-    Country* defending_country = attack_phase_->GetDefendingCountry();
+    std::shared_ptr<Country> attacking_country = attack_phase_->GetAttackingCountry();
+    std::shared_ptr<Country> defending_country = attack_phase_->GetDefendingCountry();
     Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
     string msg;
@@ -386,12 +386,12 @@ void Player::AttackerConquersDefeatedCountry() {
 
     msg = "";
 
-    defender->RemoveCountryFromCollection(defending_country);
+    defender->RemoveCountryFromCollection(defending_country.get());
     //defender has lost. Its country will now be transferred to the attacker
-    AddCountryToCollection(defending_country);
+    AddCountryToCollection(defending_country.get());
 
 
-    player_strategy_->MoveArmiesAfterAttack(this, attacking_country, defending_country);
+    player_strategy_->MoveArmiesAfterAttack(this, attacking_country.get(), defending_country.get());
 
     defending_country->SetCountryOwner(player_id_);
     attack_phase_->RemoveDefeatedCountryFromOpponents(defending_country);
@@ -414,7 +414,7 @@ void Player::AttackerConquersDefeatedCountry() {
     }
     //check to see if player has no more countries
     if(defender->GetPlayersCountries()->empty()) {
-        RemoveDefeatedPlayerFromGame(defending_country, defender);
+        RemoveDefeatedPlayerFromGame(defending_country.get(), defender);
     }
 }
 
@@ -491,7 +491,8 @@ void Player::Attack() {
         return;
     }
 
-    attack_phase_ = new AttackPhase(this);
+    std::shared_ptr<Player> ptr (this);
+    attack_phase_ = new AttackPhase(ptr);
 
     int countries_conquered = 0;
 
@@ -556,8 +557,8 @@ void Player::Attack() {
             msg = *player_name_ + " has selected " + *attack_phase_->GetDefendingCountry()->GetCountryName() + " to attack\n";
             Notify(this, GamePhase::Attack, msg, false, false);
 
-            Country* attacking_country = attack_phase_->GetAttackingCountry();
-            Country* defending_country = attack_phase_->GetDefendingCountry();
+            std::shared_ptr<Country> attacking_country = attack_phase_->GetAttackingCountry();
+            std::shared_ptr<Country> defending_country = attack_phase_->GetDefendingCountry();
             Player* defender = game_engine_->GetPlayerByID(defending_country->GetOwnerID());
 
 
@@ -721,7 +722,7 @@ void Player::Fortify() {
                 return;
             }
 
-            Country *source_country = fortify_phase_->GetSourceCountry();
+            Country* source_country = fortify_phase_->GetSourceCountry().get();
 
 
             cout << "Please select which target country you wish to fortify:\n";
@@ -738,7 +739,8 @@ void Player::Fortify() {
             //find all the neighbours of the source country that belong to the current player
             for (Country *country : *neighbours) {
                 if (DoesPlayerOwnCountry(country->GetCountryID()) && player_id_ == country->GetOwnerID()) {
-                    fortify_phase_->GetNeighboursToFortify()->push_back(country);
+                    std::shared_ptr<Country> ptr (country);
+                    fortify_phase_->GetNeighboursToFortify()->push_back(ptr);
                 }
             }
 
@@ -755,7 +757,7 @@ void Player::Fortify() {
             cout << "\nHere are the neighbouring countries to " << *source_country->GetCountryName() << endl;
             cout << endl << setw(25) << left << "Country ID" << setw(25) << "Name" << setw(25) << right
                  << "Number of Armies" << endl;
-            for (const Country *country : *fortify_phase_->GetNeighboursToFortify()) {
+            for (const std::shared_ptr<Country> country : *fortify_phase_->GetNeighboursToFortify()) {
                 cout << setw(25) << left << country->GetCountryID() << setw(25) << *country->GetCountryName()
                      << setw(25) << right << country->GetNumberOfArmies() << endl;
                 cout << endl;
@@ -770,7 +772,7 @@ void Player::Fortify() {
                 return;
             }
 
-            Country *target_country = fortify_phase_->GetTargetCountry();
+            std::shared_ptr<Country> target_country = fortify_phase_->GetTargetCountry();
 
             msg = "There are " + to_string(source_country->GetNumberOfArmies()) + " armies in " +
                   *source_country->GetCountryName() + ".\n";

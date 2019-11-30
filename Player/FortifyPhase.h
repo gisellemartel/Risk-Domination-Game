@@ -15,13 +15,11 @@ class Map;
 class FortifyPhase {
 
 private:
-    Player* player_;
-    Map* game_map_;
-    Country* source_country_;
-    Country* target_country_;
+    std::shared_ptr<Country> source_country_;
+    std::shared_ptr<Country> target_country_;
 
-    vector<Country*>* countries_with_armies_;
-    vector<Country*>* neighbours_to_fortify_;
+    vector<std::shared_ptr<Country>>* countries_with_armies_;
+    vector<std::shared_ptr<Country>>* neighbours_to_fortify_;
 
 public:
 
@@ -32,13 +30,13 @@ public:
 
     FortifyPhase& operator=(const FortifyPhase& fortify);
 
-    Country* GetSourceCountry() const;
-    Country* GetTargetCountry() const;
-    vector<Country*>* GetNeighboursToFortify() const;
-    vector<Country*>* GetCountriesWithArmies() const;
+    std::shared_ptr<Country> GetSourceCountry() const;
+    std::shared_ptr<Country> GetTargetCountry() const;
+    vector<std::shared_ptr<Country>>* GetNeighboursToFortify() const;
+    vector<std::shared_ptr<Country>>* GetCountriesWithArmies() const;
 
-    void SetSourceCountry(Country* source);
-    void SetTargetCountry(Country* target);
+    void SetSourceCountry(std::shared_ptr<Country> source);
+    void SetTargetCountry(std::shared_ptr<Country> target);
 };
 
 

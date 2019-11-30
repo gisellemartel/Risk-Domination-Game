@@ -12,41 +12,25 @@ AttackPhase::AttackPhase() {
     defending_country_ = nullptr;
     defender_ = nullptr;
     attacker_ = nullptr;
-    game_map_ = nullptr;
-    opponent_neighbours_ = new vector<Country*>;
+    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
     rand_player_num_attacks_ = 0;
 }
 
-AttackPhase::AttackPhase(Player* player) {
+AttackPhase::AttackPhase(std::shared_ptr<Player> player) {
     attacking_country_ = nullptr;
     defending_country_ = nullptr;
     defender_ = nullptr;
     attacker_ = player;
-    game_map_ = player->GetGameMap();
-    opponent_neighbours_ = new vector<Country*>;
+    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
     rand_player_num_attacks_ = 0;
 }
 
 AttackPhase::~AttackPhase() {
-    delete game_map_;
-    game_map_ = nullptr;
 
-    delete attacking_country_;
     attacking_country_ = nullptr;
-
-    delete defending_country_;
     defending_country_ = nullptr;
-
-    delete defender_;
     defender_ = nullptr;
-
-    delete attacker_;
     attacker_ = nullptr;
-
-    for(Country* country : *opponent_neighbours_) {
-        delete country;
-        country = nullptr;
-    }
 
     delete opponent_neighbours_;
     opponent_neighbours_ = nullptr;
@@ -57,21 +41,14 @@ AttackPhase::AttackPhase(const AttackPhase& attack) {
     *defending_country_ = *attack.defending_country_;
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
-    *game_map_ = *attack.game_map_;
     rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
         (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
-        delete (*attack.opponent_neighbours_)[i];
         (*attack.opponent_neighbours_)[i] = nullptr;
     }
 
-    delete attack.attacking_country_;
-    delete attack.defending_country_;
-    delete attack.attacker_;
-    delete attack.defender_;
-    delete attack.game_map_;
     delete attack.opponent_neighbours_;
 }
 
@@ -80,21 +57,14 @@ AttackPhase& AttackPhase::operator=(const AttackPhase& attack) {
     *defending_country_ = *attack.defending_country_;
     *defender_ = *attack.defender_;
     *attacker_ = *attack.attacker_;
-    *game_map_ = *attack.game_map_;
     rand_player_num_attacks_ = attack.rand_player_num_attacks_;
 
     *opponent_neighbours_ = *attack.opponent_neighbours_;
     for(int i = 0; i < attack.opponent_neighbours_->size(); ++i) {
         (*opponent_neighbours_)[i] = (*attack.opponent_neighbours_)[i];
-        delete (*attack.opponent_neighbours_)[i];
         (*attack.opponent_neighbours_)[i] = nullptr;
     }
 
-    delete attack.attacking_country_;
-    delete attack.defending_country_;
-    delete attack.attacker_;
-    delete attack.defender_;
-    delete attack.game_map_;
     delete attack.opponent_neighbours_;
 
     return *this;
@@ -104,15 +74,15 @@ int AttackPhase::GetRandPlayerNumAttacks() const {
     return rand_player_num_attacks_;
 }
 
-Country* AttackPhase::GetAttackingCountry() const {
+std::shared_ptr<Country> AttackPhase::GetAttackingCountry() const {
     return attacking_country_;
 }
 
-Country* AttackPhase::GetDefendingCountry() const {
+std::shared_ptr<Country> AttackPhase::GetDefendingCountry() const {
     return defending_country_;
 }
 
-vector<Country*>* AttackPhase::GetOpponentNeighbours() const {
+vector<std::shared_ptr<Country>>* AttackPhase::GetOpponentNeighbours() const {
     return opponent_neighbours_;
 }
 
@@ -120,15 +90,16 @@ void AttackPhase::SetRandPlayerNumAttacks(int num_attacks) {
     rand_player_num_attacks_ = num_attacks;
 }
 
-void AttackPhase::SetAttackingCountry(Country *attacking_country) {
+void AttackPhase::SetAttackingCountry(std::shared_ptr<Country> attacking_country) {
     attacking_country_ = attacking_country;
 }
 
-void AttackPhase::SetDefender(Player* defender) {
+void AttackPhase::SetDefender(std::shared_ptr<Player> defender) {
+
     defender_ = defender;
 }
 
-void AttackPhase::SetDefendingCountry(Country* defending_country) {
+void AttackPhase::SetDefendingCountry(std::shared_ptr<Country> defending_country) {
     defending_country_ = defending_country;
 }
 
@@ -136,7 +107,7 @@ void AttackPhase::UpdateNumAttacks() {
     --rand_player_num_attacks_;
 }
 
-void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) {
+void AttackPhase::RemoveDefeatedCountryFromOpponents(std::shared_ptr<Country> defeated_country) {
     if(!defeated_country || !opponent_neighbours_ || opponent_neighbours_->empty()) {
         return;
     }
@@ -157,8 +128,8 @@ void AttackPhase::RemoveDefeatedCountryFromOpponents(Country *defeated_country) 
 }
 
 void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
-    opponent_neighbours_ = new vector<Country*>;
-    vector<Country*>* neighbours = game_map_->GetNeighbouringCountries(attacking_country_);
+    opponent_neighbours_ = new vector<std::shared_ptr<Country>>;
+    vector<Country*>* neighbours = attacker_->GetGameMap()->GetNeighbouringCountries(attacking_country_.get());
     defending_country_ = nullptr;
 
     if(neighbours->empty()) {
@@ -169,7 +140,8 @@ void AttackPhase::FindOpponentNeighboursToAttackingCountry() {
 
     for(Country* neighbour : *neighbours) {
         if(!attacker_->DoesPlayerOwnCountry(neighbour->GetCountryID())) {
-            opponent_neighbours_->push_back(neighbour);
+            std::shared_ptr<Country> ptr (neighbour);
+            opponent_neighbours_->push_back(ptr);
         }
     }
 
@@ -184,7 +156,7 @@ bool AttackPhase::DoesOpposingCountryExist() {
     bool has_enemy = false;
     for(Country* country : *attacker_->GetPlayersCountries()) {
         //Get all the neighbouring countries
-        vector<Country*>* neighbouring_countries = game_map_->GetNeighbouringCountries(country);
+        vector<Country*>* neighbouring_countries = attacker_->GetGameMap()->GetNeighbouringCountries(country);
 
         if(!neighbouring_countries->empty()) {
             //if there is a neighbour that has an army, then verify the country belongs to an opponent
