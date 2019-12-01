@@ -868,8 +868,8 @@ void GameEngine::StartGameLoop() {
             current_player->Fortify();
         }
 
-        current_index = (current_index + 1) % num_of_players_;
-        current_player = players_->at(game_start_->current_player_index_);
+        current_index = (current_index + 1) % players_->size();
+        current_player = players_->at(current_index);
 
         //each time the game is played by all players, increment the counter
         ++num_iterations;
