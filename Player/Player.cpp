@@ -92,6 +92,7 @@ Player& Player::operator=(const Player &player) {
         is_benevolant_ = player.is_benevolant_;
         is_aggressive_ = player.is_aggressive_;
 
+
         *countries_ = *player.countries_;
         for(size_t i = 0; i < player.countries_->size(); ++i) {
             (*countries_)[i] = (*player.countries_)[i];
@@ -127,8 +128,7 @@ Player& Player::operator=(const Player &player) {
 
 bool Player::operator==(const Player& player) {
     bool is_equal = true;
-    is_equal &= *player_name_ == *player.player_name_
-            && player_id_ == player.player_id_
+    is_equal &= player_id_ == player.player_id_
             && is_human_ == player.is_human_
             && is_random_ == player.is_random_
             && is_cheater_ == player.is_cheater_

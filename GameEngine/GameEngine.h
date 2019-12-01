@@ -56,7 +56,7 @@ private:
 
     vector<PlayerType>* tournament_strategies_;
     vector<string*>* tournament_maps_;
-    map<Map*, vector<GameResult>> tournament_results_; //data structure that will store the results of all games for each map
+    map<string, vector<GameResult>> tournament_results_; //data structure that will store the results of all games for each map
 
     //for phase and statistics observers
     vector<Observer*>* observers_;

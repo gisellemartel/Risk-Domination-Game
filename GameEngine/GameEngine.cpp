@@ -159,11 +159,18 @@ void GameEngine::StartTournament() {
         MapLoader *current_map = new MapLoader(*map_file_name);
 
         if(current_map->ParseMap()) {
+            string map_name = *current_map->GetParsedMap()->GetMapName();
             loaded_map_ = current_map;
 
             vector<GameResult> game_results;
             //current map will be played for num_games
             for (int i = 0; i < num_games_tournament_; ++i) {
+                if(!current_map) {
+                    current_map = new MapLoader(*map_file_name);
+                    current_map->ParseMap();
+                    loaded_map_ = current_map;
+                    game_start_ = new StartupPhase;
+                }
                 CreatePlayersForMap(current_map);
                 CreateCardsDeck(current_map);
                 AssignHandOfCardsToPlayers();
@@ -209,8 +216,8 @@ void GameEngine::StartTournament() {
                         current_player->Fortify();
                     }
 
-                    current_index = (current_index + 1) % num_of_players_;
-                    current_player = players_->at(game_start_->current_player_index_);
+                    current_index = (current_index + 1) % players_->size();
+                    current_player = players_->at(current_index);
                     //each time the game is played by all players, increment the counter
                     ++current_turn;
                     if(current_turn == max_num_turns_per_game_) {
@@ -238,10 +245,20 @@ void GameEngine::StartTournament() {
                 }
 
                 Notify(game_over, *players_);
+
+                for(Player* player : *players_) {
+                    RemovePlayer(player);
+                }
+
+                delete loaded_map_;
+                delete game_start_;
+                game_start_ = nullptr;
+                loaded_map_ = nullptr;
+                current_map = nullptr;
             }
 
             //store the map and the results of each game
-            tournament_results_.insert({current_map->GetParsedMap(), game_results});
+            tournament_results_.insert({map_name, game_results});
         } else {
             Notify("\nMap file " + Utility::StripString(*map_file_name, "/", "") + " failed to load! Skipping this map...\n", *players_);
         }
@@ -261,11 +278,10 @@ void GameEngine::PrintFinalTournamentResult() {
         result.append("none");
     } else {
         for(auto& entry : tournament_results_){
-            Map* game_map = entry.first;
+            string game_map = entry.first;
 
-            if(game_map){
-                result.append(*game_map->GetMapName() + ", ");
-            }
+            result.append(game_map + ", ");
+
         }
         result.pop_back();
         result.pop_back();
@@ -305,48 +321,40 @@ void GameEngine::PrintFinalTournamentResult() {
     result.append("\nD: " + to_string(max_num_turns_per_game_) + "\n\n");
 
     for(auto& entry : tournament_results_) {
-        Map* game_map = entry.first;
-
-        int num_tabs = 0;
-        if(game_map) {
-            num_tabs = game_map->GetMapName()->size();
-        }
-
+        string game_map = entry.first;
+        int num_tabs = game_map.size();
         for(int i = 0; i < num_tabs; ++i) {
             result.append(" ");
         }
-
     }
 
     string result_str = "";
     for(auto& entry : tournament_results_) {
-        Map* game_map = entry.first;
+        string game_map = entry.first;
 
-        if(game_map) {
-            result_str.append(*game_map->GetMapName() + "\t\t\t");
-            vector<GameResult> game_results = entry.second;
-            int game_ctr = 0;
-            for(GameResult game_result : game_results) {
-                result.append("\tGame " + to_string(++game_ctr));
-                switch(game_result) {
-                    case GameResult::AggressiveWin :
-                        result_str.append("Aggressive\t\t\t");
-                        break;
-                    case GameResult ::CheaterWin :
-                        result_str.append("Cheater\t\t\t");
-                        break;
-                    case GameResult::RandomWin :
-                        result_str.append("Random\t\t\t");
-                        break;
-                    case GameResult::Draw :
-                        result_str.append("Draw\t\t\t");
-                        break;
-                    default:
-                        break;
-                }
+        result_str.append(game_map + "\t\t\t");
+        vector<GameResult> game_results = entry.second;
+        int game_ctr = 0;
+        for(GameResult game_result : game_results) {
+            result.append("\tGame " + to_string(++game_ctr));
+            switch(game_result) {
+                case GameResult::AggressiveWin :
+                    result_str.append("Aggressive\t\t\t");
+                    break;
+                case GameResult ::CheaterWin :
+                    result_str.append("Cheater\t\t\t");
+                    break;
+                case GameResult::RandomWin :
+                    result_str.append("Random\t\t\t");
+                    break;
+                case GameResult::Draw :
+                    result_str.append("Draw\t\t\t");
+                    break;
+                default:
+                    break;
             }
-            result_str.append("\n\n");
         }
+        result_str.append("\n\n");
     }
 
     result.append("\n"  + result_str);
@@ -738,7 +746,6 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsBenevolent();
         players_->push_back((new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this)));
-        tournament_strategies_->push_back(PlayerType::Benevolant);
     }
 
     for(size_t i = 0; i < num_random_players_; ++i) {
@@ -749,7 +756,6 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsRandom();
         players_->push_back(player);
-        tournament_strategies_->push_back(PlayerType::Random);
     }
 
     for(size_t i = 0; i < num_cheater_players_; ++i) {
@@ -760,9 +766,30 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsCheater();
         players_->push_back(player);
-        tournament_strategies_->push_back(PlayerType::Cheater);
     }
 
+    if(tournament_strategies_->empty()) {
+        if(num_benevolant_players_ > 0) {
+            tournament_strategies_->push_back(PlayerType::Benevolant);
+        }
+
+        if(num_cheater_players_ > 0) {
+            tournament_strategies_->push_back(PlayerType::Cheater);
+        }
+
+        if(num_aggressive_players_ > 0) {
+            tournament_strategies_->push_back(PlayerType::Aggressive);
+        }
+
+        if(num_random_players_ > 0) {
+            tournament_strategies_->push_back(PlayerType::Random);
+        }
+    }
+
+    num_of_players_ = num_benevolant_players_ + num_random_players_ + num_cheater_players_ + num_aggressive_players_;
+    if(!game_start_) {
+        game_start_ = new StartupPhase;
+    }
     game_start_->SetNumberOfArmies(num_of_players_);
 }
 
@@ -984,10 +1011,10 @@ void GameEngine::RemovePlayer(Player *player) {
         }
     }
 
+    delete (*players_)[idx_to_remove];
+    (*players_)[idx_to_remove] = nullptr;
     //remove the deleted player from the game
     if(idx_to_remove > -1) {
         players_->erase(players_->begin() + idx_to_remove);
     }
-
-    --num_of_players_;
 }

@@ -201,6 +201,10 @@ bool Hand::AreThreeSame(Cards* card_1, Cards* card_2, Cards* card_3) {
 }
 
 bool Hand::AreThreeDifferent(Cards *card_1, Cards *card_2, Cards *card_3) {
+
+    if(!card_1 || !card_2 || !card_3) {
+        return true;
+    }
     return
             (
                     card_1->GetCardType() != card_2->GetCardType() &&
