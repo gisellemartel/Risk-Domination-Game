@@ -134,7 +134,7 @@ void GameEngine::SetUpTournament() {
 
 
     // prompt the user for the number of different strategies they would like to include
-    cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): ";
+    cout << "\nPlease enter the number of different computer strategies you would like to include in the game (between 2-4): " << endl;
     num_strategies_ = Utility::PromptUserNumericalInput(2, 4);
 
     //Create the games
@@ -925,7 +925,7 @@ void GameEngine::PromptUserToSelectNumPlayers(PlayerType player_type) {
 
     if(num_players_remaining_to_assign > 0) {
         cout << "How many " << player_type_str << " opponents would you like to battle? (choose between 0 - "
-             << num_players_remaining_to_assign << " ): ";
+             << num_players_remaining_to_assign << " ): " << endl;
         while (!(cin >> num_players) || num_players < 0 || num_players > num_players_remaining_to_assign) {
             cout << "Invalid selection! Please try again:";
             cin.clear();
