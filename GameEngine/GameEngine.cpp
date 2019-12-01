@@ -68,6 +68,52 @@ string GameEngine::SelectFileForTournament() {
     return file_to_load;
 }
 
+void GameEngine::PromptUserToSelectStrategiesForTournament() {
+
+    vector<int> chosen_strategies;
+    cout << "\nHere all the available strategies:\n";
+    cout << "Aggressive: 1\n";
+    cout << "Benevolant: 2\n";
+    cout << "Random: 3\n";
+    cout << "Cheater: 4\n";
+    for(int i = 0; i < num_strategies_; ++i) {
+        cout << "\nPlease specify the desired strategy for player " << (i+1) << ".\n";
+        int result = Utility::PromptUserNumericalInput(1, 4);
+
+        while(Utility::HasValue(chosen_strategies, result)) {
+            cout << "You have already chosen this strategy! Please try again";
+            result = Utility::PromptUserNumericalInput(1, 4);
+        }
+
+        switch(result) {
+            case 1:
+                num_aggressive_players_ = 1;
+                cout << "You have chosen Aggressive strategy\n";
+                chosen_strategies.push_back(1);
+                break;
+            case 2:
+                num_benevolant_players_ = 1;
+                chosen_strategies.push_back(2);
+                cout << "You have chosen Benevolant strategy\n";
+                break;
+            case 3:
+                num_random_players_ = 1;
+                chosen_strategies.push_back(3);
+                cout << "You have chosen Random strategy\n";
+                break;
+            case 4:
+                num_cheater_players_ = 1;
+                chosen_strategies.push_back(4);
+                cout << "You have chosen Cheater strategy\n";
+                break;
+            default:
+                break;
+        }
+
+
+    }
+}
+
 void GameEngine::SetUpSingleGame() {
     game_start_ = new StartupPhase;
 
@@ -143,10 +189,7 @@ void GameEngine::SetUpTournament() {
 
     //prompt the user to select the number of players for each strategy type
     while((num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_) < num_of_players_) {
-        PromptUserToSelectNumPlayers(PlayerType::Aggressive);
-        PromptUserToSelectNumPlayers(PlayerType::Benevolant);
-        PromptUserToSelectNumPlayers(PlayerType::Random);
-        PromptUserToSelectNumPlayers(PlayerType::Cheater);
+        PromptUserToSelectStrategiesForTournament();
     }
 
     //start playing the tournament!

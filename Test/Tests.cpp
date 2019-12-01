@@ -257,11 +257,7 @@ int main() {
 
         cout << "Please Select what you would like to test (enter the corresponding number):\n";
 
-        while (!(cin >> user_response) || user_response < 0 || user_response > 4) {
-            cin.clear();
-            cin.ignore(132, '\n');
-            cout << "Invalid selection. Please try again: ";
-        }
+        user_response = Utility::PromptUserNumericalInput(0, 5);
 
         switch (user_response) {
             case 0 :

@@ -72,6 +72,7 @@ private:
     void SetUpTournament();
     void StartTournament();
     void PrintFinalTournamentResult();
+    void PromptUserToSelectStrategiesForTournament();
 
 public:
     // Function to test Player functions within game
