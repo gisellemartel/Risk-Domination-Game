@@ -320,45 +320,64 @@ void GameEngine::PrintFinalTournamentResult() {
     //# num turns per game
     result.append("\nD: " + to_string(max_num_turns_per_game_) + "\n\n");
 
-    for(auto& entry : tournament_results_) {
-        string game_map = entry.first;
-        int num_tabs = game_map.size();
-        for(int i = 0; i < num_tabs; ++i) {
-            result.append(" ");
-        }
-    }
 
-    string result_str = "";
-    for(auto& entry : tournament_results_) {
-        string game_map = entry.first;
+//    //formatting for console output
+//    int num_tabs = 0;
+//    string longest_name = "";
+//    for(auto& entry : tournament_results_) {
+//        string game_map = entry.first;
+//        if(game_map.size() > longest_name.size()) {
+//            longest_name = game_map;
+//        }
+//    }
+//
+//    num_tabs = longest_name.size();
+//
+//    for(int i = 0; i < num_tabs; ++i) {
+//        result.append(" ");
+//    }
+//
+//
+//    string result_str = "";
+//    for(auto& entry : tournament_results_) {
+//        string game_map = entry.first;
 
-        result_str.append(game_map + "\t\t\t");
-        vector<GameResult> game_results = entry.second;
-        int game_ctr = 0;
-        for(GameResult game_result : game_results) {
-            result.append("\tGame " + to_string(++game_ctr));
-            switch(game_result) {
-                case GameResult::AggressiveWin :
-                    result_str.append("Aggressive\t\t\t");
-                    break;
-                case GameResult ::CheaterWin :
-                    result_str.append("Cheater\t\t\t");
-                    break;
-                case GameResult::RandomWin :
-                    result_str.append("Random\t\t\t");
-                    break;
-                case GameResult::Draw :
-                    result_str.append("Draw\t\t\t");
-                    break;
-                default:
-                    break;
-            }
-        }
-        result_str.append("\n\n");
-    }
-
-    result.append("\n"  + result_str);
-    Utility::ClearScreen();
+//        //formatting
+//        int num_spaces = longest_name.size() - game_map.size();
+//        string left_margin = "\t\t";
+//        for(int i = 0; i < num_spaces; ++i) {
+//            left_margin.append(" ");
+//        }
+//
+//        result_str.append(game_map);
+//        vector<GameResult> game_results = entry.second;
+//        int game_ctr = 0;
+//        result.append("\t\tGame " + to_string(++game_ctr));
+//        for(GameResult game_result : game_results) {
+////            result_str.append(left_margin);
+//            string result_str = "";
+//            switch(game_result) {
+//                case GameResult::AggressiveWin :
+//                    result_str.append("Aggressive\t\t");
+//                    break;
+//                case GameResult ::CheaterWin :
+//                    result_str.append("Cheater\t\t");
+//                    break;
+//                case GameResult::RandomWin :
+//                    result_str.append( "Random\t\t");
+//                    break;
+//                case GameResult::Draw :
+//                    result_str.append("Draw\t\t");
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
+//        result_str.append("\n\n");
+//    }
+//
+//    result.append("\n"  + result_str);
+//    Utility::ClearScreen();
     cout << result;
 }
 

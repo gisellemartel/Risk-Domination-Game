@@ -220,13 +220,18 @@ public:
         Tester::TestConquestMapLoader("../MapLoader/conquest-map-files/too-many-territories.map", false);
     }
 
-    static void TestGameTournament() {
+    static void TestGameTournament(bool with_observer) {
         cout << "\n\nTesting Game Tournament...\n\n";
         GameEngine* new_game = new GameEngine();
-        Observer* observer = new GameStatisticObserver;
-        new_game->Register(observer);
-        new_game->CreateNewGame();
-        new_game->Unregister(observer);
+        if(with_observer) {
+            Observer* observer = new GameStatisticObserver;
+            new_game->Register(observer);
+            new_game->CreateNewGame();
+            new_game->Unregister(observer);
+        } else {
+            new_game->CreateNewGame();
+        }
+
 
         cout << "\n\nFinished Testing Game Tournament...\n\n";
 
@@ -242,11 +247,12 @@ int main() {
         Utility::ClearScreen();
         int user_response;
         cout << endl;
-        cout << "Test Game Tournament w/ Phase Observer      |  0\n";
-        cout << "Test Dynamic Strategies w/ Phase Observer   |  1\n";
-        cout << "Test Different Strategies w/ Phase Observer |  2\n";
-        cout << "Test GameLoop with Game Statistic Observer  |  3\n";
-        cout << "Test Conquest Map Loader                    |  4\n\n";
+        cout << "Test Game Tournament w/ Statistic Observer  |  0\n";
+        cout << "Test Game Tournament with no observer       |  1\n";
+        cout << "Test Dynamic Strategies w/ Phase Observer   |  2\n";
+        cout << "Test Different Strategies w/ Phase Observer |  3\n";
+        cout << "Test GameLoop with Game Statistic Observer  |  4\n";
+        cout << "Test Conquest Map Loader                    |  5\n\n";
 
 
         cout << "Please Select what you would like to test (enter the corresponding number):\n";
@@ -259,18 +265,21 @@ int main() {
 
         switch (user_response) {
             case 0 :
-                Tester::TestGameTournament();
+                Tester::TestGameTournament(true);
                 break;
             case 1 :
-                Tester::TestDynamicBehaviours();
+                Tester::TestGameTournament(false);
                 break;
             case 2:
-                Tester::TestPlayerStrategiesWithPhaseObserver();
+                Tester::TestDynamicBehaviours();
                 break;
             case 3:
-                Tester::TestGameStatisticsObserver();
+                Tester::TestPlayerStrategiesWithPhaseObserver();
                 break;
             case 4:
+                Tester::TestGameStatisticsObserver();
+                break;
+            case 5:
                 Tester::TestMapFiles();
                 break;
             default:
