@@ -68,6 +68,46 @@ string GameEngine::SelectFileForTournament() {
     return file_to_load;
 }
 
+void GameEngine::SetUpSingleGame() {
+    game_start_ = new StartupPhase;
+
+    string map_file_name = AutoSelectMap("../MapLoader/domination-map-files");
+    loaded_map_ = new MapLoader(map_file_name);
+
+    if(!loaded_map_) {
+        cout << "Failed to load selected map! Aborting\n";
+        return;
+    }
+
+    if(loaded_map_->ParseMap()) {
+
+        cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
+        num_of_players_ = Utility::PromptUserNumericalInput(2, 6);
+
+        while(num_of_human_players_ + num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_ < num_of_players_) {
+            PromptUserToSelectNumPlayers(PlayerType::Human);
+            PromptUserToSelectNumPlayers(PlayerType::Aggressive);
+            PromptUserToSelectNumPlayers(PlayerType::Benevolant);
+            PromptUserToSelectNumPlayers(PlayerType::Random);
+            PromptUserToSelectNumPlayers(PlayerType::Cheater);
+        }
+
+        CreatePlayersForMap(loaded_map_);
+        CreateCardsDeck(loaded_map_);
+        AssignHandOfCardsToPlayers();
+        AssignDiceToPlayers();
+        game_start_->RandomlyDeterminePlayerOrder(players_);
+        game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
+        game_start_->AutoAssignArmiesToAllPlayers(players_);
+
+        for(Player* player : *players_) {
+            player->SetGameMap(loaded_map_->GetParsedMap());
+        }
+
+        StartGameLoop();
+    }
+}
+
 void GameEngine::SetUpTournament() {
 
     // Ask the user to specify and load the maps they wish to use
@@ -283,23 +323,23 @@ void GameEngine::PrintFinalTournamentResult() {
         Map* game_map = entry.first;
 
         if(game_map) {
-            result_str.append(*game_map->GetMapName() + "\t");
+            result_str.append(*game_map->GetMapName() + "\t\t\t");
             vector<GameResult> game_results = entry.second;
             int game_ctr = 0;
             for(GameResult game_result : game_results) {
                 result.append("\tGame " + to_string(++game_ctr));
                 switch(game_result) {
                     case GameResult::AggressiveWin :
-                        result_str.append("Aggressive\t");
+                        result_str.append("Aggressive\t\t\t");
                         break;
                     case GameResult ::CheaterWin :
-                        result_str.append("Cheater\t");
+                        result_str.append("Cheater\t\t\t");
                         break;
                     case GameResult::RandomWin :
-                        result_str.append("Random\t");
+                        result_str.append("Random\t\t\t");
                         break;
                     case GameResult::Draw :
-                        result_str.append("Draw\t");
+                        result_str.append("Draw\t\t\t");
                         break;
                     default:
                         break;
@@ -658,6 +698,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
     }
 
     players_ = new vector<Player*>;
+    int current_id = 0;
 
     if(num_of_players_ < 2 || num_of_players_ > 6) {
         //something went wrong. Set number of players to default value of 2
@@ -672,7 +713,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
 
         ConcreteStrategies* strategy = new HumanPlayerStrategy();
 
-        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsHuman();
         players_->push_back(player);
@@ -682,7 +723,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Aggressive Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new AggressiveComputerPlayerStrategy();
-        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsAggressive();
         players_->push_back(player);
@@ -693,10 +734,10 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Benevolant Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new BenevolantComputerPlayerStrategy();
-        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsBenevolent();
-        players_->push_back((new Player(player_name, loaded_map->GetParsedMap(), this)));
+        players_->push_back((new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this)));
         tournament_strategies_->push_back(PlayerType::Benevolant);
     }
 
@@ -704,7 +745,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Random Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new RandomComputerPlayerStrategy();
-        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsRandom();
         players_->push_back(player);
@@ -715,7 +756,7 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         string player_name = "Cheater Player " + std::to_string(player_counter++);
 
         ConcreteStrategies* strategy = new CheaterComputerPlayerStrategy();
-        Player* player = (new Player(player_name, loaded_map->GetParsedMap(), this));
+        Player* player = (new Player(player_name, ++current_id, loaded_map->GetParsedMap(), this));
         player->SetPlayerStrategy(strategy);
         player->SetAsCheater();
         players_->push_back(player);
@@ -894,66 +935,16 @@ void GameEngine::PromptUserToSelectNumPlayers(PlayerType player_type) {
 }
 
 void GameEngine::CreateNewGame() {
-    bool is_tournament;
     cout << "Please enter 0 to play single game, or 1 to play tournament" << endl;
-
-    while(!(cin >> is_tournament)) {
-        cin.clear();
-        cin.ignore(132, '\n');
-        cout << "Invalid entry! Please try again" << endl;
-    }
+    int is_tournament = Utility::PromptUserNumericalInput(0,1);
 
     if(is_tournament) {
-        cout << "You have chosen to do a tournament!" << endl;
+        cout << "You have chosen tournament mode!" << endl;
         SetUpTournament();
 
     } else {
-        game_start_ = new StartupPhase;
-
-        string map_file_name = AutoSelectMap("../MapLoader/domination-map-files");
-        loaded_map_ = new MapLoader(map_file_name);
-
-        if(!loaded_map_) {
-            cout << "Failed to load selected map! Aborting\n";
-            return;
-        }
-
-        if(loaded_map_->ParseMap()) {
-
-            cout << "Please enter the number of human players joining the game (between 2 and 6 players per game): ";
-            num_of_players_ = Utility::PromptUserNumericalInput(2, 6);
-
-            while(num_of_human_players_ + num_aggressive_players_ + num_benevolant_players_ + num_random_players_ + num_cheater_players_ < num_of_players_) {
-                PromptUserToSelectNumPlayers(PlayerType::Human);
-                PromptUserToSelectNumPlayers(PlayerType::Aggressive);
-                PromptUserToSelectNumPlayers(PlayerType::Benevolant);
-                PromptUserToSelectNumPlayers(PlayerType::Random);
-                PromptUserToSelectNumPlayers(PlayerType::Cheater);
-            }
-
-            CreatePlayersForMap(loaded_map_);
-            CreateCardsDeck(loaded_map_);
-            AssignHandOfCardsToPlayers();
-            AssignDiceToPlayers();
-            game_start_->RandomlyDeterminePlayerOrder(players_);
-            game_start_->AssignCountriesToAllPlayers(players_, loaded_map_->GetParsedMap()->GetCountries());
-            game_start_->AutoAssignArmiesToAllPlayers(players_);
-
-            for(Player* player : *players_) {
-                player->SetGameMap(loaded_map_->GetParsedMap());
-            }
-
-            //repeat game loop 2 times
-//            for(int i = 0; i < 2; ++i) {
-//                for(Player* player : *players_) {
-//                    player->Reinforce();
-//                    player->Attack();
-//                    player->Fortify();
-//                }
-//            }
-
-            StartGameLoop();
-        }
+        cout << "You have chosen single game mode!" << endl;
+        SetUpSingleGame();
     }
 }
 

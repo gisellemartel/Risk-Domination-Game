@@ -32,7 +32,6 @@ class GameEngine;
 class Player {
 
 private:
-    bool is_player_turn_;
     bool is_human_;
     bool is_aggressive_;
     bool is_benevolant_;
@@ -59,22 +58,14 @@ private:
     string AttackerConquersDefeatedCountry();
     void RemoveDefeatedPlayerFromGame(Country* defeated_country, Player* defender);
 
-    static int ID() {
-        static int ID = 0;
-        return ID++;
-    }
-
 public:
-    explicit Player(string player_name);
-    Player(string player_name, Map* game_map, GameEngine* game_engine);
-    Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn);
+    Player(string player_name, int player_id, Map* game_map, GameEngine* game_engine);
     Player(const Player &player);
     ~Player();
 
     Player& operator=(const Player& player);
     bool operator==(const Player& player);
 
-    void SetPlayersTurn(bool is_turn);
     void SetPlayerName(string* player_name);
     void SetPlayerDice(Dice* dice);
     void SetPlayerHand(Hand* hand);
@@ -102,7 +93,6 @@ public:
     Country* GetCountryInVectorById(vector<Country*>* countries, int country_id);
 
     bool DoesPlayerOwnCountry(int id) const;
-    bool IsCurrentlyPlayersTurn() const;
     bool IsHuman() const;
     bool IsRandom() const;
     bool IsCheater() const;

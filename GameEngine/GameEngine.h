@@ -68,6 +68,7 @@ private:
     MapLoader* SelectFile();
     string SelectFileForTournament();
     void PromptUserToSelectNumPlayers(PlayerType player_type);
+    void SetUpSingleGame();
     void SetUpTournament();
     void StartTournament();
     void PrintFinalTournamentResult();
