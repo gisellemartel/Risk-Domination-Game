@@ -321,63 +321,38 @@ void GameEngine::PrintFinalTournamentResult() {
     result.append("\nD: " + to_string(max_num_turns_per_game_) + "\n\n");
 
 
-//    //formatting for console output
-//    int num_tabs = 0;
-//    string longest_name = "";
-//    for(auto& entry : tournament_results_) {
-//        string game_map = entry.first;
-//        if(game_map.size() > longest_name.size()) {
-//            longest_name = game_map;
-//        }
-//    }
-//
-//    num_tabs = longest_name.size();
-//
-//    for(int i = 0; i < num_tabs; ++i) {
-//        result.append(" ");
-//    }
-//
-//
-//    string result_str = "";
-//    for(auto& entry : tournament_results_) {
-//        string game_map = entry.first;
+    for(auto& entry : tournament_results_) {
+        string map_name = entry.first;
 
-//        //formatting
-//        int num_spaces = longest_name.size() - game_map.size();
-//        string left_margin = "\t\t";
-//        for(int i = 0; i < num_spaces; ++i) {
-//            left_margin.append(" ");
-//        }
-//
-//        result_str.append(game_map);
-//        vector<GameResult> game_results = entry.second;
-//        int game_ctr = 0;
-//        result.append("\t\tGame " + to_string(++game_ctr));
-//        for(GameResult game_result : game_results) {
-////            result_str.append(left_margin);
-//            string result_str = "";
-//            switch(game_result) {
-//                case GameResult::AggressiveWin :
-//                    result_str.append("Aggressive\t\t");
-//                    break;
-//                case GameResult ::CheaterWin :
-//                    result_str.append("Cheater\t\t");
-//                    break;
-//                case GameResult::RandomWin :
-//                    result_str.append( "Random\t\t");
-//                    break;
-//                case GameResult::Draw :
-//                    result_str.append("Draw\t\t");
-//                    break;
-//                default:
-//                    break;
-//            }
-//        }
-//        result_str.append("\n\n");
-//    }
-//
-//    result.append("\n"  + result_str);
-//    Utility::ClearScreen();
+        map_name.append(":\n\n");
+
+        vector<GameResult> game_results = entry.second;
+        int game_ctr = 0;
+        for(GameResult game_result : game_results) {
+            map_name.append("Game " + to_string(++game_ctr) + ": ");
+            switch(game_result) {
+                case GameResult::AggressiveWin :
+                    map_name.append("Aggressive\t\t");
+                    break;
+                case GameResult ::CheaterWin :
+                    map_name.append("Cheater\t\t");
+                    break;
+                case GameResult::RandomWin :
+                    map_name.append( "Random\t\t");
+                    break;
+                case GameResult::Draw :
+                    map_name.append("Draw\t\t");
+                    break;
+                default:
+                    break;
+            }
+
+            map_name.append("\n");
+        }
+        result.append(map_name +  "\n\n");
+    }
+
+    Utility::ClearScreen();
     cout << result;
 }
 
@@ -754,7 +729,6 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
         player->SetPlayerStrategy(strategy);
         player->SetAsAggressive();
         players_->push_back(player);
-        tournament_strategies_->push_back(PlayerType::Aggressive);
     }
 
     for(size_t i = 0; i < num_benevolant_players_; ++i) {
@@ -1030,10 +1004,12 @@ void GameEngine::RemovePlayer(Player *player) {
         }
     }
 
-    delete (*players_)[idx_to_remove];
-    (*players_)[idx_to_remove] = nullptr;
     //remove the deleted player from the game
-    if(idx_to_remove > -1) {
+    if(idx_to_remove > -1 && idx_to_remove < players_->size() - 1) {
+        if((*players_)[idx_to_remove]) {
+            delete (*players_)[idx_to_remove];
+            (*players_)[idx_to_remove] = nullptr;
+        }
         players_->erase(players_->begin() + idx_to_remove);
     }
 }
