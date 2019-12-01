@@ -9,31 +9,10 @@
 
 
 // Player class implementation ----------------------------------------------------------------------------
-
-Player::Player(string player_name) : player_id_(ID()) {
+Player::Player(string player_name, int player_id, Map *game_map, GameEngine* game_engine)
+: player_id_(player_id), game_map_(game_map), game_engine_(game_engine)
+{
     player_name_ = new string(std::move(player_name));
-    is_player_turn_ = false;
-    is_human_ = false;
-    is_random_ = false;
-    is_cheater_ = false;
-    is_benevolant_ = false;
-    is_aggressive_ = false;
-    countries_ = new vector<Country*>;
-    risk_cards_ = nullptr;
-    dice_roll_ = nullptr;
-    game_map_ = nullptr;
-    player_strategy_ = nullptr;
-    attack_phase_ = nullptr;
-    reinforce_phase_ = nullptr;
-    fortify_phase_ = nullptr;
-    game_engine_ = nullptr;
-}
-
-Player::Player(string player_name, Map *game_map, GameEngine* game_engine) : player_id_(ID()) {
-    player_name_ = new string(std::move(player_name));
-    game_map_ = game_map;
-    game_engine_ = game_engine;
-    is_player_turn_ = false;
     is_human_ = false;
     is_random_ = false;
     is_cheater_ = false;
@@ -46,31 +25,10 @@ Player::Player(string player_name, Map *game_map, GameEngine* game_engine) : pla
     reinforce_phase_ = nullptr;
     attack_phase_ = nullptr;
     fortify_phase_ = nullptr;
-}
-
-Player::Player(string player_name, vector<Country*>* countries_to_assign_to_player, bool is_player_turn) : player_id_(ID()) {
-    player_name_ = new string(std::move(player_name));
-    is_player_turn_ = is_player_turn;
-    is_human_ = false;
-    is_random_ = false;
-    is_cheater_ = false;
-    is_benevolant_ = false;
-    is_aggressive_ = false;
-    //countries to be assigned to each player are chosen randomly at start-up phase
-    countries_ = countries_to_assign_to_player;
-    risk_cards_ = nullptr;
-    dice_roll_ = nullptr;
-    game_map_ = nullptr;
-    player_strategy_ = nullptr;
-    fortify_phase_ = nullptr;
-    attack_phase_ = nullptr;
-    reinforce_phase_ = nullptr;
-    game_engine_ = nullptr;
 }
 
 Player::Player(const Player &player) : player_id_(player.player_id_){
     *player_name_ = *player.player_name_;
-    is_player_turn_ = player.is_player_turn_;
     is_human_ = player.is_human_;
     is_random_ = player.is_random_;
     is_cheater_ = player.is_cheater_;
@@ -128,7 +86,6 @@ Player& Player::operator=(const Player &player) {
 
     if(this != & player) {
         *player_name_ = *player.player_name_;
-        is_player_turn_ = player.is_player_turn_;
         is_human_ = player.is_human_;
         is_random_ = player.is_random_;
         is_cheater_ = player.is_cheater_;
@@ -202,10 +159,6 @@ bool Player::DoesPlayerOwnCountry(int id) const {
 
 int Player::GetPlayerID() const {
     return player_id_;
-}
-
-bool Player::IsCurrentlyPlayersTurn() const {
-    return is_player_turn_;
 }
 
 vector<Country*>* Player::GetPlayersCountries() const {
@@ -293,10 +246,6 @@ string* Player::GetPlayerName() const {
     return player_name_;
 }
 
-void Player::SetPlayersTurn(bool is_turn) {
-    is_player_turn_ = is_turn;
-}
-
 void Player::SetPlayerName(string* player_name) {
     player_name_ = player_name;
 }
@@ -369,12 +318,7 @@ void Player::DisplayPlayerStats() const {
     cout << endl;
 
     cout << "Total dice rolls made: " << dice_roll_->GetTotalRolls();
-    cout << endl;
-
-    cout << "Is it " << *player_name_ << "'s turn? ";
-    string result = is_player_turn_ ? "true" : "false";
-
-    cout << result << "\n===================================================\n";
+    cout  << "\n===================================================\n";
 }
 
 void Player::DisplayCountries() const {
@@ -607,7 +551,7 @@ void Player::Attack() {
 
                 msg = "\nIt is " + *defender->GetPlayerName() + "'s turn to enter the number of dice they wish to roll (can roll max " + to_string(MAX_NUM_OF_DICE_DEFENDER) + ") dice: ";
                 Notify(this, GamePhase::Attack, msg, false, false);
-                Notify(msg, *game_engine_->GetPlayers());
+               // Notify(msg, *game_engine_->GetPlayers());
 
                 //if the player is human then they select their own number of dice otherwise it is randomly generated for computer players
                 if(defender->IsHuman()) {

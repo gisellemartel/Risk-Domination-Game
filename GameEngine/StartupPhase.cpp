@@ -87,13 +87,11 @@ void StartupPhase::RandomlyDeterminePlayerOrder(vector<Player*>* players) {
     }
 
     //print the players in the generated order
-    for(map<Player* , int>::iterator it = player_order_.begin(); it != player_order_.end(); ++it) {
+    for(auto it = player_order_.begin(); it != player_order_.end(); ++it) {
         Player*  player = it->first;
 
         for(int i = 0; i < players->size(); ++i ) {
             if(player && *player == *(*players)[i]) {
-                //set the turn for the current player
-                (*players)[i]->SetPlayersTurn(it->second == current_player_index_);
                 //display order for current player
                 cout << *player->GetPlayerName() << ": " << (it->second + 1) << "\n";
             }
@@ -130,16 +128,14 @@ void StartupPhase::AssignCountriesToAllPlayers(vector<Player*>* players, vector<
         for (auto &it : player_order_) {
             //find the player whose is currently to be assigned countries
             if (it.second == current_player_index_) {
-                it.first->SetPlayersTurn(true);
                 int current_random_index = random_order[current_index];
 
                 //debug string
                 cout << "Assigning " << *(*countries_to_assign)[current_random_index]->GetCountryName() << " to " << *(it.first->GetPlayerName()) << endl;
 
                 it.first->AddCountryToCollection(countries_to_assign->at(current_random_index));
-                it.first->SetPlayersTurn(false);
                 //update position of current index
-                ++current_index;
+                current_index = (current_index + 1) % random_order.size();
                 --num_countries;
             }
         }
@@ -182,9 +178,6 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
                     break;
                 }
 
-                it.first->SetPlayersTurn(true);
-                //  int random_country_index = GenerateRandomNumInRange(0, it.first->GetPlayersCountries()->size());
-
                 it.first->DisplayCountries();
                 cout << "Please choose which country you would like to assign armies to (enter by numerical id):\n";
 
@@ -216,8 +209,6 @@ void StartupPhase::AssignArmiesToAllPlayers(vector<Player*>* players) {
 
                     //update number of armies for current player after assignment
                     num_armies[it.second] = num_armies[it.second] - user_selection;
-
-                    it.first->SetPlayersTurn(false);
                 }
             }
         }
@@ -261,9 +252,6 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
                     cout << *it.first->GetPlayerName() << " has no more countries left to assign. Going to next turn\n\n";
                     break;
                 }
-
-                it.first->SetPlayersTurn(true);
-
                 int country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
                 while(!it.first->DoesPlayerOwnCountry(country_id)) {
                     country_id = Utility::GenerateRandomNumInRange(1, it.first->GetGameMap()->GetCountries()->size());
@@ -295,8 +283,6 @@ void StartupPhase::AutoAssignArmiesToAllPlayers(vector<Player*>* players) {
 
                     //update number of armies for current player after assignment
                     num_armies[it.second] = num_armies[it.second] - num_armies_to_assign;
-
-                    it.first->SetPlayersTurn(false);
                 }
             }
         }
