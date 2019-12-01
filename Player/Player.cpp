@@ -701,7 +701,8 @@ void Player::Attack() {
         if(!game_deck_) {
             return;
         }
-        risk_cards_->AddCardToHand(game_deck_->Draw());
+        if(game_deck_->GetNumberOfCardsInDeck() != 0 )
+            risk_cards_->AddCardToHand(game_deck_->Draw());
     }
 
     //PhaseObserver
