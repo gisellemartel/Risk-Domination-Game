@@ -129,11 +129,11 @@ public:
         }
 
         for(Player* player : *new_game->GetPlayers()) {
-            player->DisplayCountries();
+//            player->DisplayCountries();
             player->Reinforce();
-            player->DisplayCountries();
+//            player->DisplayCountries();
             player->Attack();
-            player->DisplayCountries();
+//            player->DisplayCountries();
             player->Fortify();
         }
 

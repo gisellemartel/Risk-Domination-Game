@@ -250,8 +250,6 @@ void GameEngine::StartTournament() {
                     if(!current_player->GetPlayersCountries()->empty()){
 
                         current_player->Reinforce();
-                        cout << *current_player->GetPlayerName() << endl;
-                        current_player->DisplayCountries();
                         current_player->Attack();
                         if(num_of_players_ < 2) {
                             break;
@@ -829,7 +827,6 @@ void GameEngine::CreatePlayersForMap(MapLoader *loaded_map) {
     game_start_->SetNumberOfArmies(num_of_players_);
 }
 
-
 void GameEngine::AssignDiceToPlayers() {
     if(players_->empty()) {
 
@@ -902,8 +899,6 @@ void GameEngine::StartGameLoop() {
         if(!current_player->GetPlayersCountries()->empty()){
 
             current_player->Reinforce();
-            cout << *current_player->GetPlayerName() << endl;
-            current_player->DisplayCountries();
             current_player->Attack();
             if(num_of_players_ < 2) {
                 break;
