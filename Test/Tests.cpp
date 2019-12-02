@@ -255,7 +255,7 @@ int main() {
         cout << "Test Conquest Map Loader                    |  5\n\n";
 
 
-        cout << "Please Select what you would like to test (enter the corresponding number):\n";
+        cout << "Please Select what you would like to test (enter the corresponding number):";
 
         user_response = Utility::PromptUserNumericalInput(0, 5);
 
