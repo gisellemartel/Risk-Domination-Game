@@ -1,6 +1,4 @@
-//
-// Created by Giselle Martel on 2019-11-26.
-//
+
 
 #include "Continent.h"
 

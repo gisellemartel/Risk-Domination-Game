@@ -1,6 +1,4 @@
-//
-// Created by Giselle Martel on 2019-11-26.
-//
+
 
 #ifndef TEAMPROJECT_COMP345_STARTUPPHASE_H
 #define TEAMPROJECT_COMP345_STARTUPPHASE_H

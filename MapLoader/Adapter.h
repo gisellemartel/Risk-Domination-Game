@@ -1,6 +1,3 @@
-//
-// Created by Giselle Martel on 2019-11-26.
-//
 
 #include "ConquestMapLoader.h"
 #include "MapLoader.h"

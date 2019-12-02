@@ -1,6 +1,3 @@
-//
-// Created by Giselle Martel on 2019-11-29.
-//
 
 #ifndef TEAMPROJECT_COMP345_DECK_H
 #define TEAMPROJECT_COMP345_DECK_H
